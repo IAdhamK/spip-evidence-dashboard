@@ -371,7 +371,7 @@ function ParameterList({ parameters, kkId, kode }) {
               <span>Baris {parameter.source_row}</span>
               <span>{compactCodes(parameter)}</span>
             </div>
-            <p>{parameter.uraian}</p>
+            <p className="parameter-statement">{parameter.uraian}</p>
             {parameter.cara_pengujian ? (
               <div className="test-method">
                 <strong>

@@ -544,6 +544,17 @@ tbody tr:hover,
   line-height: 1.45;
 }
 
+.parameter-item .parameter-statement {
+  padding: 10px 11px;
+  color: var(--text);
+  background: #f4faf8;
+  border-left: 3px solid var(--primary);
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 780;
+  line-height: 1.45;
+}
+
 .test-method {
   display: grid;
   gap: 4px;
