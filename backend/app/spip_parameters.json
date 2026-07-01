@@ -1,0 +1,2203 @@
+{
+  "KK3.1": {
+    "1.1": {
+      "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
+      "parameters": [
+        {
+          "source_row": 11,
+          "no": "1",
+          "uraian": "K/L/D menegakkan integritas dan nilai etika dalam melaksanakan tugas dan fungsi organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penegakan integritas dan nilai etika telah diperbaiki secara berkelanjutan sehingga tercipta suasana kerja organisasi yang kondusif yang dapat mendorong kinerja para pegawai secara optimal",
+          "penjelasan_sample": "- Setiap individu dalam organisasi dapat mendorong penerapan nilai-nilai organisasi - Setiap individu mendukung pencapaian kinerja organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan integritas dan perilaku individu serta mempengaruhi remunerasi individu",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.2": {
+      "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
+      "parameters": [
+        {
+          "source_row": 17,
+          "no": "1",
+          "uraian": "Tugas dan jabatan dalam organisasi dilaksanakan dan diisi oleh SDM yang kompeten",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan kompetensi SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Setiap posisi dalam organisasi telah diisi oleh SDM sesuai dengan standar kompetensinya - Penerapan standar kompetensi telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan kompetensi SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.3": {
+      "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
+      "parameters": [
+        {
+          "source_row": 23,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menciptakan lingkungan kerja yang kondusif untuk pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penerapan manajemen kinerja, pengelolaan keuangan, manajemen SDM, serta manajemen risiko dapat meningkatkan efektivitas dan efisiensi kinerja seluruh level pimpinan dan pegawai",
+          "penjelasan_sample": "Sudah Jelas",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 28,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D mengalokasikan sumber daya untuk penerapan manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah mengalokasikan sumber daya secara memadai untuk penerapan manajemen risiko pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "a. Instansi Pemerintah telah menganggarkan dana implementasi manajemen risiko seperti rapat terkait manajemen risiko, identifikasi dan analisis risiko, penyusunan profil risiko, implementasi RTP, kegiatan monitoring dan reviu dalam rencana kerja/DPA/DIPA dan dalam implementasi manajemen risiko tidak terkendala kekurangan dana implementasi ditingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D b. Minimal 70% SDM yang menjadi anggota UPR pada tingkat operasional dan strategis unit kerja serta strategis K/L/D diisi oleh orang yang berkompeten dalam bidang manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 33,
+          "no": "3",
+          "uraian": "Pimpinan K/L/D menggunakan informasi terkait risiko dalam pengambilan keputusan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pengambilan keputusan strategis K/L/D, strategis unit kerja, dan operasional unit kerja telah mempertimbangkan risiko dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "penjelasan_sample": "Seluruh keputusan pimpinan instansi maupun pimpinan unit kerja secara umum menggunakan informasi terkait risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 38,
+          "no": "4",
+          "uraian": "Pimpinan K/L/D mendorong penerapan manajemen risiko, melalui penggunaan kinerja penerapan manajemen risiko sebagai indikator penilaian kinerja",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kinerja penerapan manajemen risiko digunakan sebagai dasar penilaian kinerja pada seluruh UPR tingkatan operasional unit kerja, seluruh UPR tingkatan strategis unit kerja, dan UPR tingkat strategis K/L/D secara memadai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "Kinerja penerapan manajemen risiko sudah digunakan sebagai indikator kinerja pada dokumen perencanaan UPR tingkat strategis K/L/D, seluruh UPR tingkatan strategis unit kerja, dan seluruh UPR tingkatan operasional unit kerja secara tepat, telah diukur pencapaiannya, serta dievaluasi pencapaiannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.4": {
+      "matrix_subunsur_name": "Struktur Organisasi Sesuai Kebutuhan",
+      "parameters": [
+        {
+          "source_row": 44,
+          "no": "1",
+          "uraian": "Struktur organisasi dibentuk dalam rangka mendukung pencapaian sasaran strategis organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D memiliki fleksibilitas untuk menyesuaikan struktur organisasi dalam rangka mendukung perubahan proses bisnis dan perubahan perencanaan strategis",
+          "penjelasan_sample": "Perbaikan struktur organisasi dan tata laksana dapat dilakukan secara berkelanjutan dengan dukungan teknologi informasi yang terintegrasi untuk mengelola arus data dan informasi dalam menjalanan fungsi-fungsi dalam proses bisnis organisasi. sehingga kedudukan fungsi berada di atas struktur.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.5": {
+      "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
+      "parameters": [
+        {
+          "source_row": 50,
+          "no": "1",
+          "uraian": "Wewenang dan tanggung jawab diberikan kepada pegawai yang tepat sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dalam rangka percepatan pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pimpinan organisasi memiliki akses untuk melihat proses pendelegasian wewenang dan tanggungjawab yang diberikan dan memonitor pelaksanaan tugas fungsi yang dijalankan untuk menjamin tujuan percepatan yang diharapkan dan mendukung perbaikan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat tools untuk memonitor pelaksanaan wewenang dan tanggungjawab yang diberikan secara berjenjang dan menampung pelaporan atas pelaksanaan wewenang dan tanggungjawab kepada jenjang di atasnya. b. Kemudahan akses memungkinkan pimpinan untuk memberikan teguran/arahan atas pelaksanaan wewenang dan tanggung jawab pelaksanaan kegiatan sebelum menyalahi prosedur yang ditetapkan; c. penerima manfaat/stakeholder memberikan feedback yang baik atas kecepatan respon organisasi terhadap kebutuhan mereka.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.6": {
+      "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 56,
+          "no": "1",
+          "uraian": "Penerapan kebijakan manajemen dan praktik pembinaan SDM sehingga dapat digunakan secara maksimal untuk mencapai tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan telah menghasilkan: - Pengelolaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pengelolaan SDM-nya - Pengelolaan SDM mampu meningkatkan kepuasan kerja pegawai",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 61,
+          "no": "2",
+          "uraian": "Pegawai telah mendapatkan fasilitas untuk meningkatkan kompetensi dan keterampilan terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Terdapat upaya peningkatan kompetensi dan keterampilan terkait manajemen risiko yang memadai dengan cakupan seluruh pegawai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "A. Kriteria upaya peningkatan kompetensi yang memadai: 1. Memiliki program pelatihan/sertifikasi terkait manajemen risiko baik tahunan maupun lima tahunan baik ditingkat K/L/Pemerintah daerah maupun Kerja/OPD; 2. Unit Kerja Eseon I/OPD memiliki program in house training tahunan; 3. Instansi Pemerintah telah melaksanakan program pelatihan/sertifikasi tersebut dan dibuktikan dengan adanya laporan pelatihan dan bukti perolehan sertifikat keahlian (setiap Unit Kerja Eseon I/OPD terdapat pegawai yang memiliki sertifikat keahlian); 4. In House Training telah dilaksanakan setidaknya satu kali dalam satu semester oleh masing-masing Unit Kerja Eseon I/OPD serta instruktur harus orang yang telah memiliki sertifikat keahlian; B. Kriteria Output: Pelatihan dan in house training untuk meningkatkan kompetensi telah dilakukan untuk setiap tingkatan risiko: 1. Strategis K/L/D untuk Eselon I adalah lebih dari 90% pejabat; 2. Strategis Unit Eselon I/OPD untuk Eselon II adalah lebih dari 90% pejabat; 3. Operasional Kerja/OPD untuk Eselon III ke atas sampai dengan staf adalah lebih dari 90% pejabat dan staff di level ini. C. Terdapat evaluasi atas dampak peningkatan kompetensi dan ketrampilan terhadap kualitas proses dan hasil manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 65,
+          "no": "2",
+          "uraian": "Peraturan Menteri Desa dan PDT Nomor 11 Tahun 2025 ttg Rencana Strategis Kementerian Desa dan PDT Tahun 2025-2029 (1)",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "E",
+          "kriteria_sample": "Terdapat upaya peningkatan kompetensi dan keterampilan terkait manajemen risiko namun belum memadai",
+          "penjelasan_sample": "Kriteria belum memadai apabila terdapat parameter point 1-4 dalam kriteria memadai tidak terpenuhi. Kriteria Memadai: 1. Memiliki program pelatihan/sertifikasi terkait manajemen risiko baik tahunan maupun lima tahunan baik ditingkat K/L/Pemerintah daerah maupun Unit Kerja/OPD; 2. Unit Kerja/OPD memiliki program in house training tahunan; 3. Instansi Pemerintah telah melaksanakan program pelatihan/sertifikasi tersebut dan dibuktikan dengan adanya laporan pelatihan dan bukti perolehan sertifikat keahlian (setiap Unit Kerja/OPD terdapat pegawai yang memiliki sertifikat keahlian); 4. In House Training telah dilaksanakan setidaknya satu kali dalam satu semester oleh masing2 Unit Kerja/OPD serta instruktur harus orang yang telah memiliki sertifikat keahlian; B. Kriteria Output: Pelatihan dan in house training untuk meningkatkan kompetensi telah dilakukan untuk setiap tingkatan risiko: 1. Strategis K/L/D untuk Eselon I adalah < 50% pejabat; 2. Strategis Unit Eselon I/OPD untuk Eselon II adalah < 50% pejabat; 3. Operasional Unit Eselon I/OPD untuk Eselon III ke atas sampai dengan staf adalah < 50% pejabat dan staff di level ini.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 66,
+          "no": "3",
+          "uraian": "Pegawai memiliki kesadaran terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pegawai telah memiliki pemahaman terkait manajemen risiko",
+          "penjelasan_sample": "100% pegawai sampel menunjukan kesadaran/keaktifan dalam penerapan MR",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.7": {
+      "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
+      "parameters": [
+        {
+          "source_row": 72,
+          "no": "1",
+          "uraian": "Pengawasan APIP telah dapat memberikan nilai tambah pada perbaikan pengendalian organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "APIP telah menjadi unit yang terus belajar baik dari dalam maupun dari luar organisasi untuk perbaikan berkelanjutan",
+          "penjelasan_sample": "Mengikuti syarat Level 5 Kapabilitas APIP (Optimizing)",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.8": {
+      "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
+      "parameters": [
+        {
+          "source_row": 78,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menjalin hubungan kerja yang baik (kemitraan) dengan instansi lain terkait dengan upaya pencapaian tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan hubungan kerja yang baik dengan mitra kerjasama organisasi menghasilkan efektivitas pencapaian tujuan organisasi dan efisiensi penggunaan sumberdaya masing-masing instansi",
+          "penjelasan_sample": "Pimpinan organisasi telah menjalin hubungan kerja yang baik dengan instansi lain melalui pembagian peran dan ukuran kinerja yang diharapkan dapat saling mendukung kepada tujuan masing-masing. Pembagian peran mendukung pimpinan untuk mengoptimalkan sumber daya yang ada untuk melaksanakan kegiatan sesuai lingkupnya.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 83,
+          "no": "2",
+          "uraian": "Dalam rangka menciptakan hubungan kerja yang baik, K/L/D telah mengidentifikasi, menilai, dan mengelola risiko (termasuk implikasi dari transfer risiko) terkait kemitraan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, penerapannya telah terintegrasi dengan proses bisnis Instansi Pemerintah, telah direviu secara berkala dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "A. Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, telah dilakukan reviu secara berkala dan hasil reviu dijadikan media pembelajaran. B. Kriteria implementasi adalah sebagai berikut: 1. Terintegrasi apabila penerapan manajemen risiko: a. Telah menyatu dalam proses perencanaan kegiatan kemitraan; b. Manajemen risiko diterapkan diseluruh kegiatan kemitraan; c. Dirancang untuk mengelola seluruh risiko yang muncul d. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan. 2. Kriteria memadai apabila penerapan manajemen risiko telah dilakukan terhadap semua kemitraan yang memiliki peran yang penting dalam organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.1": {
+      "matrix_subunsur_name": "Identifikasi Risiko",
+      "parameters": [
+        {
+          "source_row": 89,
+          "no": "1",
+          "uraian": "K/L/D telah memiliki Kebijakan Manajemen Risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D telah memiliki Kebijakan Manajemen Risiko yang memadai, terintegrasi serta telah direviu secara berkala",
+          "penjelasan_sample": "Kebijakan Manajemen Risiko memiliki kriteria memadai dan dalam kebijakan tersebut telah menjelaskan bahwa: 1. Penerapan manajemen risiko oleh Instansi Pemerintah telah menyatu/menjadi pertimbangan dalam proses perencanaan (perumusan target dan strategi pencapaian tujuan Instansi Pemerintah), 2. Manajemen risiko diterapkan diseluruh level organisasi 3. Manajemen risiko dirancang untuk mengelola seluruh risiko yang muncul 4. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan 5. Kebijakan tersebut telah direviu secara berkala",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 94,
+          "no": "2",
+          "uraian": "Risiko telah teridentifikasi dan dituangkan dalam register risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kualitas identifikasi risiko dan register risiko memadai, serta telah mengidentifikasi peluang",
+          "penjelasan_sample": "Kualitas Identifikasi Risiko dan Risk Register yang memadai bila: 1. Proses identifikasi risiko menghasilkan risiko utama dan peluang yang bisa diambil; 2. Seluruh sasaran strategis K/L/D, sasaran strategis unit kerja serta program dan kegiatan yang telah ditetapkan dalam penetapan konteks telah diidentifikasi risikonya; 3. Pihak yang terlibat setidakya seluruh pegawai unit kerja yang benar-benar memahami proses bisnis organisasi; 4. Proses identifikasi telah sesuai dengan kebijakan yang dibuat; 5. Risk register setidaknya memuat hal berikut: a. uraian tujuan/sasaran strategis/kegiatan, b. Indikator tujuan/sasaran strategis/kegiatan, c. Uraian Risiko, d. Pemilik risiko, e. Uraian dan sumber penyebab, f. Uraian dan pihak yang terdampak; 6. Pernyataan risiko, RTP, penyebab secara umum jelas/dapat dipahami (>90% sampling).",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 99,
+          "no": "3",
+          "uraian": "Proses manajemen risiko telah melekat pada proses bisnis K/L/D",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses manajemen risiko mendukung inovasi, diidentifikasi untuk memaksimalkan peluang dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "Proses manajemen risiko telah terintegrasi dengan proses bisnis utama dari unit kerja terkait dan menjadi pertimbangan dalam proses perencaan strategis K/L/D dan Unit kerja Eselon I/II/OPD maupun dalam proses perencanaan operasional unit kerja Eselon I/II/OPD. Proses manajemen risiko juga dilakukan untuk mengidentifikasi dan memaksimalkan peluang-peluang yang ada serta mendorong adanya inovasi-inovasi. Disamping itu, hasil dari proses manajemen risiko menjadi bahan pembelajaran dalam pengambilan keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.2": {
+      "matrix_subunsur_name": "Analisis Risiko",
+      "parameters": [
+        {
+          "source_row": 105,
+          "no": "1",
+          "uraian": "Seluruh risiko telah dianalisis dampak dan tingkat keterjadiannya",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Analisis risiko telah dilakukan secara memadai terhadap risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D",
+          "penjelasan_sample": "A. Instansi Pemerintah telah melakukan analisis risiko untuk hasil identifikasi risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai yaitu: 1. Telah sesuai dengan kebijakan (termasuk selera risiko dan langkah analisis); 2. Kriteria yang digunakan baik dampak maupun probabilitasnya konsisten antara satu unit kerja dengan unit kerja lain; 3. Proses analisis risiko dilaksanakan setidaknya oleh orang2 yang memiliki kompetensi. B. Hasil dari proses ini telah menghasilkan tren risiko.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 110,
+          "no": "2",
+          "uraian": "K/L/D telah menentukan prioritas risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan prioritas risiko pada seluruh risiko operasional unit kerja, strategis unit kerja, strategis K/L/D",
+          "penjelasan_sample": "1. Instansi Pemerintah telah melakukan evaluasi risiko untuk menentukan prioritas risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D terhadap seluruh hasil analisis risiko yang telah dilakukan; 2. Proses evaluasi risiko telah didokumentasikan. 3. Evaluasi risiko dilakukan sesuai dengan kebijakan kriteria risiko yang telah ditetapkan sebelumnya",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 115,
+          "no": "3",
+          "uraian": "K/L/D telah menentukan rencana tindak pengendalian",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan rencana tindak pengendalian terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D yang disusun (sampling) telah relevan dengan tujuan yang ingin dicapai, jelas target waktu, penanggung jawab, ukuran pelaksanaan, secara substansi dinilai dapat mengurangi dampak/menghilangkan penyebab,realistis.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 120,
+          "no": "4",
+          "uraian": "Tindak pengendalian telah diimplementasikan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian terhadap seluruh risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D telah diimplementasikan",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D (sampling) yang direncanakan telah diimplementasikan dan didukung oleh sumber daya yang dibutuhkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 125,
+          "no": "5",
+          "uraian": "Tindak pengendalian efektif menurunkan risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian telah efektif menurunkan risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "RTP untuk risiko tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D mampu menurunkan level risiko sebesar >60%. Misalnya terdapat 20 risiko yang yang perlu ditangani (diluar batas risk tolerance), dari 20 risiko tersebut ternyata terdapat 5 kejadian risiko yang mana 2 kejadian masih dalam batas risk tolerance sedangkan 3 kejadian diluar batas risk tolerance. Maka efektivitas penangan risiko dihitung dengan cara ((20-3)/20)X100%=95%.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.1": {
+      "matrix_subunsur_name": "Reviu atas Kinerja",
+      "parameters": [
+        {
+          "source_row": 131,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D membandingkan tolok ukur kinerja dengan capaian kinerja secara berkala untuk mengatasi hambatan kinerja, menetapkan strategi perbaikan, dan menilai kinerja suatu unit sampai dengan periode tertentu dalam rangka mengawal pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan reviu kinerja mendukung pencapaian kinerja organisasi",
+          "penjelasan_sample": "a. Terdapat perbaikan yang berkelanjutan atas kinerja organisasi, unit kerja, kegiatan, dan pegawai sebagai akibat pelaksanaan reviu kinerja, b. Reviu kinerja memungkinkan penilaian terhadap tolok ukur kinerja seluruh level pimpinan dan pegawai dalam mendukung pencapaian tujuan organisasi. c. Hasil reviu kinerja digunakan pimpinan organisasi dalam penetapan kebijakan pelaksanaan kegiatan, pengalokasikan sumber daya, dan pertimbangan dalam penilaian kinerja secara individual.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.2": {
+      "matrix_subunsur_name": "Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 137,
+          "no": "1",
+          "uraian": "Pembinaan SDM dilakukan sehingga setiap pegawai dapat memberikan manfaat optimal dalam pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembinaan SDM organisasi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pembinaan SDM telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pembinaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pembinaan SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.3": {
+      "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
+      "parameters": [
+        {
+          "source_row": 143,
+          "no": "1",
+          "uraian": "Pengendalian atas pengelolaan sistem informasi dilakukan untuk memastikan sistem informasi dapat menyajikan data yang akurat dan tepat waktu untuk digunakan oleh pengguna",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan terkait pengelolaan sistem informasi organisasi dilakukan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat sistem pengelolaan sistem informasi yang terintegrasi; b. Terdapat perbaikan berkelanjutan atas pengelolaan sistem informasi sesuai dengan perubahan lingkungan strategis; c. Sistem informasi menghasilkan seluruh data yang dibutuhkan untuk pelaporan dan pengambilan keputusan oleh pimpinan. c. Pengelolaan sistem informasi telah mendukung pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.4": {
+      "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
+      "parameters": [
+        {
+          "source_row": 149,
+          "no": "1",
+          "uraian": "Pengelolaan BMN/D dilakukan untuk menjamin aset tersedia dan dapat digunakan dengan baik oleh pengguna dalam rangka mendukung kinerja organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pengelolaan aset organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas pengelolaan aset didukung dengan sistem pengendalian atas aset yang terintegrasi dan menghasilkan aset yang tersedia secara optimal dalam mendukung kinerja organisasi; antara lain ditunjukan dengan kondisi: a. tidak terdapat aset dengan kondisi rusak baik ringan maupun berat; b. tidak terdapat keluhan atas penggunaan aset oleh pengguna; c. tidak terdapat aset pribadi yang digunakan untuk keperluan organisasi akibat keterbatasan aset.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.5": {
+      "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
+      "parameters": [
+        {
+          "source_row": 155,
+          "no": "1",
+          "uraian": "Kegiatan pengendalian atas penetapan dan reviu atas indikator dan ukuran kinerja dilakukan untuk menjamin keandalan ukuran dan ketepatan penetapan indikator masing-masing unit secara berjenjang dibandingkan dengan IKU organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas penetapan dan reviu atas indikator dan ukuran kinerja organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas kebijakan/prosedur penetapan indikator dan ukuran kinerja menghasilkan pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.6": {
+      "matrix_subunsur_name": "Pemisahan Fungsi",
+      "parameters": [
+        {
+          "source_row": 161,
+          "no": "1",
+          "uraian": "Terdapat pemisahan fungsi sehingga seluruh aspek utama transaksi dan kejadian tidak dikendalikan hanya oleh satu orang",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pemisahan fungsi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pemisahan fungsi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pemisahan fungsi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Pemisahan fungsi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.7": {
+      "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
+      "parameters": [
+        {
+          "source_row": 167,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi dan kejadian penting hanya dapat diotorisasi ketika memenuhi persyaratan dan dilakukan oleh pihak yang memiliki kewenangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses otorisasi atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Fungsi otorisasi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Fungsi otorisasi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Fungsi otorisasi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.8": {
+      "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
+      "parameters": [
+        {
+          "source_row": 173,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi telah diklasifikasikan dengan layak dan dikelompokkan dengan benar serta dicatat dengan segera sehingga relevan, bernilai, dan berguna bagi manajemen",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pencatatan atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pencatatan telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pencatatan secara efektif mampu memitigasi risiko manipulasi transaksi dan penyalahgunaan wewenang - Proses pencatatan mampu menghasilkan informasi yang relevan, bernilai, dan berguna bagi manajemen dalam mengendalikan operasi dan mengambil keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.9": {
+      "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 179,
+          "no": "1",
+          "uraian": "Terdapat pembatasan atas kesempatan dan hak untuk menggunakan, atau memperoleh sumber daya dan mengakses pencatatannya",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembatasan akses terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pembatasan akses telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pembatasan akses secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Menghasilkan zero significant fraudulent/dangerous intrusion",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.10": {
+      "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 185,
+          "no": "1",
+          "uraian": "Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya yang diberikan/dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pertanggungjawaban terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pertanggungjawaban telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pertanggungjawaban secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Pertanggungjawaban terhadap sumber daya dan pencatatannya telah dibagi habis kepada pihak/pegawai sesuai dengan kewenangannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.11": {
+      "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
+      "parameters": [
+        {
+          "source_row": 191,
+          "no": "1",
+          "uraian": "Terdapat pengelolaan, pemeliharaan, dan pendokumentasian secara berkala yang mencakup seluruh SPI serta transaksi dan kejadian penting yang dilaksanakan secara lengkap dan akurat untuk memfasilitasi penelusuran transaksi, kejadian, dan informasi terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pendokumentasian atas SPI serta transaksi dan kejadian penting telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pendokumentasian telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pendokumentasian mampu menghasilkan dokumen yang relevan, bernilai, dan berguna bagi manajemen dan pihak lain secara real time",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.1": {
+      "matrix_subunsur_name": "Informasi yang Relevan",
+      "parameters": [
+        {
+          "source_row": 197,
+          "no": "1",
+          "uraian": "Tersedianya informasi yang relevan untuk kebutuhan internal dan eksternal",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Informasi yang disajikan relevan dan memenuhi ekspektasi stakeholder",
+          "penjelasan_sample": "- Informasi produk, standar, prosedur layanan/pelaksanaan tugas fungsi dan pengaduan telah memenuhi ekspektasi stakeholder; - Informasi layanan internal (keuangan, kepegawaian, umum, dsb) telah memenuhi ekspektasi stakeholder; - Informasi manajemen kinerja (rencana kinerja, capaian kinerja, dsb) telah memenuhi ekspektasi stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 202,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D membangun sistem pengaduan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sistem pengaduan berdampak pada perbaikan berkelanjutan",
+          "penjelasan_sample": "Perbaikan berkelanjutan antara lain berdampak pada peningkatan kinerja, perbaikan pelayanan publik, dan kepuasan stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 207,
+          "no": "3",
+          "uraian": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan pada seluruh pegawai pada tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D",
+          "penjelasan_sample": ">60% pegawai sample pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D menunjukan pengetahuan akan strategi dan kebijakan yang telah ditetapkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 212,
+          "no": "4",
+          "uraian": "Register risiko dan rencana tindak pengendalian telah dikomunikasikan ke pihak terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, strategis Unit Kerja/OPD dan Strategis K/L/D telah dikomunikasikan kepada seluruh pihak terkait dan dijadikan bahan dalam pengambilan keputusan serta menjadi bahan pembelajaran dan inovasi",
+          "penjelasan_sample": "Komunikasi Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, dan strategis Unit Kerja/OPD telah dilakukan kepada semua pihak yang telah diidentifikasi dalam rencana komunikasi sebagaimana tertuang dalam dokumen RTP yang telah disusun sebelumnya dan dijadikan bahan pembuatan keputusan oleh pihak-pihak tersebut serta menjadi bahan pembelajaran dan inovasi bagi K/L/D",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.2": {
+      "matrix_subunsur_name": "Komunikasi yang Efektif",
+      "parameters": [
+        {
+          "source_row": 218,
+          "no": "1",
+          "uraian": "Terlaksananya komunikasi yang efektif dengan internal dan eksternal",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas metodologi komunikasi yang efektif",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas komunikasi yang efektif menghasilkan: - Upaya promosi/sosialisasi tentang produk/layanan/ pelaksanaan tugas fungsi yang telah berhasil meningkatkan kepercayaan publik/stakholder; - Upaya komunikasi dengan publik/stakeholder yang telah berhasil memperbaiki citra instansi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.1": {
+      "matrix_subunsur_name": "Pemantauan Berkelanjutan",
+      "parameters": [
+        {
+          "source_row": 224,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D/penanggungjawab program dan kegiatan/penanggungjawab operasional mengevaluasi secara berkala pengendalian intern yang telah dilakukan dalam rangka mencapai tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pemantauan pengendalian intern dilaksanakan dan berdampak pada kualitas pengendalian intern",
+          "penjelasan_sample": "a. Pemantauan atas pelaksanaan pengendalian telah efektif mengurangi dampak dan frekuensi keterjadian risiko; b. Terdapat sistem informasi terintegrasi untuk memantau pengendalian untuk seluruh proses bisnis secara realtime. c. Pemantauan kinerja digunakan sebagai dasar dalam reward and punishment; d. Didukung oleh sistem informasi pemantauan kinerja yang terintegrasi.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 229,
+          "no": "2",
+          "uraian": "Proses manajemen risiko telah direviu",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah dilakukan reviu atas seluruh risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan hasil reviu dijadikan bahan perbaikan organisasi",
+          "penjelasan_sample": "Kebijakan, framework, metode, tahapan, proses, dan praktik yang dijalankan terkait dengan proses manajemen risiko telah direviu oleh pihak internal dari Instansi Pemerintah (oleh APIP maupun komite manajemen risiko) untuk semua risiko operasional unit kerja, strategis unit kerja, strategis K/L/D. Hasil reviu telah seluruhnya ditindaklanjuti dan sudah ada implementasi perbaikan atas hasil reviu tersebut.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 234,
+          "no": "3",
+          "uraian": "Pemantauan/monitoring terhadap risiko telah dilakukan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Monitoring terhadap risiko dan tindak pengendalian dilakukan terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai dan menjadi bahan pembelajaran bagi unit kerja",
+          "penjelasan_sample": "Memadai berarti: 1.Telah ada langkah Monitoring sesuai kebijakan; 2. Monitoring dilakukan sesuai dengan jadwal yang ditetapkan sesuai kebijakan; 3. Monitoring dilakukan oleh unit kepatuhan dan dilaksanakan minimal satu kali per semester atau sesuai dengan kebutuhan; 4. Proses dan hasil Monitoring telah didokumentasikan; 5. Monitoring sepenuhnya dilakukan terhadap: a. implementasi pengendalian; b. kejadian risiko (termasuk mekanisme dan implementasi pelaporan segera); c. Memantau pelaksanaan tiap tahapan pengelolaan risiko. 6. Hasil monitoring menunjukkan kondisi yang baik; 7. Hasil Monitoring seluruhnya telah ditindaklanjuti. 9. Terdapat implementasi perbaikan atas hasil monitoring",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.2": {
+      "matrix_subunsur_name": "Evaluasi Terpisah",
+      "parameters": [
+        {
+          "source_row": 240,
+          "no": "1",
+          "uraian": "Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian intern, mengidentifikasi kelemahan pengendalian, menentukan penyebab dari kegagalan aktivitas pengendalian, serta pengaruhnya terhadap pencapaian tujuan instansi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pelaksanaan evaluasi terpisah berdampak pada peningkatan kualitas pengendalian intern dan pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Hasil tindak lanjut mampu mengurangi dampak dan frekuensi risiko. - Hasil tindak lanjut mampu mengakselerasi pencapaian indikator program dan kegiatan.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 245,
+          "no": "2",
+          "uraian": "Terdapat reviu independen terhadap proses manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Reviu terhadap proses tindak pengendalian risiko tingkat operasional unit kerja/OPD, strategis unit kerja/OPD, dan strategis K/L/D sangat memadai",
+          "penjelasan_sample": "Sangat memadai berarti: 1.Telah ada pedoman reviu yang terstandar yang merunjuk pada best practice; 2. Reviu dilakukan sesuai dengan jadwal yang ditetapkan dan sesuai dengan pedoman; 3. Reviu dilakukan oleh APIP minimal satu kali per tahun; 4. Proses dan hasil reviu telah didokumentasikan serta dapat disimpulkan baik; 5. Reviu dilakukan untuk mereviu rencana dan implementasi pengendalian serta kejadian risiko serta respon yang dilakukan 6. Hasil reviu menunjukkan kondisi yang seluruhnya telah sesuai dengan standar dan kebijakan serta dapat disimpulkan baik; 7. Hasil reviu seluruhnya telah diditindaklanjut; 9. Terdapat implementasi perbaikan atas hasil reviu.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    }
+  },
+  "KK3.2": {
+    "1.1": {
+      "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
+      "parameters": [
+        {
+          "source_row": 11,
+          "no": "1",
+          "uraian": "K/L/D menegakkan integritas dan nilai etika dalam pengelolaan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penegakan integritas dan nilai etika telah diperbaiki secara berkelanjutan sehingga tercipta suasana kerja organisasi yang kondusif yang dapat mendorong kinerja para pegawai secara optimal",
+          "penjelasan_sample": "- Setiap individu dalam organisasi dapat mendorong penerapan nilai-nilai organisasi - Setiap individu mendukung pencapaian kinerja organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan integritas dan perilaku individu serta mempengaruhi remunerasi individu",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.2": {
+      "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
+      "parameters": [
+        {
+          "source_row": 17,
+          "no": "1",
+          "uraian": "Tugas dan jabatan dalam struktur pengelolaan keuangan dilaksanakan dan diisi oleh SDM yang kompeten",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan kompetensi SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Setiap posisi dalam organisasi telah diisi oleh SDM sesuai dengan standar kompetensinya - Penerapan standar kompetensi telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan kompetensi SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.3": {
+      "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
+      "parameters": [
+        {
+          "source_row": 23,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menciptakan lingkungan kerja yang kondusif dalam pengelolaan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penerapan manajemen kinerja, pengelolaan keuangan, manajemen SDM, serta manajemen risiko dapat meningkatkan efektivitas dan efisiensi kinerja seluruh level pimpinan dan pegawai",
+          "penjelasan_sample": "Sudah Jelas",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 28,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D mengalokasikan sumber daya untuk penerapan manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah mengalokasikan sumber daya secara memadai untuk penerapan manajemen risiko pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "a. Instansi Pemerintah telah menganggarkan dana implementasi manajemen risiko seperti rapat terkait manajemen risiko, identifikasi dan analisis risiko, penyusunan profil risiko, implementasi RTP, kegiatan monitoring dan reviu dalam rencana kerja/DPA/DIPA dan dalam implementasi manajemen risiko tidak terkendala kekurangan dana implementasi ditingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D b. Minimal 70% SDM yang menjadi anggota UPR pada tingkat operasional dan strategis unit kerja serta strategis K/L/D diisi oleh orang yang berkompeten dalam bidang manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 33,
+          "no": "3",
+          "uraian": "Pimpinan K/L/D menggunakan informasi terkait risiko dalam pengambilan keputusan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pengambilan keputusan strategis K/L/D, strategis unit kerja, dan operasional unit kerja telah mempertimbangkan risiko dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "penjelasan_sample": "Seluruh keputusan pimpinan instansi maupun pimpinan unit kerja secara umum menggunakan informasi terkait risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 38,
+          "no": "4",
+          "uraian": "Pimpinan K/L/D mendorong penerapan manajemen risiko, melalui penggunaan kinerja penerapan manajemen risiko sebagai indikator penilaian kinerja",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kinerja penerapan manajemen risiko digunakan sebagai dasar penilaian kinerja pada seluruh UPR tingkatan operasional unit kerja, seluruh UPR tingkatan strategis unit kerja, dan UPR tingkat strategis K/L/D secara memadai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "Kinerja penerapan manajemen risiko sudah digunakan sebagai indikator kinerja pada dokumen perencanaan UPR tingkat strategis K/L/D, seluruh UPR tingkatan strategis unit kerja, dan seluruh UPR tingkatan operasional unit kerja secara tepat, telah diukur pencapaiannya, serta dievaluasi pencapaiannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.4": {
+      "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
+      "parameters": [
+        {
+          "source_row": 44,
+          "no": "1",
+          "uraian": "Struktur organisasi dibentuk dalam rangka mendukung pencapaian keandalan laporan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D memiliki fleksibilitas untuk menyesuaikan struktur organisasi dalam rangka mendukung perubahan proses bisnis dan perubahan perencanaan strategis",
+          "penjelasan_sample": "Perbaikan struktur organisasi dan tata laksana dapat dilakukan secara berkelanjutan dengan dukungan teknologi informasi yang terintegrasi untuk mengelola arus data dan informasi dalam menjalanan fungsi-fungsi dalam proses bisnis organisasi. sehingga kedudukan fungsi berada di atas struktur.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.5": {
+      "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
+      "parameters": [
+        {
+          "source_row": 50,
+          "no": "1",
+          "uraian": "Wewenang dan tanggung jawab pengelolaan keuangan diberikan kepada pegawai yang tepat sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan memperhatikan benturan kepentingan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pimpinan organisasi memiliki akses untuk melihat proses pendelegasian wewenang dan tanggungjawab yang diberikan dan memonitor pelaksanaan tugas fungsi yang dijalankan untuk menjamin tujuan percepatan yang diharapkan dan mendukung perbaikan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat tools untuk memonitor pelaksanaan wewenang dan tanggungjawab yang diberikan secara berjenjang dan menampung pelaporan atas pelaksanaan wewenang dan tanggungjawab kepada jenjang di atasnya. b. Kemudahan akses memungkinkan pimpinan untuk memberikan teguran/arahan atas pelaksanaan wewenang dan tanggung jawab pelaksanaan kegiatan sebelum menyalahi prosedur yang ditetapkan; c. penerima manfaat/stakeholder memberikan feedback yang baik atas kecepatan respon organisasi terhadap kebutuhan mereka.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.6": {
+      "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 56,
+          "no": "1",
+          "uraian": "Penerapan kebijakan manajemen dan praktik pembinaan SDM sehingga dapat digunakan secara maksimal untuk mengelola keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan telah menghasilkan: - Pengelolaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pengelolaan SDM-nya - Pengelolaan SDM mampu meningkatkan kepuasan kerja pegawai",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 61,
+          "no": "2",
+          "uraian": "Pegawai telah mendapatkan fasilitas untuk meningkatkan kompetensi dan keterampilan terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Terdapat upaya peningkatan kompetensi dan keterampilan terkait manajemen risiko yang memadai dengan cakupan seluruh pegawai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "A. Kriteria upaya peningkatan kompetensi yang memadai: 1. Memiliki program pelatihan/sertifikasi terkait manajemen risiko baik tahunan maupun lima tahunan baik ditingkat K/L/Pemerintah daerah maupun Kerja/OPD; 2. Unit Kerja Eseon I/OPD memiliki program in house training tahunan; 3. Instansi Pemerintah telah melaksanakan program pelatihan/sertifikasi tersebut dan dibuktikan dengan adanya laporan pelatihan dan bukti perolehan sertifikat keahlian (setiap Unit Kerja Eseon I/OPD terdapat pegawai yang memiliki sertifikat keahlian); 4. In House Training telah dilaksanakan setidaknya satu kali dalam satu semester oleh masing-masing Unit Kerja Eseon I/OPD serta instruktur harus orang yang telah memiliki sertifikat keahlian; B. Kriteria Output: Pelatihan dan in house training untuk meningkatkan kompetensi telah dilakukan untuk setiap tingkatan risiko: 1. Strategis K/L/D untuk Eselon I adalah lebih dari 90% pejabat; 2. Strategis Unit Eselon I/OPD untuk Eselon II adalah lebih dari 90% pejabat; 3. Operasional Kerja/OPD untuk Eselon III ke atas sampai dengan staf adalah lebih dari 90% pejabat dan staff di level ini. C. Terdapat evaluasi atas dampak peningkatan kompetensi dan ketrampilan terhadap kualitas proses dan hasil manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 66,
+          "no": "3",
+          "uraian": "Pegawai memiliki kesadaran terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pegawai telah memiliki pemahaman terkait manajemen risiko",
+          "penjelasan_sample": "100% pegawai sampel menunjukan kesadaran/keaktifan dalam penerapan MR",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.7": {
+      "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
+      "parameters": [
+        {
+          "source_row": 72,
+          "no": "1",
+          "uraian": "Pengawasan APIP telah dapat memberikan nilai tambah pada perbaikan pengendalian organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "APIP telah menjadi unit yang terus belajar baik dari dalam maupun dari luar organisasi untuk perbaikan berkelanjutan",
+          "penjelasan_sample": "Mengikuti syarat Level 5 Kapabilitas APIP (Optimizing)",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.8": {
+      "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
+      "parameters": [
+        {
+          "source_row": 78,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menjalin hubungan kerja yang baik (kemitraan) dengan instansi lain terkait dengan pengelolaan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan hubungan kerja yang baik dengan mitra kerjasama organisasi menghasilkan efektivitas pencapaian tujuan organisasi dan efisiensi penggunaan sumberdaya masing-masing instansi",
+          "penjelasan_sample": "Pimpinan organisasi telah menjalin hubungan kerja yang baik dengan instansi lain melalui pembagian peran dan ukuran kinerja yang diharapkan dapat saling mendukung kepada tujuan masing-masing. Pembagian peran mendukung pimpinan untuk mengoptimalkan sumber daya yang ada untuk melaksanakan kegiatan sesuai lingkupnya.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 83,
+          "no": "2",
+          "uraian": "Dalam rangka menciptakan hubungan kerja yang baik, K/L/D telah mengidentifikasi, menilai, dan mengelola risiko (termasuk implikasi dari transfer risiko) terkait kemitraan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, penerapannya telah terintegrasi dengan proses bisnis Instansi Pemerintah, telah direviu secara berkala dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "A. Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, telah dilakukan reviu secara berkala dan hasil reviu dijadikan media pembelajaran. B. Kriteria implementasi adalah sebagai berikut: 1. Terintegrasi apabila penerapan manajemen risiko: a. Telah menyatu dalam proses perencanaan kegiatan kemitraan; b. Manajemen risiko diterapkan diseluruh kegiatan kemitraan; c. Dirancang untuk mengelola seluruh risiko yang muncul d. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan. 2. Kriteria memadai apabila penerapan manajemen risiko telah dilakukan terhadap semua kemitraan yang memiliki peran yang penting dalam organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.1": {
+      "matrix_subunsur_name": "Identifikasi Risiko",
+      "parameters": [
+        {
+          "source_row": 89,
+          "no": "1",
+          "uraian": "K/L/D telah memiliki Kebijakan Manajemen Risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D telah memiliki Kebijakan Manajemen Risiko yang memadai, terintegrasi serta telah direviu secara berkala",
+          "penjelasan_sample": "Kebijakan Manajemen Risiko memiliki kriteria memadai dan dalam kebijakan tersebut telah menjelaskan bahwa: 1. Penerapan manajemen risiko oleh Instansi Pemerintah telah menyatu/menjadi pertimbangan dalam proses perencanaan (perumusan target dan strategi pencapaian tujuan Instansi Pemerintah), 2. Manajemen risiko diterapkan diseluruh level organisasi 3. Manajemen risiko dirancang untuk mengelola seluruh risiko yang muncul 4. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan 5. Kebijakan tersebut telah direviu secara berkala",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 94,
+          "no": "2",
+          "uraian": "Risiko telah teridentifikasi dan dituangkan dalam register risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kualitas identifikasi risiko dan register risiko memadai, serta telah mengidentifikasi peluang",
+          "penjelasan_sample": "Kualitas Identifikasi Risiko dan Risk Register yang memadai bila: 1. Proses identifikasi risiko menghasilkan risiko utama dan peluang yang bisa diambil; 2. Seluruh sasaran strategis K/L/D, sasaran strategis unit kerja serta program dan kegiatan yang telah ditetapkan dalam penetapan konteks telah diidentifikasi risikonya; 3. Pihak yang terlibat setidakya seluruh pegawai unit kerja yang benar-benar memahami proses bisnis organisasi; 4. Proses identifikasi telah sesuai dengan kebijakan yang dibuat; 5. Risk register setidaknya memuat hal berikut: a. uraian tujuan/sasaran strategis/kegiatan, b. Indikator tujuan/sasaran strategis/kegiatan, c. Uraian Risiko, d. Pemilik risiko, e. Uraian dan sumber penyebab, f. Uraian dan pihak yang terdampak; 6. Pernyataan risiko, RTP, penyebab secara umum jelas/dapat dipahami (>90% sampling).",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 99,
+          "no": "3",
+          "uraian": "Proses manajemen risiko telah melekat pada proses bisnis K/L/D",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses manajemen risiko mendukung inovasi, diidentifikasi untuk memaksimalkan peluang dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "Proses manajemen risiko telah terintegrasi dengan proses bisnis utama dari unit kerja terkait dan menjadi pertimbangan dalam proses perencaan strategis K/L/D dan Unit kerja Eselon I/II/OPD maupun dalam proses perencanaan operasional unit kerja Eselon I/II/OPD. Proses manajemen risiko juga dilakukan untuk mengidentifikasi dan memaksimalkan peluang-peluang yang ada serta mendorong adanya inovasi-inovasi. Disamping itu, hasil dari proses manajemen risiko menjadi bahan pembelajaran dalam pengambilan keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.2": {
+      "matrix_subunsur_name": "Analisis Risiko",
+      "parameters": [
+        {
+          "source_row": 105,
+          "no": "1",
+          "uraian": "Seluruh risiko telah dianalisis dampak dan tingkat keterjadiannya",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Analisis risiko telah dilakukan secara memadai terhadap risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D",
+          "penjelasan_sample": "A. Instansi Pemerintah telah melakukan analisis risiko untuk hasil identifikasi risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai yaitu: 1. Telah sesuai dengan kebijakan (termasuk selera risiko dan langkah analisis); 2. Kriteria yang digunakan baik dampak maupun probabilitasnya konsisten antara satu unit kerja dengan unit kerja lain; 3. Proses analisis risiko dilaksanakan setidaknya oleh orang2 yang memiliki kompetensi. B. Hasil dari proses ini telah menghasilkan tren risiko.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 110,
+          "no": "2",
+          "uraian": "K/L/D telah menentukan prioritas risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan prioritas risiko pada seluruh risiko operasional unit kerja, strategis unit kerja, strategis K/L/D",
+          "penjelasan_sample": "1. Instansi Pemerintah telah melakukan evaluasi risiko untuk menentukan prioritas risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D terhadap seluruh hasil analisis risiko yang telah dilakukan; 2. Proses evaluasi risiko telah didokumentasikan. 3. Evaluasi risiko dilakukan sesuai dengan kebijakan kriteria risiko yang telah ditetapkan sebelumnya",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 115,
+          "no": "3",
+          "uraian": "K/L/D telah menentukan rencana tindak pengendalian",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan rencana tindak pengendalian terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D yang disusun (sampling) telah relevan dengan tujuan yang ingin dicapai, jelas target waktu, penanggung jawab, ukuran pelaksanaan, secara substansi dinilai dapat mengurangi dampak/menghilangkan penyebab,realistis.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 120,
+          "no": "4",
+          "uraian": "Tindak pengendalian telah diimplementasikan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian terhadap seluruh risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D telah diimplementasikan",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D (sampling) yang direncanakan telah diimplementasikan dan didukung oleh sumber daya yang dibutuhkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 125,
+          "no": "5",
+          "uraian": "Tindak pengendalian efektif menurunkan risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian telah efektif menurunkan risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "RTP untuk risiko tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D mampu menurunkan level risiko sebesar >60%. Misalnya terdapat 20 risiko yang yang perlu ditangani (diluar batas risk tolerance), dari 20 risiko tersebut ternyata terdapat 5 kejadian risiko yang mana 2 kejadian masih dalam batas risk tolerance sedangkan 3 kejadian diluar batas risk tolerance. Maka efektivitas penangan risiko dihitung dengan cara ((20-3)/20)X100%=95%.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.1": {
+      "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
+      "parameters": [
+        {
+          "source_row": 131,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D membandingkan tolok ukur keuangan dengan capaian kinerja secara berkala untuk mengatasi hambatan kinerja, menetapkan strategi perbaikan, dan menilai kinerja suatu unit sampai dengan periode tertentu dalam rangka mengawal pencapaian tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan reviu kinerja mendukung pencapaian kinerja organisasi",
+          "penjelasan_sample": "a. Terdapat perbaikan yang berkelanjutan atas kinerja organisasi, unit kerja, kegiatan, dan pegawai sebagai akibat pelaksanaan reviu kinerja, b. Reviu kinerja memungkinkan penilaian terhadap tolok ukur kinerja seluruh level pimpinan dan pegawai dalam mendukung pencapaian tujuan organisasi. c. Hasil reviu kinerja digunakan pimpinan organisasi dalam penetapan kebijakan pelaksanaan kegiatan, pengalokasikan sumber daya, dan pertimbangan dalam penilaian kinerja secara individual.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.2": {
+      "matrix_subunsur_name": "Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 137,
+          "no": "1",
+          "uraian": "Pembinaan SDM terkait pengelolaan keuangan dilakukan sehingga setiap pegawai dapat memberikan manfaat optimal dalam pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembinaan SDM organisasi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pembinaan SDM telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pembinaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pembinaan SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.3": {
+      "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
+      "parameters": [
+        {
+          "source_row": 143,
+          "no": "1",
+          "uraian": "Pengendalian atas pengelolaan sistem informasi keuangan dilakukan untuk memastikan sistem informasi dapat menyajikan data yang akurat dan tepat waktu untuk digunakan oleh pengguna.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan terkait pengelolaan sistem informasi organisasi dilakukan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat sistem pengelolaan sistem informasi yang terintegrasi; b. Terdapat perbaikan berkelanjutan atas pengelolaan sistem informasi sesuai dengan perubahan lingkungan strategis; c. Sistem informasi menghasilkan seluruh data yang dibutuhkan untuk pelaporan dan pengambilan keputusan oleh pimpinan. c. Pengelolaan sistem informasi telah mendukung pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.4": {
+      "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
+      "parameters": [
+        {
+          "source_row": 149,
+          "no": "1",
+          "uraian": "Pengelolaan BMN/D dilakukan untuk menjamin aset tersedia dan dapat digunakan dengan baik oleh pengguna dalam rangka melakukan pengelolaan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pengelolaan aset organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas pengelolaan aset didukung dengan sistem pengendalian atas aset yang terintegrasi dan menghasilkan aset yang tersedia secara optimal dalam mendukung kinerja organisasi; antara lain ditunjukan dengan kondisi: a. tidak terdapat aset dengan kondisi rusak baik ringan maupun berat; b. tidak terdapat keluhan atas penggunaan aset oleh pengguna; c. tidak terdapat aset pribadi yang digunakan untuk keperluan organisasi akibat keterbatasan aset.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.5": {
+      "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
+      "parameters": [
+        {
+          "source_row": 155,
+          "no": "1",
+          "uraian": "Kegiatan pengendalian atas penetapan dan reviu atas indikator dan ukuran kinerja keuangan dilakukan untuk menjamin keandalan ukuran dan ketepatan penetapan indikator masing-masing unit secara berjenjang dibandingkan dengan IKU organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas penetapan dan reviu atas indikator dan ukuran kinerja organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas kebijakan/prosedur penetapan indikator dan ukuran kinerja menghasilkan pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.6": {
+      "matrix_subunsur_name": "Pemisahan Fungsi",
+      "parameters": [
+        {
+          "source_row": 161,
+          "no": "1",
+          "uraian": "Terdapat pemisahan fungsi dalam pengelolaan keuangan sehingga seluruh aspek utama transaksi dan kejadian tidak dikendalikan hanya oleh satu orang",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pemisahan fungsi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pemisahan fungsi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pemisahan fungsi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Pemisahan fungsi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.7": {
+      "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
+      "parameters": [
+        {
+          "source_row": 167,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi keuangan dan kejadian penting hanya dapat diotorisasi ketika memenuhi persyaratan dan dilakukan oleh pihak yang memiliki kewenangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses otorisasi atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Fungsi otorisasi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Fungsi otorisasi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Fungsi otorisasi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.8": {
+      "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
+      "parameters": [
+        {
+          "source_row": 173,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi keuangan telah diklasifikasikan dengan layak dan dikelompokkan dengan benar serta dicatat dengan segera sehingga relevan, bernilai, dan berguna bagi manajemen",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pencatatan atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pencatatan telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pencatatan secara efektif mampu memitigasi risiko manipulasi transaksi dan penyalahgunaan wewenang - Proses pencatatan mampu menghasilkan informasi yang relevan, bernilai, dan berguna bagi manajemen dalam mengendalikan operasi dan mengambil keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.9": {
+      "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 179,
+          "no": "1",
+          "uraian": "Terdapat pembatasan atas kesempatan dan hak untuk menggunakan, atau memperoleh sumber daya dan mengakses pencatatan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembatasan akses terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pembatasan akses telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pembatasan akses secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Menghasilkan zero significant fraudulent/dangerous intrusion",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.10": {
+      "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 185,
+          "no": "1",
+          "uraian": "Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya keuangan yang diberikan/dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pertanggungjawaban terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pertanggungjawaban telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pertanggungjawaban secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Pertanggungjawaban terhadap sumber daya dan pencatatannya telah dibagi habis kepada pihak/pegawai sesuai dengan kewenangannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.11": {
+      "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
+      "parameters": [
+        {
+          "source_row": 191,
+          "no": "1",
+          "uraian": "Terdapat pengelolaan, pemeliharaan, dan pendokumentasian secara berkala yang mencakup seluruh SPI serta transaksi keuangan dan kejadian penting yang dilaksanakan secara lengkap dan akurat untuk memfasilitasi penelusuran transaksi, kejadian, dan informasi terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pendokumentasian atas SPI serta transaksi dan kejadian penting telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pendokumentasian telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pendokumentasian mampu menghasilkan dokumen yang relevan, bernilai, dan berguna bagi manajemen dan pihak lain secara real time",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.1": {
+      "matrix_subunsur_name": "Informasi yang Relevan",
+      "parameters": [
+        {
+          "source_row": 197,
+          "no": "1",
+          "uraian": "Tersedianya informasi keuangan yang relevan untuk kebutuhan internal dan eksternal",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Informasi yang disajikan relevan dan memenuhi ekspektasi stakeholder",
+          "penjelasan_sample": "- Informasi produk, standar, prosedur layanan/pelaksanaan tugas fungsi dan pengaduan telah memenuhi ekspektasi stakeholder; - Informasi layanan internal (keuangan, kepegawaian, umum, dsb) telah memenuhi ekspektasi stakeholder; - Informasi manajemen kinerja (rencana kinerja, capaian kinerja, dsb) telah memenuhi ekspektasi stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 202,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D membangun sistem pengaduan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sistem pengaduan berdampak pada perbaikan berkelanjutan",
+          "penjelasan_sample": "Perbaikan berkelanjutan antara lain berdampak pada peningkatan kinerja, perbaikan pelayanan publik, dan kepuasan stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 207,
+          "no": "3",
+          "uraian": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan pada seluruh pegawai pada tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D",
+          "penjelasan_sample": ">60% pegawai sample pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D menunjukan pengetahuan akan strategi dan kebijakan yang telah ditetapkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 212,
+          "no": "4",
+          "uraian": "Register risiko dan rencana tindak pengendalian telah dikomunikasikan ke pihak terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, strategis Unit Kerja/OPD dan Strategis K/L/D telah dikomunikasikan kepada seluruh pihak terkait dan dijadikan bahan dalam pengambilan keputusan serta menjadi bahan pembelajaran dan inovasi",
+          "penjelasan_sample": "Komunikasi Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, dan strategis Unit Kerja/OPD telah dilakukan kepada semua pihak yang telah diidentifikasi dalam rencana komunikasi sebagaimana tertuang dalam dokumen RTP yang telah disusun sebelumnya dan dijadikan bahan pembuatan keputusan oleh pihak-pihak tersebut serta menjadi bahan pembelajaran dan inovasi bagi K/L/D",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.2": {
+      "matrix_subunsur_name": "Komunikasi yang Efektif",
+      "parameters": [
+        {
+          "source_row": 218,
+          "no": "1",
+          "uraian": "Terlaksananya komunikasi yang efektif dengan internal dan eksternal terkait pengelolaan keuangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas metodologi komunikasi yang efektif",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas komunikasi yang efektif menghasilkan: - Upaya promosi/sosialisasi tentang produk/layanan/ pelaksanaan tugas fungsi yang telah berhasil meningkatkan kepercayaan publik/stakholder; - Upaya komunikasi dengan publik/stakeholder yang telah berhasil memperbaiki citra instansi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.1": {
+      "matrix_subunsur_name": "Pemantauan Berkelanjutan",
+      "parameters": [
+        {
+          "source_row": 224,
+          "no": "1",
+          "uraian": "Pimpinan organisasi/penanggungjawab program dan kegiatan/penanggungjawab operasional mengevaluasi secara berkala pengendalian intern pengelolaan keuangan yang telah dilakukan dalam rangka mencapai tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pemantauan pengendalian intern dilaksanakan dan berdampak pada kualitas pengendalian intern",
+          "penjelasan_sample": "a. Pemantauan atas pelaksanaan pengendalian telah efektif mengurangi dampak dan frekuensi keterjadian risiko; b. Terdapat sistem informasi terintegrasi untuk memantau pengendalian untuk seluruh proses bisnis secara realtime. c. Pemantauan kinerja digunakan sebagai dasar dalam reward and punishment; d. Didukung oleh sistem informasi pemantauan kinerja yang terintegrasi.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 229,
+          "no": "2",
+          "uraian": "Proses manajemen risiko telah direviu",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah dilakukan reviu atas seluruh risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan hasil reviu dijadikan bahan perbaikan organisasi",
+          "penjelasan_sample": "Kebijakan, framework, metode, tahapan, proses, dan praktik yang dijalankan terkait dengan proses manajemen risiko telah direviu oleh pihak internal dari Instansi Pemerintah (oleh APIP maupun komite manajemen risiko) untuk semua risiko operasional unit kerja, strategis unit kerja, strategis K/L/D. Hasil reviu telah seluruhnya ditindaklanjuti dan sudah ada implementasi perbaikan atas hasil reviu tersebut.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 234,
+          "no": "3",
+          "uraian": "Pemantauan/monitoring terhadap risiko telah dilakukan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Monitoring terhadap risiko dan tindak pengendalian dilakukan terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai dan menjadi bahan pembelajaran bagi unit kerja",
+          "penjelasan_sample": "Memadai berarti: 1.Telah ada langkah Monitoring sesuai kebijakan; 2. Monitoring dilakukan sesuai dengan jadwal yang ditetapkan sesuai kebijakan; 3. Monitoring dilakukan oleh unit kepatuhan dan dilaksanakan minimal satu kali per semester atau sesuai dengan kebutuhan; 4. Proses dan hasil Monitoring telah didokumentasikan; 5. Monitoring sepenuhnya dilakukan terhadap: a. implementasi pengendalian; b. kejadian risiko (termasuk mekanisme dan implementasi pelaporan segera); c. Memantau pelaksanaan tiap tahapan pengelolaan risiko. 6. Hasil monitoring menunjukkan kondisi yang baik; 7. Hasil Monitoring seluruhnya telah ditindaklanjuti. 9. Terdapat implementasi perbaikan atas hasil monitoring",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.2": {
+      "matrix_subunsur_name": "Evaluasi Terpisah",
+      "parameters": [
+        {
+          "source_row": 240,
+          "no": "1",
+          "uraian": "Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian intern, mengidentifikasi kelemahan pengendalian, menentukan penyebab dari kegagalan aktivitas pengendalian terkait pengelolaan keuangan, serta pengaruhnya terhadap pencapaian tujuan instansi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pelaksanaan evaluasi terpisah berdampak pada peningkatan kualitas pengendalian intern dan pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Hasil tindak lanjut mampu mengurangi dampak dan frekuensi risiko. - Hasil tindak lanjut mampu mengakselerasi pencapaian indikator program dan kegiatan.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 245,
+          "no": "2",
+          "uraian": "Terdapat reviu independen terhadap proses manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Reviu terhadap proses tindak pengendalian risiko tingkat operasional unit kerja/OPD, strategis unit kerja/OPD, dan strategis K/L/D sangat memadai",
+          "penjelasan_sample": "Sangat memadai berarti: 1.Telah ada pedoman reviu yang terstandar yang merunjuk pada best practice; 2. Reviu dilakukan sesuai dengan jadwal yang ditetapkan dan sesuai dengan pedoman; 3. Reviu dilakukan oleh APIP minimal satu kali per tahun; 4. Proses dan hasil reviu telah didokumentasikan serta dapat disimpulkan baik; 5. Reviu dilakukan untuk mereviu rencana dan implementasi pengendalian serta kejadian risiko serta respon yang dilakukan 6. Hasil reviu menunjukkan kondisi yang seluruhnya telah sesuai dengan standar dan kebijakan serta dapat disimpulkan baik; 7. Hasil reviu seluruhnya telah diditindaklanjut; 9. Terdapat implementasi perbaikan atas hasil reviu.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    }
+  },
+  "KK3.3": {
+    "1.1": {
+      "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
+      "parameters": [
+        {
+          "source_row": 11,
+          "no": "1",
+          "uraian": "K/L/D menegakkan integritas dan nilai etika dalam pengelolaan aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penegakan integritas dan nilai etika telah diperbaiki secara berkelanjutan sehingga tercipta suasana kerja organisasi yang kondusif yang dapat mendorong kinerja para pegawai secara optimal",
+          "penjelasan_sample": "- Setiap individu dalam organisasi dapat mendorong penerapan nilai-nilai organisasi - Setiap individu mendukung pencapaian kinerja organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan integritas dan perilaku individu serta mempengaruhi remunerasi individu",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.2": {
+      "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
+      "parameters": [
+        {
+          "source_row": 17,
+          "no": "1",
+          "uraian": "Tugas dan jabatan dalam struktur pengelolaan aset dilaksanakan dan diisi oleh SDM yang kompeten",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan kompetensi SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Setiap posisi dalam organisasi telah diisi oleh SDM sesuai dengan standar kompetensinya - Penerapan standar kompetensi telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan kompetensi SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.3": {
+      "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
+      "parameters": [
+        {
+          "source_row": 23,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menciptakan lingkungan kerja yang kondusif dalam pengelolaan aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Penerapan manajemen kinerja, pengelolaan keuangan, manajemen SDM, serta manajemen risiko dapat meningkatkan efektivitas dan efisiensi kinerja seluruh level pimpinan dan pegawai",
+          "penjelasan_sample": "Sudah Jelas",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 28,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D mengalokasikan sumber daya untuk penerapan manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah mengalokasikan sumber daya secara memadai untuk penerapan manajemen risiko pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "a. Instansi Pemerintah telah menganggarkan dana implementasi manajemen risiko seperti rapat terkait manajemen risiko, identifikasi dan analisis risiko, penyusunan profil risiko, implementasi RTP, kegiatan monitoring dan reviu dalam rencana kerja/DPA/DIPA dan dalam implementasi manajemen risiko tidak terkendala kekurangan dana implementasi ditingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D b. Minimal 70% SDM yang menjadi anggota UPR pada tingkat operasional dan strategis unit kerja serta strategis K/L/D diisi oleh orang yang berkompeten dalam bidang manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 33,
+          "no": "3",
+          "uraian": "Pimpinan K/L/D menggunakan informasi terkait risiko dalam pengambilan keputusan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pengambilan keputusan strategis K/L/D, strategis unit kerja, dan operasional unit kerja telah mempertimbangkan risiko dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "penjelasan_sample": "Seluruh keputusan pimpinan instansi maupun pimpinan unit kerja secara umum menggunakan informasi terkait risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan memberikan dampak bagi pencapaian tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 38,
+          "no": "4",
+          "uraian": "Pimpinan K/L/D mendorong penerapan manajemen risiko, melalui penggunaan kinerja penerapan manajemen risiko sebagai indikator penilaian kinerja",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kinerja penerapan manajemen risiko digunakan sebagai dasar penilaian kinerja pada seluruh UPR tingkatan operasional unit kerja, seluruh UPR tingkatan strategis unit kerja, dan UPR tingkat strategis K/L/D secara memadai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "Kinerja penerapan manajemen risiko sudah digunakan sebagai indikator kinerja pada dokumen perencanaan UPR tingkat strategis K/L/D, seluruh UPR tingkatan strategis unit kerja, dan seluruh UPR tingkatan operasional unit kerja secara tepat, telah diukur pencapaiannya, serta dievaluasi pencapaiannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.4": {
+      "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
+      "parameters": [
+        {
+          "source_row": 44,
+          "no": "1",
+          "uraian": "Struktur organisasi dibentuk dalam rangka mendukung pencapaian pengamanan aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D memiliki fleksibilitas untuk menyesuaikan struktur organisasi dalam rangka mendukung perubahan proses bisnis dan perubahan perencanaan strategis",
+          "penjelasan_sample": "Perbaikan struktur organisasi dan tata laksana dapat dilakukan secara berkelanjutan dengan dukungan teknologi informasi yang terintegrasi untuk mengelola arus data dan informasi dalam menjalanan fungsi-fungsi dalam proses bisnis organisasi. sehingga kedudukan fungsi berada di atas struktur.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.5": {
+      "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
+      "parameters": [
+        {
+          "source_row": 50,
+          "no": "1",
+          "uraian": "Wewenang dan tanggung jawab pengelolaan aset diberikan kepada pegawai yang tepat sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan memperhatikan benturan kepentingan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pimpinan organisasi memiliki akses untuk melihat proses pendelegasian wewenang dan tanggungjawab yang diberikan dan memonitor pelaksanaan tugas fungsi yang dijalankan untuk menjamin tujuan percepatan yang diharapkan dan mendukung perbaikan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat tools untuk memonitor pelaksanaan wewenang dan tanggungjawab yang diberikan secara berjenjang dan menampung pelaporan atas pelaksanaan wewenang dan tanggungjawab kepada jenjang di atasnya. b. Kemudahan akses memungkinkan pimpinan untuk memberikan teguran/arahan atas pelaksanaan wewenang dan tanggung jawab pelaksanaan kegiatan sebelum menyalahi prosedur yang ditetapkan; c. penerima manfaat/stakeholder memberikan feedback yang baik atas kecepatan respon organisasi terhadap kebutuhan mereka.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.6": {
+      "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 56,
+          "no": "1",
+          "uraian": "Penerapan kebijakan manajemen dan praktik pembinaan SDM sehingga dapat digunakan secara maksimal untuk mengelola aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pengelolaan SDM telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan telah menghasilkan: - Pengelolaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pengelolaan SDM-nya - Pengelolaan SDM mampu meningkatkan kepuasan kerja pegawai",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 61,
+          "no": "2",
+          "uraian": "Pegawai telah mendapatkan fasilitas untuk meningkatkan kompetensi dan keterampilan terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Terdapat upaya peningkatan kompetensi dan keterampilan terkait manajemen risiko yang memadai dengan cakupan seluruh pegawai dan telah dievaluasi pencapaiannya",
+          "penjelasan_sample": "A. Kriteria upaya peningkatan kompetensi yang memadai: 1. Memiliki program pelatihan/sertifikasi terkait manajemen risiko baik tahunan maupun lima tahunan baik ditingkat K/L/Pemerintah daerah maupun Kerja/OPD; 2. Unit Kerja Eseon I/OPD memiliki program in house training tahunan; 3. Instansi Pemerintah telah melaksanakan program pelatihan/sertifikasi tersebut dan dibuktikan dengan adanya laporan pelatihan dan bukti perolehan sertifikat keahlian (setiap Unit Kerja Eseon I/OPD terdapat pegawai yang memiliki sertifikat keahlian); 4. In House Training telah dilaksanakan setidaknya satu kali dalam satu semester oleh masing-masing Unit Kerja Eseon I/OPD serta instruktur harus orang yang telah memiliki sertifikat keahlian; B. Kriteria Output: Pelatihan dan in house training untuk meningkatkan kompetensi telah dilakukan untuk setiap tingkatan risiko: 1. Strategis K/L/D untuk Eselon I adalah lebih dari 90% pejabat; 2. Strategis Unit Eselon I/OPD untuk Eselon II adalah lebih dari 90% pejabat; 3. Operasional Kerja/OPD untuk Eselon III ke atas sampai dengan staf adalah lebih dari 90% pejabat dan staff di level ini. C. Terdapat evaluasi atas dampak peningkatan kompetensi dan ketrampilan terhadap kualitas proses dan hasil manajemen risiko",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 66,
+          "no": "3",
+          "uraian": "Pegawai memiliki kesadaran terkait manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Seluruh pegawai telah memiliki pemahaman terkait manajemen risiko",
+          "penjelasan_sample": "100% pegawai sampel menunjukan kesadaran/keaktifan dalam penerapan MR",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.7": {
+      "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
+      "parameters": [
+        {
+          "source_row": 72,
+          "no": "1",
+          "uraian": "Pengawasan APIP telah dapat memberikan nilai tambah pada perbaikan pengendalian organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "APIP telah menjadi unit yang terus belajar baik dari dalam maupun dari luar organisasi untuk perbaikan berkelanjutan",
+          "penjelasan_sample": "Mengikuti syarat Level 5 Kapabilitas APIP (Optimizing)",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "1.8": {
+      "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
+      "parameters": [
+        {
+          "source_row": 78,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D menjalin hubungan kerja yang baik (kemitraan) dengan instansi lain terkait dengan pengelolaan aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan hubungan kerja yang baik dengan mitra kerjasama organisasi menghasilkan efektivitas pencapaian tujuan organisasi dan efisiensi penggunaan sumberdaya masing-masing instansi",
+          "penjelasan_sample": "Pimpinan organisasi telah menjalin hubungan kerja yang baik dengan instansi lain melalui pembagian peran dan ukuran kinerja yang diharapkan dapat saling mendukung kepada tujuan masing-masing. Pembagian peran mendukung pimpinan untuk mengoptimalkan sumber daya yang ada untuk melaksanakan kegiatan sesuai lingkupnya.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 83,
+          "no": "2",
+          "uraian": "Dalam rangka menciptakan hubungan kerja yang baik, K/L/D telah mengidentifikasi, menilai, dan mengelola risiko (termasuk implikasi dari transfer risiko) terkait kemitraan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, penerapannya telah terintegrasi dengan proses bisnis Instansi Pemerintah, telah direviu secara berkala dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "A. Instansi Pemerintah telah memiliki kebijakan pengelolaan risiko terkait kemitraan, telah dilakukan reviu secara berkala dan hasil reviu dijadikan media pembelajaran. B. Kriteria implementasi adalah sebagai berikut: 1. Terintegrasi apabila penerapan manajemen risiko: a. Telah menyatu dalam proses perencanaan kegiatan kemitraan; b. Manajemen risiko diterapkan diseluruh kegiatan kemitraan; c. Dirancang untuk mengelola seluruh risiko yang muncul d. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan. 2. Kriteria memadai apabila penerapan manajemen risiko telah dilakukan terhadap semua kemitraan yang memiliki peran yang penting dalam organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.1": {
+      "matrix_subunsur_name": "Identifikasi Risiko",
+      "parameters": [
+        {
+          "source_row": 89,
+          "no": "1",
+          "uraian": "K/L/D telah memiliki Kebijakan Manajemen Risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "K/L/D telah memiliki Kebijakan Manajemen Risiko yang memadai, terintegrasi serta telah direviu secara berkala",
+          "penjelasan_sample": "Kebijakan Manajemen Risiko memiliki kriteria memadai dan dalam kebijakan tersebut telah menjelaskan bahwa: 1. Penerapan manajemen risiko oleh Instansi Pemerintah telah menyatu/menjadi pertimbangan dalam proses perencanaan (perumusan target dan strategi pencapaian tujuan Instansi Pemerintah), 2. Manajemen risiko diterapkan diseluruh level organisasi 3. Manajemen risiko dirancang untuk mengelola seluruh risiko yang muncul 4. Menginkorporasikan hasil dari manajemen risiko kedalam dokumen kinerja dan pengambilan keputusan 5. Kebijakan tersebut telah direviu secara berkala",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 94,
+          "no": "2",
+          "uraian": "Risiko telah teridentifikasi dan dituangkan dalam register risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Kualitas identifikasi risiko dan register risiko memadai, serta telah mengidentifikasi peluang",
+          "penjelasan_sample": "Kualitas Identifikasi Risiko dan Risk Register yang memadai bila: 1. Proses identifikasi risiko menghasilkan risiko utama dan peluang yang bisa diambil; 2. Seluruh sasaran strategis K/L/D, sasaran strategis unit kerja serta program dan kegiatan yang telah ditetapkan dalam penetapan konteks telah diidentifikasi risikonya; 3. Pihak yang terlibat setidakya seluruh pegawai unit kerja yang benar-benar memahami proses bisnis organisasi; 4. Proses identifikasi telah sesuai dengan kebijakan yang dibuat; 5. Risk register setidaknya memuat hal berikut: a. uraian tujuan/sasaran strategis/kegiatan, b. Indikator tujuan/sasaran strategis/kegiatan, c. Uraian Risiko, d. Pemilik risiko, e. Uraian dan sumber penyebab, f. Uraian dan pihak yang terdampak; 6. Pernyataan risiko, RTP, penyebab secara umum jelas/dapat dipahami (>90% sampling).",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 99,
+          "no": "3",
+          "uraian": "Proses manajemen risiko telah melekat pada proses bisnis K/L/D",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses manajemen risiko mendukung inovasi, diidentifikasi untuk memaksimalkan peluang dan dijadikan bahan pembelajaran",
+          "penjelasan_sample": "Proses manajemen risiko telah terintegrasi dengan proses bisnis utama dari unit kerja terkait dan menjadi pertimbangan dalam proses perencaan strategis K/L/D dan Unit kerja Eselon I/II/OPD maupun dalam proses perencanaan operasional unit kerja Eselon I/II/OPD. Proses manajemen risiko juga dilakukan untuk mengidentifikasi dan memaksimalkan peluang-peluang yang ada serta mendorong adanya inovasi-inovasi. Disamping itu, hasil dari proses manajemen risiko menjadi bahan pembelajaran dalam pengambilan keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "2.2": {
+      "matrix_subunsur_name": "Analisis Risiko",
+      "parameters": [
+        {
+          "source_row": 105,
+          "no": "1",
+          "uraian": "Seluruh risiko telah dianalisis dampak dan tingkat keterjadiannya",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Analisis risiko telah dilakukan secara memadai terhadap risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D",
+          "penjelasan_sample": "A. Instansi Pemerintah telah melakukan analisis risiko untuk hasil identifikasi risiko di tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai yaitu: 1. Telah sesuai dengan kebijakan (termasuk selera risiko dan langkah analisis); 2. Kriteria yang digunakan baik dampak maupun probabilitasnya konsisten antara satu unit kerja dengan unit kerja lain; 3. Proses analisis risiko dilaksanakan setidaknya oleh orang2 yang memiliki kompetensi. B. Hasil dari proses ini telah menghasilkan tren risiko.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 110,
+          "no": "2",
+          "uraian": "K/L/D telah menentukan prioritas risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan prioritas risiko pada seluruh risiko operasional unit kerja, strategis unit kerja, strategis K/L/D",
+          "penjelasan_sample": "1. Instansi Pemerintah telah melakukan evaluasi risiko untuk menentukan prioritas risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D terhadap seluruh hasil analisis risiko yang telah dilakukan; 2. Proses evaluasi risiko telah didokumentasikan. 3. Evaluasi risiko dilakukan sesuai dengan kebijakan kriteria risiko yang telah ditetapkan sebelumnya",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 115,
+          "no": "3",
+          "uraian": "K/L/D telah menentukan rencana tindak pengendalian",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Instansi Pemerintah telah menentukan rencana tindak pengendalian terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D yang disusun (sampling) telah relevan dengan tujuan yang ingin dicapai, jelas target waktu, penanggung jawab, ukuran pelaksanaan, secara substansi dinilai dapat mengurangi dampak/menghilangkan penyebab,realistis.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 120,
+          "no": "4",
+          "uraian": "Tindak pengendalian telah diimplementasikan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian terhadap seluruh risiko operasional unit kerja, risiko strategis unit kerja, dan risiko strategis K/L/D telah diimplementasikan",
+          "penjelasan_sample": ">60% RTP terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D (sampling) yang direncanakan telah diimplementasikan dan didukung oleh sumber daya yang dibutuhkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 125,
+          "no": "5",
+          "uraian": "Tindak pengendalian efektif menurunkan risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Tindak pengendalian telah efektif menurunkan risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D",
+          "penjelasan_sample": "RTP untuk risiko tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D mampu menurunkan level risiko sebesar >60%. Misalnya terdapat 20 risiko yang yang perlu ditangani (diluar batas risk tolerance), dari 20 risiko tersebut ternyata terdapat 5 kejadian risiko yang mana 2 kejadian masih dalam batas risk tolerance sedangkan 3 kejadian diluar batas risk tolerance. Maka efektivitas penangan risiko dihitung dengan cara ((20-3)/20)X100%=95%.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.1": {
+      "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
+      "parameters": [
+        {
+          "source_row": 131,
+          "no": "1",
+          "uraian": "Pimpinan K/L/D membandingkan tolok ukur kinerja pengelolaan aset dengan capaian kinerja secara berkala untuk mengatasi hambatan kinerja, menetapkan strategi perbaikan, dan menilai kinerja suatu unit sampai dengan periode tertentu dalam rangka mengawal pencapaian tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pelaksanaan reviu kinerja mendukung pencapaian kinerja organisasi",
+          "penjelasan_sample": "a. Terdapat perbaikan yang berkelanjutan atas kinerja organisasi, unit kerja, kegiatan, dan pegawai sebagai akibat pelaksanaan reviu kinerja, b. Reviu kinerja memungkinkan penilaian terhadap tolok ukur kinerja seluruh level pimpinan dan pegawai dalam mendukung pencapaian tujuan organisasi. c. Hasil reviu kinerja digunakan pimpinan organisasi dalam penetapan kebijakan pelaksanaan kegiatan, pengalokasikan sumber daya, dan pertimbangan dalam penilaian kinerja secara individual.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.2": {
+      "matrix_subunsur_name": "Pembinaan SDM",
+      "parameters": [
+        {
+          "source_row": 137,
+          "no": "1",
+          "uraian": "Pembinaan SDM terkait pengelolaan aset dilakukan sehingga setiap pegawai dapat memberikan manfaat optimal dalam pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembinaan SDM organisasi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pembinaan SDM telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pembinaan SDM telah berhasil meningkatkan kinerja yang memberikan dampak bagi pencapaian tujuan organisasi - Keberhasilan pencapaian kinerja organisasi dapat dihubungkan dengan pembinaan SDM-nya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.3": {
+      "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
+      "parameters": [
+        {
+          "source_row": 143,
+          "no": "1",
+          "uraian": "Pengendalian atas pengelolaan sistem informasi aset dilakukan untuk memastikan sistem informasi dapat menyajikan data yang akurat dan tepat waktu untuk digunakan oleh pengguna.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan terkait pengelolaan sistem informasi organisasi dilakukan secara berkelanjutan.",
+          "penjelasan_sample": "a. Terdapat sistem pengelolaan sistem informasi yang terintegrasi; b. Terdapat perbaikan berkelanjutan atas pengelolaan sistem informasi sesuai dengan perubahan lingkungan strategis; c. Sistem informasi menghasilkan seluruh data yang dibutuhkan untuk pelaporan dan pengambilan keputusan oleh pimpinan. c. Pengelolaan sistem informasi telah mendukung pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.4": {
+      "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
+      "parameters": [
+        {
+          "source_row": 149,
+          "no": "1",
+          "uraian": "Pengelolaan BMN/D dilakukan untuk menjamin aset tersedia dan dapat digunakan dengan baik oleh pengguna dalam rangka pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pengelolaan aset organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas pengelolaan aset didukung dengan sistem pengendalian atas aset yang terintegrasi dan menghasilkan aset yang tersedia secara optimal dalam mendukung kinerja organisasi; antara lain ditunjukan dengan kondisi: a. tidak terdapat aset dengan kondisi rusak baik ringan maupun berat; b. tidak terdapat keluhan atas penggunaan aset oleh pengguna; c. tidak terdapat aset pribadi yang digunakan untuk keperluan organisasi akibat keterbatasan aset.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.5": {
+      "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
+      "parameters": [
+        {
+          "source_row": 155,
+          "no": "1",
+          "uraian": "Kegiatan pengendalian atas penetapan dan reviu atas indikator dan ukuran kinerja keuangan dilakukan untuk menjamin keandalan ukuran dan ketepatan penetapan indikator masing-masing unit secara berjenjang dibandingkan dengan IKU organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas penetapan dan reviu atas indikator dan ukuran kinerja organisasi",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas kebijakan/prosedur penetapan indikator dan ukuran kinerja menghasilkan pencapaian tujuan organisasi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.6": {
+      "matrix_subunsur_name": "Pemisahan Fungsi",
+      "parameters": [
+        {
+          "source_row": 161,
+          "no": "1",
+          "uraian": "Terdapat pemisahan fungsi dalam pengelolaan aset sehingga seluruh aspek utama transaksi dan kejadian tidak dikendalikan hanya oleh satu orang",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pemisahan fungsi telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Pemisahan fungsi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Pemisahan fungsi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Pemisahan fungsi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.7": {
+      "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
+      "parameters": [
+        {
+          "source_row": 167,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi dan kejadian penting terkait aset hanya dapat diotorisasi ketika memenuhi persyaratan dan dilakukan oleh pihak yang memiliki kewenangan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Proses otorisasi atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Fungsi otorisasi telah mampu menyesuaikan dengan perubahan lingkungan strategis - Fungsi otorisasi secara efektif mampu memitigasi risiko kolusi dan penyalahgunaan wewenang - Fungsi otorisasi mampu membuat pelaksanaan program dan kegiatan lebih efektif dalam mencapai tujuan organisasi",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.8": {
+      "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
+      "parameters": [
+        {
+          "source_row": 173,
+          "no": "1",
+          "uraian": "Terdapat proses untuk memastikan transaksi terkait aset telah diklasifikasikan dengan layak dan dikelompokkan dengan benar serta dicatat dengan segera sehingga relevan, bernilai, dan berguna bagi manajemen",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pencatatan atas transaksi dan kejadian telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pencatatan telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pencatatan secara efektif mampu memitigasi risiko manipulasi transaksi dan penyalahgunaan wewenang - Proses pencatatan mampu menghasilkan informasi yang relevan, bernilai, dan berguna bagi manajemen dalam mengendalikan operasi dan mengambil keputusan",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.9": {
+      "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 179,
+          "no": "1",
+          "uraian": "Terdapat pembatasan atas kesempatan dan hak untuk menggunakan, atau memperoleh sumber daya dan mengakses pencatatan atas aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pembatasan akses terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pembatasan akses telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pembatasan akses secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Menghasilkan zero significant fraudulent/dangerous intrusion",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.10": {
+      "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
+      "parameters": [
+        {
+          "source_row": 185,
+          "no": "1",
+          "uraian": "Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola aset yang diberikan/dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pertanggungjawaban terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pertanggungjawaban telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pertanggungjawaban secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang - Pertanggungjawaban terhadap sumber daya dan pencatatannya telah dibagi habis kepada pihak/pegawai sesuai dengan kewenangannya",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "3.11": {
+      "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
+      "parameters": [
+        {
+          "source_row": 191,
+          "no": "1",
+          "uraian": "Terdapat pengelolaan, pemeliharaan, dan pendokumentasian secara berkala yang mencakup seluruh SPI serta transaksi dan kejadian penting terkait aset yang dilaksanakan secara lengkap dan akurat untuk memfasilitasi penelusuran transaksi, kejadian, dan informasi terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Pendokumentasian atas SPI serta transaksi dan kejadian penting telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pendokumentasian telah mampu menyesuaikan dengan perubahan lingkungan strategis - Proses pendokumentasian mampu menghasilkan dokumen yang relevan, bernilai, dan berguna bagi manajemen dan pihak lain secara real time",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.1": {
+      "matrix_subunsur_name": "Informasi yang Relevan",
+      "parameters": [
+        {
+          "source_row": 197,
+          "no": "1",
+          "uraian": "Tersedianya informasi terkait aset yang relevan untuk kebutuhan internal dan eksternal",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Informasi yang disajikan relevan dan memenuhi ekspektasi stakeholder",
+          "penjelasan_sample": "- Informasi produk, standar, prosedur layanan/pelaksanaan tugas fungsi dan pengaduan telah memenuhi ekspektasi stakeholder; - Informasi layanan internal (keuangan, kepegawaian, umum, dsb) telah memenuhi ekspektasi stakeholder; - Informasi manajemen kinerja (rencana kinerja, capaian kinerja, dsb) telah memenuhi ekspektasi stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 202,
+          "no": "2",
+          "uraian": "Pimpinan K/L/D membangun sistem pengaduan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sistem pengaduan berdampak pada perbaikan berkelanjutan",
+          "penjelasan_sample": "Perbaikan berkelanjutan antara lain berdampak pada peningkatan kinerja, perbaikan pelayanan publik, dan kepuasan stakeholder.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 207,
+          "no": "3",
+          "uraian": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Strategi dan kebijakan manajemen risiko telah dikomunikasikan pada seluruh pegawai pada tingkat operasional unit kerja, tingkat strategis unit kerja, dan tingkat strategis K/L/D",
+          "penjelasan_sample": ">60% pegawai sample pada tingkat operasional unit kerja, strategis unit kerja, dan strategis K/L/D menunjukan pengetahuan akan strategi dan kebijakan yang telah ditetapkan",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 212,
+          "no": "4",
+          "uraian": "Register risiko dan rencana tindak pengendalian telah dikomunikasikan ke pihak terkait",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, strategis Unit Kerja/OPD dan Strategis K/L/D telah dikomunikasikan kepada seluruh pihak terkait dan dijadikan bahan dalam pengambilan keputusan serta menjadi bahan pembelajaran dan inovasi",
+          "penjelasan_sample": "Komunikasi Register risiko dan rencana tindak pengendalian tingkat operasional Unit Kerja/OPD, dan strategis Unit Kerja/OPD telah dilakukan kepada semua pihak yang telah diidentifikasi dalam rencana komunikasi sebagaimana tertuang dalam dokumen RTP yang telah disusun sebelumnya dan dijadikan bahan pembuatan keputusan oleh pihak-pihak tersebut serta menjadi bahan pembelajaran dan inovasi bagi K/L/D",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "4.2": {
+      "matrix_subunsur_name": "Komunikasi yang Efektif",
+      "parameters": [
+        {
+          "source_row": 218,
+          "no": "1",
+          "uraian": "Terlaksananya komunikasi yang efektif dengan internal dan eksternal terkait pengelolaan aset",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas metodologi komunikasi yang efektif",
+          "penjelasan_sample": "Perbaikan berkelanjutan atas komunikasi yang efektif menghasilkan: - Upaya promosi/sosialisasi tentang produk/layanan/ pelaksanaan tugas fungsi yang telah berhasil meningkatkan kepercayaan publik/stakholder; - Upaya komunikasi dengan publik/stakeholder yang telah berhasil memperbaiki citra instansi.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.1": {
+      "matrix_subunsur_name": "Pemantauan Berkelanjutan",
+      "parameters": [
+        {
+          "source_row": 224,
+          "no": "1",
+          "uraian": "Pimpinan organisasi/penanggungjawab program dan kegiatan/penanggungjawab operasional mengevaluasi secara berkala pengendalian intern pengelolaan aset yang telah dilakukan dalam rangka mencapai tujuan organisasi.",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pemantauan pengendalian intern dilaksanakan dan berdampak pada kualitas pengendalian intern",
+          "penjelasan_sample": "a. Pemantauan atas pelaksanaan pengendalian telah efektif mengurangi dampak dan frekuensi keterjadian risiko; b. Terdapat sistem informasi terintegrasi untuk memantau pengendalian untuk seluruh proses bisnis secara realtime. c. Pemantauan kinerja digunakan sebagai dasar dalam reward and punishment; d. Didukung oleh sistem informasi pemantauan kinerja yang terintegrasi.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 229,
+          "no": "2",
+          "uraian": "Proses manajemen risiko telah direviu",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Sudah dilakukan reviu atas seluruh risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D dan hasil reviu dijadikan bahan perbaikan organisasi",
+          "penjelasan_sample": "Kebijakan, framework, metode, tahapan, proses, dan praktik yang dijalankan terkait dengan proses manajemen risiko telah direviu oleh pihak internal dari Instansi Pemerintah (oleh APIP maupun komite manajemen risiko) untuk semua risiko operasional unit kerja, strategis unit kerja, strategis K/L/D. Hasil reviu telah seluruhnya ditindaklanjuti dan sudah ada implementasi perbaikan atas hasil reviu tersebut.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 234,
+          "no": "3",
+          "uraian": "Pemantauan/monitoring terhadap risiko telah dilakukan",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Monitoring terhadap risiko dan tindak pengendalian dilakukan terhadap risiko operasional unit kerja, strategis unit kerja, dan strategis K/L/D secara memadai dan menjadi bahan pembelajaran bagi unit kerja",
+          "penjelasan_sample": "Memadai berarti: 1.Telah ada langkah Monitoring sesuai kebijakan; 2. Monitoring dilakukan sesuai dengan jadwal yang ditetapkan sesuai kebijakan; 3. Monitoring dilakukan oleh unit kepatuhan dan dilaksanakan minimal satu kali per semester atau sesuai dengan kebutuhan; 4. Proses dan hasil Monitoring telah didokumentasikan; 5. Monitoring sepenuhnya dilakukan terhadap: a. implementasi pengendalian; b. kejadian risiko (termasuk mekanisme dan implementasi pelaporan segera); c. Memantau pelaksanaan tiap tahapan pengelolaan risiko. 6. Hasil monitoring menunjukkan kondisi yang baik; 7. Hasil Monitoring seluruhnya telah ditindaklanjuti. 9. Terdapat implementasi perbaikan atas hasil monitoring",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    },
+    "5.2": {
+      "matrix_subunsur_name": "Evaluasi Terpisah",
+      "parameters": [
+        {
+          "source_row": 240,
+          "no": "1",
+          "uraian": "Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian intern, mengidentifikasi kelemahan pengendalian, menentukan penyebab dari kegagalan aktivitas pengendalian terkait pengelolaan aset, serta pengaruhnya terhadap pencapaian tujuan instansi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Perbaikan berkelanjutan atas pelaksanaan evaluasi terpisah berdampak pada peningkatan kualitas pengendalian intern dan pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Hasil tindak lanjut mampu mengurangi dampak dan frekuensi risiko. - Hasil tindak lanjut mampu mengakselerasi pencapaian indikator program dan kegiatan.",
+          "cara_pengujian": "W/D/O"
+        },
+        {
+          "source_row": 245,
+          "no": "2",
+          "uraian": "Terdapat reviu independen terhadap proses manajemen risiko",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "MRI",
+            "iepk": "-"
+          },
+          "grade_sample": "A",
+          "kriteria_sample": "Reviu terhadap proses tindak pengendalian risiko tingkat operasional unit kerja/OPD, strategis unit kerja/OPD, dan strategis K/L/D sangat memadai",
+          "penjelasan_sample": "Sangat memadai berarti: 1.Telah ada pedoman reviu yang terstandar yang merunjuk pada best practice; 2. Reviu dilakukan sesuai dengan jadwal yang ditetapkan dan sesuai dengan pedoman; 3. Reviu dilakukan oleh APIP minimal satu kali per tahun; 4. Proses dan hasil reviu telah didokumentasikan serta dapat disimpulkan baik; 5. Reviu dilakukan untuk mereviu rencana dan implementasi pengendalian serta kejadian risiko serta respon yang dilakukan 6. Hasil reviu menunjukkan kondisi yang seluruhnya telah sesuai dengan standar dan kebijakan serta dapat disimpulkan baik; 7. Hasil reviu seluruhnya telah diditindaklanjut; 9. Terdapat implementasi perbaikan atas hasil reviu.",
+          "cara_pengujian": "W/D/O"
+        }
+      ]
+    }
+  }
+}
