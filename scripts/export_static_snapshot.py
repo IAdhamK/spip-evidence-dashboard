@@ -67,7 +67,7 @@ def build_snapshot_from_database(settings) -> dict:
             **folder,
             "matrix_subunsur_name": matrix_subunsur_name,
             "parameters": parameters,
-            "files": db.files(folder["kk_id"], folder["kode"]),
+            "files": [sanitize_file(file) for file in db.files(folder["kk_id"], folder["kode"])],
         }
 
     return {
@@ -109,6 +109,11 @@ def inject_public_urls(payload: dict, settings) -> None:
         url = by_key.get((detail["kk_id"], detail["kode"]))
         if url:
             detail["public_url"] = url
+        detail["files"] = [sanitize_file(file) for file in detail.get("files", [])]
+
+
+def sanitize_file(file: dict) -> dict:
+    return {**file, "href": ""}
 
 
 def build_dashboard(folders: list[dict]) -> dict:
