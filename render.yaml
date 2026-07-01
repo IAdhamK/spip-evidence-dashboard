@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: spip-evidence-dashboard
+    env: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: LUMBUNG_HOST
+        value: https://lumbungfile.kemendesa.go.id
+      - key: LUMBUNG_SHARE_TOKEN
+        sync: false
+      - key: DATABASE_PATH
+        value: /app/data/evidence.db
+      - key: SCAN_TIMEOUT_SECONDS
+        value: "30"

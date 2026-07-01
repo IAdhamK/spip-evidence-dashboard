@@ -73,15 +73,32 @@ npm run dev
 
 ## Deployment Online
 
-Repository ini memiliki workflow GitHub Pages untuk menerbitkan SPA versi online:
+Repository ini memiliki dua pola deployment:
+
+### Full-stack live
+
+```text
+Frontend React + backend FastAPI berjalan dalam satu container.
+```
+
+Gunakan `Dockerfile` di root repository atau `render.yaml` untuk Render. Set environment variable berikut di platform hosting:
+
+```text
+LUMBUNG_HOST=https://lumbungfile.kemendesa.go.id
+LUMBUNG_SHARE_TOKEN=isi-token-share
+DATABASE_PATH=/app/data/evidence.db
+SCAN_TIMEOUT_SECONDS=30
+```
+
+Mode ini mendukung tombol `Sinkronkan` langsung dari dashboard karena API backend tersedia online pada origin yang sama.
+
+### GitHub Pages snapshot
 
 ```text
 https://iadhamk.github.io/spip-evidence-dashboard/
 ```
 
-Versi Pages berjalan sebagai snapshot read-only dari data terakhir yang diekspor ke `frontend/public/snapshot.json`. Tombol buka folder tetap dapat dibuat saat deploy melalui GitHub Actions Secret `LUMBUNG_SHARE_TOKEN`, tanpa menyimpan token tersebut di source repository.
-
-Sinkronisasi live ke Lumbung File tetap memerlukan backend FastAPI, sehingga dijalankan melalui mode lokal/Docker atau server full-stack.
+Versi Pages hanya snapshot read-only dari data terakhir yang diekspor ke `frontend/public/snapshot.json`. GitHub Pages tidak cocok untuk kebutuhan upload lalu langsung terbaca, karena tidak menjalankan backend FastAPI.
 
 ## Catatan
 

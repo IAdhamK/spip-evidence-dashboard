@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 const STATIC_SNAPSHOT = import.meta.env.VITE_STATIC_SNAPSHOT === "true";
 let snapshotPromise;
 
@@ -85,4 +85,10 @@ async function loadSnapshot() {
 
 function detailKey(kkId, kode) {
   return `${kkId}::${kode}`;
+}
+
+function normalizeApiBaseUrl(value) {
+  if (value === "same-origin") return "";
+  if (value === undefined) return "http://localhost:8000";
+  return value.replace(/\/$/, "");
 }
