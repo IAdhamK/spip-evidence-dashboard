@@ -18,7 +18,7 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import { apiGet, apiPost } from "./lib/api.js";
+import { apiGet, apiPost, isStaticSnapshot } from "./lib/api.js";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
@@ -31,6 +31,7 @@ const STATUS_ICONS = {
 };
 
 function App() {
+  const staticSnapshot = isStaticSnapshot();
   const [dashboard, setDashboard] = useState(null);
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,10 @@ function App() {
   }
 
   async function runSync() {
+    if (staticSnapshot) {
+      setError("Versi online GitHub Pages memakai snapshot read-only. Sinkronisasi live dijalankan dari aplikasi lokal/server backend.");
+      return;
+    }
     setSyncing(true);
     setError("");
     try {
@@ -115,13 +120,19 @@ function App() {
           <button className="icon-button" onClick={loadData} aria-label="Refresh dashboard" title="Refresh dashboard">
             <RefreshCw size={18} />
           </button>
-          <button className="primary-button" onClick={runSync} disabled={syncing}>
+          <button
+            className="primary-button"
+            onClick={runSync}
+            disabled={syncing || staticSnapshot}
+            title={staticSnapshot ? "Versi online memakai snapshot read-only" : "Sinkronkan dengan Lumbung File"}
+          >
             {syncing ? <Loader2 className="spin" size={18} /> : <Database size={18} />}
-            Sinkronkan
+            {staticSnapshot ? "Snapshot" : "Sinkronkan"}
           </button>
         </div>
       </header>
 
+      {staticSnapshot ? <Notice tone="info" text="Mode online: snapshot read-only dari data terakhir. Tombol Buka Folder tetap mengarah ke Lumbung File." /> : null}
       {error ? <Notice tone="danger" text={error} /> : null}
 
       {loading ? (

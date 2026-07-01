@@ -71,6 +71,18 @@ npm run dev
 - `POST /api/sync`
 - `POST /api/sync/{kk_id}/{kode}`
 
+## Deployment Online
+
+Repository ini memiliki workflow GitHub Pages untuk menerbitkan SPA versi online:
+
+```text
+https://iadhamk.github.io/spip-evidence-dashboard/
+```
+
+Versi Pages berjalan sebagai snapshot read-only dari data terakhir yang diekspor ke `frontend/public/snapshot.json`. Tombol buka folder tetap dapat dibuat saat deploy melalui GitHub Actions Secret `LUMBUNG_SHARE_TOKEN`, tanpa menyimpan token tersebut di source repository.
+
+Sinkronisasi live ke Lumbung File tetap memerlukan backend FastAPI, sehingga dijalankan melalui mode lokal/Docker atau server full-stack.
+
 ## Catatan
 
 Aplikasi tahap ini hanya membaca metadata file. Upload, rename, delete, login, role PIC/admin, dan verifikasi manual final belum dimasukkan ke MVP.
