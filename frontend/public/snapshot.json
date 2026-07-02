@@ -519,10 +519,10 @@
         "folder_path": "KK 3.2 KEANDALAN PELAPORAN KEUANGAN/1.1 Penegakan Integritas dan Nilai Etika",
         "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika",
         "status": "Terisi",
-        "status_reason": "Terbaca 6 file dari folder detail grade/kategori.",
+        "status_reason": "Terbaca 6 file dari folder detail grade.",
         "file_count": 6,
         "total_size_bytes": 16376706,
-        "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+        "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
         "error_message": null
       },
       {
@@ -539,7 +539,7 @@
         "status_reason": "Folder belum memiliki file evidence.",
         "file_count": 0,
         "total_size_bytes": 0,
-        "last_scanned_at": "2026-07-02T14:55:29.728508+00:00",
+        "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
         "error_message": null
       },
       {
@@ -2236,10 +2236,10 @@
           "folder_path": "KK 3.2 KEANDALAN PELAPORAN KEUANGAN/1.1 Penegakan Integritas dan Nilai Etika",
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika",
           "status": "Terisi",
-          "status_reason": "Terbaca 6 file dari folder detail grade/kategori.",
+          "status_reason": "Terbaca 6 file dari folder detail grade.",
           "file_count": 6,
           "total_size_bytes": 16376706,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         },
         {
@@ -2256,7 +2256,7 @@
           "status_reason": "Folder belum memiliki file evidence.",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": "2026-07-02T14:55:29.728508+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         },
         {
@@ -3539,7 +3539,7 @@
       "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
       "parameters": [
         {
-          "id": 3108,
+          "id": 3474,
           "kk_id": "KK3.1",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -3808,7 +3808,7 @@
       "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
       "parameters": [
         {
-          "id": 3109,
+          "id": 3475,
           "kk_id": "KK3.1",
           "kode": "1.2",
           "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
@@ -4077,7 +4077,7 @@
       "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
       "parameters": [
         {
-          "id": 3110,
+          "id": 3476,
           "kk_id": "KK3.1",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -4236,7 +4236,7 @@
           "detail_kode": "1.3.1"
         },
         {
-          "id": 3111,
+          "id": 3477,
           "kk_id": "KK3.1",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -4395,7 +4395,7 @@
           "detail_kode": "1.3.2"
         },
         {
-          "id": 3112,
+          "id": 3478,
           "kk_id": "KK3.1",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -4554,7 +4554,7 @@
           "detail_kode": "1.3.3"
         },
         {
-          "id": 3113,
+          "id": 3479,
           "kk_id": "KK3.1",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -5081,7 +5081,7 @@
       "matrix_subunsur_name": "Struktur Organisasi Sesuai Kebutuhan",
       "parameters": [
         {
-          "id": 3114,
+          "id": 3480,
           "kk_id": "KK3.1",
           "kode": "1.4",
           "matrix_subunsur_name": "Struktur Organisasi Sesuai Kebutuhan",
@@ -5350,7 +5350,7 @@
       "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
       "parameters": [
         {
-          "id": 3115,
+          "id": 3481,
           "kk_id": "KK3.1",
           "kode": "1.5",
           "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
@@ -5619,7 +5619,7 @@
       "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
       "parameters": [
         {
-          "id": 3116,
+          "id": 3482,
           "kk_id": "KK3.1",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -5778,7 +5778,7 @@
           "detail_kode": "1.6.1"
         },
         {
-          "id": 3117,
+          "id": 3483,
           "kk_id": "KK3.1",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -5937,7 +5937,7 @@
           "detail_kode": "1.6.2"
         },
         {
-          "id": 3118,
+          "id": 3484,
           "kk_id": "KK3.1",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -6378,7 +6378,7 @@
       "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
       "parameters": [
         {
-          "id": 3119,
+          "id": 3485,
           "kk_id": "KK3.1",
           "kode": "1.7",
           "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
@@ -6647,7 +6647,7 @@
       "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
       "parameters": [
         {
-          "id": 3120,
+          "id": 3486,
           "kk_id": "KK3.1",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -6806,7 +6806,7 @@
           "detail_kode": "1.8.1"
         },
         {
-          "id": 3121,
+          "id": 3487,
           "kk_id": "KK3.1",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -7161,7 +7161,7 @@
       "matrix_subunsur_name": "Identifikasi Risiko",
       "parameters": [
         {
-          "id": 3122,
+          "id": 3488,
           "kk_id": "KK3.1",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -7320,7 +7320,7 @@
           "detail_kode": "2.1.1"
         },
         {
-          "id": 3123,
+          "id": 3489,
           "kk_id": "KK3.1",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -7479,7 +7479,7 @@
           "detail_kode": "2.1.2"
         },
         {
-          "id": 3124,
+          "id": 3490,
           "kk_id": "KK3.1",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -7920,7 +7920,7 @@
       "matrix_subunsur_name": "Analisis Risiko",
       "parameters": [
         {
-          "id": 3125,
+          "id": 3491,
           "kk_id": "KK3.1",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -8079,7 +8079,7 @@
           "detail_kode": "2.2.1"
         },
         {
-          "id": 3126,
+          "id": 3492,
           "kk_id": "KK3.1",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -8238,7 +8238,7 @@
           "detail_kode": "2.2.2"
         },
         {
-          "id": 3127,
+          "id": 3493,
           "kk_id": "KK3.1",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -8397,7 +8397,7 @@
           "detail_kode": "2.2.3"
         },
         {
-          "id": 3128,
+          "id": 3494,
           "kk_id": "KK3.1",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -8556,7 +8556,7 @@
           "detail_kode": "2.2.4"
         },
         {
-          "id": 3129,
+          "id": 3495,
           "kk_id": "KK3.1",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -9169,7 +9169,7 @@
       "matrix_subunsur_name": "Reviu atas Kinerja",
       "parameters": [
         {
-          "id": 3130,
+          "id": 3496,
           "kk_id": "KK3.1",
           "kode": "3.1",
           "matrix_subunsur_name": "Reviu atas Kinerja",
@@ -9438,7 +9438,7 @@
       "matrix_subunsur_name": "Pembinaan SDM",
       "parameters": [
         {
-          "id": 3131,
+          "id": 3497,
           "kk_id": "KK3.1",
           "kode": "3.2",
           "matrix_subunsur_name": "Pembinaan SDM",
@@ -9707,7 +9707,7 @@
       "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
       "parameters": [
         {
-          "id": 3132,
+          "id": 3498,
           "kk_id": "KK3.1",
           "kode": "3.3",
           "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
@@ -9976,7 +9976,7 @@
       "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
       "parameters": [
         {
-          "id": 3133,
+          "id": 3499,
           "kk_id": "KK3.1",
           "kode": "3.4",
           "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
@@ -10245,7 +10245,7 @@
       "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
       "parameters": [
         {
-          "id": 3134,
+          "id": 3500,
           "kk_id": "KK3.1",
           "kode": "3.5",
           "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
@@ -10514,7 +10514,7 @@
       "matrix_subunsur_name": "Pemisahan Fungsi",
       "parameters": [
         {
-          "id": 3135,
+          "id": 3501,
           "kk_id": "KK3.1",
           "kode": "3.6",
           "matrix_subunsur_name": "Pemisahan Fungsi",
@@ -10783,7 +10783,7 @@
       "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
       "parameters": [
         {
-          "id": 3136,
+          "id": 3502,
           "kk_id": "KK3.1",
           "kode": "3.7",
           "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
@@ -11052,7 +11052,7 @@
       "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
       "parameters": [
         {
-          "id": 3137,
+          "id": 3503,
           "kk_id": "KK3.1",
           "kode": "3.8",
           "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
@@ -11321,7 +11321,7 @@
       "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3138,
+          "id": 3504,
           "kk_id": "KK3.1",
           "kode": "3.9",
           "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
@@ -11590,7 +11590,7 @@
       "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3139,
+          "id": 3505,
           "kk_id": "KK3.1",
           "kode": "3.10",
           "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
@@ -11859,7 +11859,7 @@
       "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
       "parameters": [
         {
-          "id": 3140,
+          "id": 3506,
           "kk_id": "KK3.1",
           "kode": "3.11",
           "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
@@ -12128,7 +12128,7 @@
       "matrix_subunsur_name": "Informasi yang Relevan",
       "parameters": [
         {
-          "id": 3141,
+          "id": 3507,
           "kk_id": "KK3.1",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -12287,7 +12287,7 @@
           "detail_kode": "4.1.1"
         },
         {
-          "id": 3142,
+          "id": 3508,
           "kk_id": "KK3.1",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -12446,7 +12446,7 @@
           "detail_kode": "4.1.2"
         },
         {
-          "id": 3143,
+          "id": 3509,
           "kk_id": "KK3.1",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -12605,7 +12605,7 @@
           "detail_kode": "4.1.3"
         },
         {
-          "id": 3144,
+          "id": 3510,
           "kk_id": "KK3.1",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -13132,7 +13132,7 @@
       "matrix_subunsur_name": "Komunikasi yang Efektif",
       "parameters": [
         {
-          "id": 3145,
+          "id": 3511,
           "kk_id": "KK3.1",
           "kode": "4.2",
           "matrix_subunsur_name": "Komunikasi yang Efektif",
@@ -13401,7 +13401,7 @@
       "matrix_subunsur_name": "Pemantauan Berkelanjutan",
       "parameters": [
         {
-          "id": 3146,
+          "id": 3512,
           "kk_id": "KK3.1",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -13560,7 +13560,7 @@
           "detail_kode": "5.1.1"
         },
         {
-          "id": 3147,
+          "id": 3513,
           "kk_id": "KK3.1",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -13719,7 +13719,7 @@
           "detail_kode": "5.1.2"
         },
         {
-          "id": 3148,
+          "id": 3514,
           "kk_id": "KK3.1",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -14160,7 +14160,7 @@
       "matrix_subunsur_name": "Evaluasi Terpisah",
       "parameters": [
         {
-          "id": 3149,
+          "id": 3515,
           "kk_id": "KK3.1",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -14319,7 +14319,7 @@
           "detail_kode": "5.2.1"
         },
         {
-          "id": 3150,
+          "id": 3516,
           "kk_id": "KK3.1",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -14666,15 +14666,15 @@
       "folder_path": "KK 3.2 KEANDALAN PELAPORAN KEUANGAN/1.1 Penegakan Integritas dan Nilai Etika",
       "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika",
       "status": "Terisi",
-      "status_reason": "Terbaca 6 file dari folder detail grade/kategori.",
+      "status_reason": "Terbaca 6 file dari folder detail grade.",
       "file_count": 6,
       "total_size_bytes": 16376706,
-      "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+      "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
       "error_message": null,
       "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
       "parameters": [
         {
-          "id": 3151,
+          "id": 3517,
           "kk_id": "KK3.2",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -14712,7 +14712,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20A",
                   "file_count": 6,
                   "total_size_bytes": 16376706,
-                  "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+                  "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
                   "error_message": null
                 }
               ]
@@ -14740,7 +14740,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20B",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+                  "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
                   "error_message": null
                 }
               ]
@@ -14768,7 +14768,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20C",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+                  "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
                   "error_message": null
                 }
               ]
@@ -14796,7 +14796,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20D",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+                  "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
                   "error_message": null
                 }
               ]
@@ -14824,7 +14824,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20E",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+                  "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
                   "error_message": null
                 }
               ]
@@ -14846,7 +14846,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20A",
           "file_count": 6,
           "total_size_bytes": 16376706,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         },
         {
@@ -14861,7 +14861,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20B",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         },
         {
@@ -14876,7 +14876,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20C",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         },
         {
@@ -14891,7 +14891,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20D",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         },
         {
@@ -14906,13 +14906,13 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.1%20Penegakan%20Integritas%20dan%20Nilai%20Etika/1.1.1%20K-L-D%20menegakkan%20integritas%20dan%20nilai%20etika%20dalam%20pengelolaan%20keuangan/Grade%20E",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": "2026-07-02T15:23:31.876475+00:00",
+          "last_scanned_at": "2026-07-02T16:47:57.360198+00:00",
           "error_message": null
         }
       ],
       "files": [
         {
-          "id": 387,
+          "id": 391,
           "kk_id": "KK3.2",
           "kode": "1.1",
           "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan",
@@ -14920,7 +14920,73 @@
           "is_folder": 1,
           "size_bytes": null,
           "mime_type": null,
-          "modified_at": "2026-07-02T15:21:31+00:00"
+          "modified_at": "2026-07-02T16:31:31+00:00"
+        },
+        {
+          "id": 392,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/5. Pakta Integritas_Cap.pdf",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 382280,
+          "mime_type": "application/pdf",
+          "modified_at": "2026-01-07T08:14:42+00:00"
+        },
+        {
+          "id": 393,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/6. Nota Kesepakatan Token IKPA.pdf",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 568868,
+          "mime_type": "application/pdf",
+          "modified_at": "2026-01-07T08:14:54+00:00"
+        },
+        {
+          "id": 394,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/DATABASE SERTIFIKAT PEJABAT PERBEN.pdf",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 79100,
+          "mime_type": "application/pdf",
+          "modified_at": "2026-07-01T14:41:27+00:00"
+        },
+        {
+          "id": 395,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/MPH 2026.xlsx",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 216978,
+          "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "modified_at": "2026-07-01T05:47:47+00:00"
+        },
+        {
+          "id": 396,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/Nodin Penegakan Disiplin dan Tertib Administrasi Pembinaan Disiplin Pegawai_2026.pdf",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 147507,
+          "mime_type": "application/pdf",
+          "modified_at": "2026-07-01T05:55:21+00:00"
+        },
+        {
+          "id": 397,
+          "kk_id": "KK3.2",
+          "kode": "1.1",
+          "name": "1.1.1 K-L-D menegakkan integritas dan nilai etika dalam pengelolaan keuangan/Grade A/SKP_TW 1 2026.zip",
+          "href": "",
+          "is_folder": 0,
+          "size_bytes": 14981973,
+          "mime_type": "application/zip",
+          "modified_at": "2026-07-01T14:36:24+00:00"
         }
       ]
     },
@@ -14938,12 +15004,12 @@
       "status_reason": "Folder belum memiliki file evidence.",
       "file_count": 0,
       "total_size_bytes": 0,
-      "last_scanned_at": "2026-07-02T14:55:29.728508+00:00",
+      "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
       "error_message": null,
       "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
       "parameters": [
         {
-          "id": 3152,
+          "id": 3518,
           "kk_id": "KK3.2",
           "kode": "1.2",
           "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
@@ -14981,7 +15047,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20A",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": null,
+                  "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
                   "error_message": null
                 }
               ]
@@ -15009,7 +15075,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20B",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": null,
+                  "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
                   "error_message": null
                 }
               ]
@@ -15037,7 +15103,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20C",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": null,
+                  "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
                   "error_message": null
                 }
               ]
@@ -15065,7 +15131,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20D",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": null,
+                  "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
                   "error_message": null
                 }
               ]
@@ -15093,7 +15159,7 @@
                   "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20E",
                   "file_count": 0,
                   "total_size_bytes": 0,
-                  "last_scanned_at": null,
+                  "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
                   "error_message": null
                 }
               ]
@@ -15115,7 +15181,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20A",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": null,
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         },
         {
@@ -15130,7 +15196,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20B",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": null,
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         },
         {
@@ -15145,7 +15211,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20C",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": null,
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         },
         {
@@ -15160,7 +15226,7 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20D",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": null,
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         },
         {
@@ -15175,13 +15241,13 @@
           "public_url": "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/KK%203.2%20KEANDALAN%20PELAPORAN%20KEUANGAN/1.2%20Komitmen%20terhadap%20Kompetensi/1.2.1%20Tugas%20dan%20jabatan%20dalam%20struktur%20pengelolaan%20keuangan%20dilaksanakan%20dan%20diisi%20oleh%20SDM%20yang%20kompeten/Grade%20E",
           "file_count": 0,
           "total_size_bytes": 0,
-          "last_scanned_at": null,
+          "last_scanned_at": "2026-07-02T16:47:57.551618+00:00",
           "error_message": null
         }
       ],
       "files": [
         {
-          "id": 248,
+          "id": 398,
           "kk_id": "KK3.2",
           "kode": "1.2",
           "name": "1.2.1 Tugas dan jabatan dalam struktur pengelolaan keuangan dilaksanakan dan diisi oleh SDM yang kompeten",
@@ -15189,7 +15255,7 @@
           "is_folder": 1,
           "size_bytes": null,
           "mime_type": null,
-          "modified_at": "2026-07-02T14:39:53+00:00"
+          "modified_at": "2026-07-02T16:34:38+00:00"
         }
       ]
     },
@@ -15212,7 +15278,7 @@
       "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
       "parameters": [
         {
-          "id": 3153,
+          "id": 3519,
           "kk_id": "KK3.2",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -15371,7 +15437,7 @@
           "detail_kode": "1.3.1"
         },
         {
-          "id": 3154,
+          "id": 3520,
           "kk_id": "KK3.2",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -15530,7 +15596,7 @@
           "detail_kode": "1.3.2"
         },
         {
-          "id": 3155,
+          "id": 3521,
           "kk_id": "KK3.2",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -15689,7 +15755,7 @@
           "detail_kode": "1.3.3"
         },
         {
-          "id": 3156,
+          "id": 3522,
           "kk_id": "KK3.2",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -16216,7 +16282,7 @@
       "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
       "parameters": [
         {
-          "id": 3157,
+          "id": 3523,
           "kk_id": "KK3.2",
           "kode": "1.4",
           "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
@@ -16485,7 +16551,7 @@
       "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
       "parameters": [
         {
-          "id": 3158,
+          "id": 3524,
           "kk_id": "KK3.2",
           "kode": "1.5",
           "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
@@ -16754,7 +16820,7 @@
       "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
       "parameters": [
         {
-          "id": 3159,
+          "id": 3525,
           "kk_id": "KK3.2",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -16913,7 +16979,7 @@
           "detail_kode": "1.6.1"
         },
         {
-          "id": 3160,
+          "id": 3526,
           "kk_id": "KK3.2",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -17072,7 +17138,7 @@
           "detail_kode": "1.6.2"
         },
         {
-          "id": 3161,
+          "id": 3527,
           "kk_id": "KK3.2",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -17513,7 +17579,7 @@
       "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
       "parameters": [
         {
-          "id": 3162,
+          "id": 3528,
           "kk_id": "KK3.2",
           "kode": "1.7",
           "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
@@ -17782,7 +17848,7 @@
       "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
       "parameters": [
         {
-          "id": 3163,
+          "id": 3529,
           "kk_id": "KK3.2",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -17941,7 +18007,7 @@
           "detail_kode": "1.8.1"
         },
         {
-          "id": 3164,
+          "id": 3530,
           "kk_id": "KK3.2",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -18296,7 +18362,7 @@
       "matrix_subunsur_name": "Identifikasi Risiko",
       "parameters": [
         {
-          "id": 3165,
+          "id": 3531,
           "kk_id": "KK3.2",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -18455,7 +18521,7 @@
           "detail_kode": "2.1.1"
         },
         {
-          "id": 3166,
+          "id": 3532,
           "kk_id": "KK3.2",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -18614,7 +18680,7 @@
           "detail_kode": "2.1.2"
         },
         {
-          "id": 3167,
+          "id": 3533,
           "kk_id": "KK3.2",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -19055,7 +19121,7 @@
       "matrix_subunsur_name": "Analisis Risiko",
       "parameters": [
         {
-          "id": 3168,
+          "id": 3534,
           "kk_id": "KK3.2",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -19214,7 +19280,7 @@
           "detail_kode": "2.2.1"
         },
         {
-          "id": 3169,
+          "id": 3535,
           "kk_id": "KK3.2",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -19373,7 +19439,7 @@
           "detail_kode": "2.2.2"
         },
         {
-          "id": 3170,
+          "id": 3536,
           "kk_id": "KK3.2",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -19532,7 +19598,7 @@
           "detail_kode": "2.2.3"
         },
         {
-          "id": 3171,
+          "id": 3537,
           "kk_id": "KK3.2",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -19691,7 +19757,7 @@
           "detail_kode": "2.2.4"
         },
         {
-          "id": 3172,
+          "id": 3538,
           "kk_id": "KK3.2",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -20304,7 +20370,7 @@
       "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
       "parameters": [
         {
-          "id": 3173,
+          "id": 3539,
           "kk_id": "KK3.2",
           "kode": "3.1",
           "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
@@ -20573,7 +20639,7 @@
       "matrix_subunsur_name": "Pembinaan SDM",
       "parameters": [
         {
-          "id": 3174,
+          "id": 3540,
           "kk_id": "KK3.2",
           "kode": "3.2",
           "matrix_subunsur_name": "Pembinaan SDM",
@@ -20842,7 +20908,7 @@
       "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
       "parameters": [
         {
-          "id": 3175,
+          "id": 3541,
           "kk_id": "KK3.2",
           "kode": "3.3",
           "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
@@ -21111,7 +21177,7 @@
       "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
       "parameters": [
         {
-          "id": 3176,
+          "id": 3542,
           "kk_id": "KK3.2",
           "kode": "3.4",
           "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
@@ -21380,7 +21446,7 @@
       "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
       "parameters": [
         {
-          "id": 3177,
+          "id": 3543,
           "kk_id": "KK3.2",
           "kode": "3.5",
           "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
@@ -21649,7 +21715,7 @@
       "matrix_subunsur_name": "Pemisahan Fungsi",
       "parameters": [
         {
-          "id": 3178,
+          "id": 3544,
           "kk_id": "KK3.2",
           "kode": "3.6",
           "matrix_subunsur_name": "Pemisahan Fungsi",
@@ -21918,7 +21984,7 @@
       "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
       "parameters": [
         {
-          "id": 3179,
+          "id": 3545,
           "kk_id": "KK3.2",
           "kode": "3.7",
           "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
@@ -22187,7 +22253,7 @@
       "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
       "parameters": [
         {
-          "id": 3180,
+          "id": 3546,
           "kk_id": "KK3.2",
           "kode": "3.8",
           "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
@@ -22456,7 +22522,7 @@
       "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3181,
+          "id": 3547,
           "kk_id": "KK3.2",
           "kode": "3.9",
           "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
@@ -22746,7 +22812,7 @@
       "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
       "parameters": [
         {
-          "id": 3182,
+          "id": 3548,
           "kk_id": "KK3.2",
           "kode": "3.11",
           "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
@@ -23015,7 +23081,7 @@
       "matrix_subunsur_name": "Informasi yang Relevan",
       "parameters": [
         {
-          "id": 3183,
+          "id": 3549,
           "kk_id": "KK3.2",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -23174,7 +23240,7 @@
           "detail_kode": "4.1.1"
         },
         {
-          "id": 3184,
+          "id": 3550,
           "kk_id": "KK3.2",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -23333,7 +23399,7 @@
           "detail_kode": "4.1.2"
         },
         {
-          "id": 3185,
+          "id": 3551,
           "kk_id": "KK3.2",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -23492,7 +23558,7 @@
           "detail_kode": "4.1.3"
         },
         {
-          "id": 3186,
+          "id": 3552,
           "kk_id": "KK3.2",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -24019,7 +24085,7 @@
       "matrix_subunsur_name": "Komunikasi yang Efektif",
       "parameters": [
         {
-          "id": 3187,
+          "id": 3553,
           "kk_id": "KK3.2",
           "kode": "4.2",
           "matrix_subunsur_name": "Komunikasi yang Efektif",
@@ -24288,7 +24354,7 @@
       "matrix_subunsur_name": "Pemantauan Berkelanjutan",
       "parameters": [
         {
-          "id": 3188,
+          "id": 3554,
           "kk_id": "KK3.2",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -24447,7 +24513,7 @@
           "detail_kode": "5.1.1"
         },
         {
-          "id": 3189,
+          "id": 3555,
           "kk_id": "KK3.2",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -24606,7 +24672,7 @@
           "detail_kode": "5.1.2"
         },
         {
-          "id": 3190,
+          "id": 3556,
           "kk_id": "KK3.2",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -25047,7 +25113,7 @@
       "matrix_subunsur_name": "Evaluasi Terpisah",
       "parameters": [
         {
-          "id": 3191,
+          "id": 3557,
           "kk_id": "KK3.2",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -25206,7 +25272,7 @@
           "detail_kode": "5.2.1"
         },
         {
-          "id": 3192,
+          "id": 3558,
           "kk_id": "KK3.2",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -25561,7 +25627,7 @@
       "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
       "parameters": [
         {
-          "id": 3193,
+          "id": 3559,
           "kk_id": "KK3.3",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -25830,7 +25896,7 @@
       "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
       "parameters": [
         {
-          "id": 3194,
+          "id": 3560,
           "kk_id": "KK3.3",
           "kode": "1.2",
           "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
@@ -26099,7 +26165,7 @@
       "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
       "parameters": [
         {
-          "id": 3195,
+          "id": 3561,
           "kk_id": "KK3.3",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -26258,7 +26324,7 @@
           "detail_kode": "1.3.1"
         },
         {
-          "id": 3196,
+          "id": 3562,
           "kk_id": "KK3.3",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -26417,7 +26483,7 @@
           "detail_kode": "1.3.2"
         },
         {
-          "id": 3197,
+          "id": 3563,
           "kk_id": "KK3.3",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -26576,7 +26642,7 @@
           "detail_kode": "1.3.3"
         },
         {
-          "id": 3198,
+          "id": 3564,
           "kk_id": "KK3.3",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -27103,7 +27169,7 @@
       "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
       "parameters": [
         {
-          "id": 3199,
+          "id": 3565,
           "kk_id": "KK3.3",
           "kode": "1.4",
           "matrix_subunsur_name": "Pembentukan Struktur Organisasi yang Sesuai dengan Kebutuhan",
@@ -27372,7 +27438,7 @@
       "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
       "parameters": [
         {
-          "id": 3200,
+          "id": 3566,
           "kk_id": "KK3.3",
           "kode": "1.5",
           "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
@@ -27641,7 +27707,7 @@
       "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
       "parameters": [
         {
-          "id": 3201,
+          "id": 3567,
           "kk_id": "KK3.3",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -27800,7 +27866,7 @@
           "detail_kode": "1.6.1"
         },
         {
-          "id": 3202,
+          "id": 3568,
           "kk_id": "KK3.3",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -27959,7 +28025,7 @@
           "detail_kode": "1.6.2"
         },
         {
-          "id": 3203,
+          "id": 3569,
           "kk_id": "KK3.3",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -28400,7 +28466,7 @@
       "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
       "parameters": [
         {
-          "id": 3204,
+          "id": 3570,
           "kk_id": "KK3.3",
           "kode": "1.7",
           "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
@@ -28669,7 +28735,7 @@
       "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
       "parameters": [
         {
-          "id": 3205,
+          "id": 3571,
           "kk_id": "KK3.3",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -28828,7 +28894,7 @@
           "detail_kode": "1.8.1"
         },
         {
-          "id": 3206,
+          "id": 3572,
           "kk_id": "KK3.3",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -29183,7 +29249,7 @@
       "matrix_subunsur_name": "Identifikasi Risiko",
       "parameters": [
         {
-          "id": 3207,
+          "id": 3573,
           "kk_id": "KK3.3",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -29342,7 +29408,7 @@
           "detail_kode": "2.1.1"
         },
         {
-          "id": 3208,
+          "id": 3574,
           "kk_id": "KK3.3",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -29501,7 +29567,7 @@
           "detail_kode": "2.1.2"
         },
         {
-          "id": 3209,
+          "id": 3575,
           "kk_id": "KK3.3",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -29942,7 +30008,7 @@
       "matrix_subunsur_name": "Analisis Risiko",
       "parameters": [
         {
-          "id": 3210,
+          "id": 3576,
           "kk_id": "KK3.3",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -30101,7 +30167,7 @@
           "detail_kode": "2.2.1"
         },
         {
-          "id": 3211,
+          "id": 3577,
           "kk_id": "KK3.3",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -30260,7 +30326,7 @@
           "detail_kode": "2.2.2"
         },
         {
-          "id": 3212,
+          "id": 3578,
           "kk_id": "KK3.3",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -30419,7 +30485,7 @@
           "detail_kode": "2.2.3"
         },
         {
-          "id": 3213,
+          "id": 3579,
           "kk_id": "KK3.3",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -30578,7 +30644,7 @@
           "detail_kode": "2.2.4"
         },
         {
-          "id": 3214,
+          "id": 3580,
           "kk_id": "KK3.3",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -31191,7 +31257,7 @@
       "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
       "parameters": [
         {
-          "id": 3215,
+          "id": 3581,
           "kk_id": "KK3.3",
           "kode": "3.1",
           "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
@@ -31460,7 +31526,7 @@
       "matrix_subunsur_name": "Pembinaan SDM",
       "parameters": [
         {
-          "id": 3216,
+          "id": 3582,
           "kk_id": "KK3.3",
           "kode": "3.2",
           "matrix_subunsur_name": "Pembinaan SDM",
@@ -31729,7 +31795,7 @@
       "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
       "parameters": [
         {
-          "id": 3217,
+          "id": 3583,
           "kk_id": "KK3.3",
           "kode": "3.3",
           "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
@@ -31998,7 +32064,7 @@
       "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
       "parameters": [
         {
-          "id": 3218,
+          "id": 3584,
           "kk_id": "KK3.3",
           "kode": "3.4",
           "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
@@ -32267,7 +32333,7 @@
       "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
       "parameters": [
         {
-          "id": 3219,
+          "id": 3585,
           "kk_id": "KK3.3",
           "kode": "3.5",
           "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
@@ -32536,7 +32602,7 @@
       "matrix_subunsur_name": "Pemisahan Fungsi",
       "parameters": [
         {
-          "id": 3220,
+          "id": 3586,
           "kk_id": "KK3.3",
           "kode": "3.6",
           "matrix_subunsur_name": "Pemisahan Fungsi",
@@ -32805,7 +32871,7 @@
       "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
       "parameters": [
         {
-          "id": 3221,
+          "id": 3587,
           "kk_id": "KK3.3",
           "kode": "3.7",
           "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
@@ -33074,7 +33140,7 @@
       "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
       "parameters": [
         {
-          "id": 3222,
+          "id": 3588,
           "kk_id": "KK3.3",
           "kode": "3.8",
           "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
@@ -33343,7 +33409,7 @@
       "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3223,
+          "id": 3589,
           "kk_id": "KK3.3",
           "kode": "3.9",
           "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
@@ -33612,7 +33678,7 @@
       "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3224,
+          "id": 3590,
           "kk_id": "KK3.3",
           "kode": "3.10",
           "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
@@ -33881,7 +33947,7 @@
       "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
       "parameters": [
         {
-          "id": 3225,
+          "id": 3591,
           "kk_id": "KK3.3",
           "kode": "3.11",
           "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
@@ -34150,7 +34216,7 @@
       "matrix_subunsur_name": "Informasi yang Relevan",
       "parameters": [
         {
-          "id": 3226,
+          "id": 3592,
           "kk_id": "KK3.3",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -34309,7 +34375,7 @@
           "detail_kode": "4.1.1"
         },
         {
-          "id": 3227,
+          "id": 3593,
           "kk_id": "KK3.3",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -34468,7 +34534,7 @@
           "detail_kode": "4.1.2"
         },
         {
-          "id": 3228,
+          "id": 3594,
           "kk_id": "KK3.3",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -34627,7 +34693,7 @@
           "detail_kode": "4.1.3"
         },
         {
-          "id": 3229,
+          "id": 3595,
           "kk_id": "KK3.3",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -35154,7 +35220,7 @@
       "matrix_subunsur_name": "Komunikasi yang Efektif",
       "parameters": [
         {
-          "id": 3230,
+          "id": 3596,
           "kk_id": "KK3.3",
           "kode": "4.2",
           "matrix_subunsur_name": "Komunikasi yang Efektif",
@@ -35423,7 +35489,7 @@
       "matrix_subunsur_name": "Pemantauan Berkelanjutan",
       "parameters": [
         {
-          "id": 3231,
+          "id": 3597,
           "kk_id": "KK3.3",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -35582,7 +35648,7 @@
           "detail_kode": "5.1.1"
         },
         {
-          "id": 3232,
+          "id": 3598,
           "kk_id": "KK3.3",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -35741,7 +35807,7 @@
           "detail_kode": "5.1.2"
         },
         {
-          "id": 3233,
+          "id": 3599,
           "kk_id": "KK3.3",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -36182,7 +36248,7 @@
       "matrix_subunsur_name": "Evaluasi Terpisah",
       "parameters": [
         {
-          "id": 3234,
+          "id": 3600,
           "kk_id": "KK3.3",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -36341,7 +36407,7 @@
           "detail_kode": "5.2.1"
         },
         {
-          "id": 3235,
+          "id": 3601,
           "kk_id": "KK3.3",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -36696,7 +36762,7 @@
       "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
       "parameters": [
         {
-          "id": 3236,
+          "id": 3602,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -36855,7 +36921,7 @@
           "detail_kode": "1.1.1"
         },
         {
-          "id": 3237,
+          "id": 3603,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37014,7 +37080,7 @@
           "detail_kode": "1.1.2"
         },
         {
-          "id": 3238,
+          "id": 3604,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37173,7 +37239,7 @@
           "detail_kode": "1.1.3"
         },
         {
-          "id": 3239,
+          "id": 3605,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37332,7 +37398,7 @@
           "detail_kode": "1.1.4"
         },
         {
-          "id": 3240,
+          "id": 3606,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37491,7 +37557,7 @@
           "detail_kode": "1.1.5"
         },
         {
-          "id": 3241,
+          "id": 3607,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37650,7 +37716,7 @@
           "detail_kode": "1.1.6"
         },
         {
-          "id": 3242,
+          "id": 3608,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -37809,7 +37875,7 @@
           "detail_kode": "1.1.7"
         },
         {
-          "id": 3243,
+          "id": 3609,
           "kk_id": "KK3.4",
           "kode": "1.1",
           "matrix_subunsur_name": "Penegakan Integritas dan Nilai Etika",
@@ -38680,7 +38746,7 @@
       "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
       "parameters": [
         {
-          "id": 3244,
+          "id": 3610,
           "kk_id": "KK3.4",
           "kode": "1.2",
           "matrix_subunsur_name": "Komitmen terhadap Kompetensi",
@@ -38949,7 +39015,7 @@
       "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
       "parameters": [
         {
-          "id": 3245,
+          "id": 3611,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39108,7 +39174,7 @@
           "detail_kode": "1.3.1"
         },
         {
-          "id": 3246,
+          "id": 3612,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39267,7 +39333,7 @@
           "detail_kode": "1.3.2"
         },
         {
-          "id": 3247,
+          "id": 3613,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39426,7 +39492,7 @@
           "detail_kode": "1.3.3"
         },
         {
-          "id": 3248,
+          "id": 3614,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39585,7 +39651,7 @@
           "detail_kode": "1.3.4"
         },
         {
-          "id": 3249,
+          "id": 3615,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39744,7 +39810,7 @@
           "detail_kode": "1.3.5"
         },
         {
-          "id": 3250,
+          "id": 3616,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -39903,7 +39969,7 @@
           "detail_kode": "1.3.6"
         },
         {
-          "id": 3251,
+          "id": 3617,
           "kk_id": "KK3.4",
           "kode": "1.3",
           "matrix_subunsur_name": "Kepemimpinan yang Kondusif",
@@ -40688,7 +40754,7 @@
       "matrix_subunsur_name": "Struktur Organisasi Sesuai Kebutuhan",
       "parameters": [
         {
-          "id": 3252,
+          "id": 3618,
           "kk_id": "KK3.4",
           "kode": "1.4",
           "matrix_subunsur_name": "Struktur Organisasi Sesuai Kebutuhan",
@@ -40957,7 +41023,7 @@
       "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
       "parameters": [
         {
-          "id": 3253,
+          "id": 3619,
           "kk_id": "KK3.4",
           "kode": "1.5",
           "matrix_subunsur_name": "Pendelegasian Wewenang dan Tanggung Jawab yang Tepat",
@@ -41226,7 +41292,7 @@
       "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
       "parameters": [
         {
-          "id": 3254,
+          "id": 3620,
           "kk_id": "KK3.4",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -41385,7 +41451,7 @@
           "detail_kode": "1.6.1"
         },
         {
-          "id": 3255,
+          "id": 3621,
           "kk_id": "KK3.4",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -41544,7 +41610,7 @@
           "detail_kode": "1.6.2"
         },
         {
-          "id": 3256,
+          "id": 3622,
           "kk_id": "KK3.4",
           "kode": "1.6",
           "matrix_subunsur_name": "Penyusunan dan Penerapan Kebijakan yang Sehat tentang Pembinaan SDM",
@@ -41985,7 +42051,7 @@
       "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
       "parameters": [
         {
-          "id": 3257,
+          "id": 3623,
           "kk_id": "KK3.4",
           "kode": "1.7",
           "matrix_subunsur_name": "Perwujudan Peran APIP yang Efektf",
@@ -42254,7 +42320,7 @@
       "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
       "parameters": [
         {
-          "id": 3258,
+          "id": 3624,
           "kk_id": "KK3.4",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -42413,7 +42479,7 @@
           "detail_kode": "1.8.1"
         },
         {
-          "id": 3259,
+          "id": 3625,
           "kk_id": "KK3.4",
           "kode": "1.8",
           "matrix_subunsur_name": "Hubungan Kerja yang Baik dengan Instansi Pemerintah Terkait",
@@ -42768,7 +42834,7 @@
       "matrix_subunsur_name": "Identifikasi Risiko",
       "parameters": [
         {
-          "id": 3260,
+          "id": 3626,
           "kk_id": "KK3.4",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -42927,7 +42993,7 @@
           "detail_kode": "2.1.1"
         },
         {
-          "id": 3261,
+          "id": 3627,
           "kk_id": "KK3.4",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -43086,7 +43152,7 @@
           "detail_kode": "2.1.2"
         },
         {
-          "id": 3262,
+          "id": 3628,
           "kk_id": "KK3.4",
           "kode": "2.1",
           "matrix_subunsur_name": "Identifikasi Risiko",
@@ -43527,7 +43593,7 @@
       "matrix_subunsur_name": "Analisis Risiko",
       "parameters": [
         {
-          "id": 3263,
+          "id": 3629,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -43686,7 +43752,7 @@
           "detail_kode": "2.2.1"
         },
         {
-          "id": 3264,
+          "id": 3630,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -43845,7 +43911,7 @@
           "detail_kode": "2.2.2"
         },
         {
-          "id": 3265,
+          "id": 3631,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -44004,7 +44070,7 @@
           "detail_kode": "2.2.3"
         },
         {
-          "id": 3266,
+          "id": 3632,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -44163,7 +44229,7 @@
           "detail_kode": "2.2.4"
         },
         {
-          "id": 3267,
+          "id": 3633,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -44322,7 +44388,7 @@
           "detail_kode": "2.2.5"
         },
         {
-          "id": 3268,
+          "id": 3634,
           "kk_id": "KK3.4",
           "kode": "2.2",
           "matrix_subunsur_name": "Analisis Risiko",
@@ -45021,7 +45087,7 @@
       "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
       "parameters": [
         {
-          "id": 3269,
+          "id": 3635,
           "kk_id": "KK3.4",
           "kode": "3.1",
           "matrix_subunsur_name": "Reviu atas Kinerja Instansi Pemerintah",
@@ -45290,7 +45356,7 @@
       "matrix_subunsur_name": "Pembinaan SDM",
       "parameters": [
         {
-          "id": 3270,
+          "id": 3636,
           "kk_id": "KK3.4",
           "kode": "3.2",
           "matrix_subunsur_name": "Pembinaan SDM",
@@ -45559,7 +45625,7 @@
       "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
       "parameters": [
         {
-          "id": 3271,
+          "id": 3637,
           "kk_id": "KK3.4",
           "kode": "3.3",
           "matrix_subunsur_name": "Pengendalian atas Pengelolaan Sistem Informasi",
@@ -45828,7 +45894,7 @@
       "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
       "parameters": [
         {
-          "id": 3272,
+          "id": 3638,
           "kk_id": "KK3.4",
           "kode": "3.4",
           "matrix_subunsur_name": "Pengendalian Fisik atas Aset",
@@ -46097,7 +46163,7 @@
       "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
       "parameters": [
         {
-          "id": 3273,
+          "id": 3639,
           "kk_id": "KK3.4",
           "kode": "3.5",
           "matrix_subunsur_name": "Penetapan dan Reviu atas Indikator dan Ukuran Kinerja",
@@ -46366,7 +46432,7 @@
       "matrix_subunsur_name": "Pemisahan Fungsi",
       "parameters": [
         {
-          "id": 3274,
+          "id": 3640,
           "kk_id": "KK3.4",
           "kode": "3.6",
           "matrix_subunsur_name": "Pemisahan Fungsi",
@@ -46635,7 +46701,7 @@
       "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
       "parameters": [
         {
-          "id": 3275,
+          "id": 3641,
           "kk_id": "KK3.4",
           "kode": "3.7",
           "matrix_subunsur_name": "Otorisasi atas Transaksi dan Kejadian yang Penting",
@@ -46904,7 +46970,7 @@
       "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
       "parameters": [
         {
-          "id": 3276,
+          "id": 3642,
           "kk_id": "KK3.4",
           "kode": "3.8",
           "matrix_subunsur_name": "Pencatatan yang Akurat dan Tepat Waktu atas Transaksi dan Kejadian",
@@ -47173,7 +47239,7 @@
       "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3277,
+          "id": 3643,
           "kk_id": "KK3.4",
           "kode": "3.9",
           "matrix_subunsur_name": "Pembatasan Akses atas Sumber Daya dan Pencatatannya",
@@ -47442,7 +47508,7 @@
       "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
       "parameters": [
         {
-          "id": 3278,
+          "id": 3644,
           "kk_id": "KK3.4",
           "kode": "3.10",
           "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
@@ -47711,7 +47777,7 @@
       "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
       "parameters": [
         {
-          "id": 3279,
+          "id": 3645,
           "kk_id": "KK3.4",
           "kode": "3.11",
           "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",
@@ -47980,7 +48046,7 @@
       "matrix_subunsur_name": "Informasi yang Relevan",
       "parameters": [
         {
-          "id": 3280,
+          "id": 3646,
           "kk_id": "KK3.4",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -48139,7 +48205,7 @@
           "detail_kode": "4.1.1"
         },
         {
-          "id": 3281,
+          "id": 3647,
           "kk_id": "KK3.4",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -48298,7 +48364,7 @@
           "detail_kode": "4.1.2"
         },
         {
-          "id": 3282,
+          "id": 3648,
           "kk_id": "KK3.4",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -48457,7 +48523,7 @@
           "detail_kode": "4.1.3"
         },
         {
-          "id": 3283,
+          "id": 3649,
           "kk_id": "KK3.4",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -48616,7 +48682,7 @@
           "detail_kode": "4.1.4"
         },
         {
-          "id": 3284,
+          "id": 3650,
           "kk_id": "KK3.4",
           "kode": "4.1",
           "matrix_subunsur_name": "Informasi yang Relevan",
@@ -49229,7 +49295,7 @@
       "matrix_subunsur_name": "Komunikasi yang Efektif",
       "parameters": [
         {
-          "id": 3285,
+          "id": 3651,
           "kk_id": "KK3.4",
           "kode": "4.2",
           "matrix_subunsur_name": "Komunikasi yang Efektif",
@@ -49498,7 +49564,7 @@
       "matrix_subunsur_name": "Pemantauan Berkelanjutan",
       "parameters": [
         {
-          "id": 3286,
+          "id": 3652,
           "kk_id": "KK3.4",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -49657,7 +49723,7 @@
           "detail_kode": "5.1.1"
         },
         {
-          "id": 3287,
+          "id": 3653,
           "kk_id": "KK3.4",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -49816,7 +49882,7 @@
           "detail_kode": "5.1.2"
         },
         {
-          "id": 3288,
+          "id": 3654,
           "kk_id": "KK3.4",
           "kode": "5.1",
           "matrix_subunsur_name": "Pemantauan Berkelanjutan",
@@ -50257,7 +50323,7 @@
       "matrix_subunsur_name": "Evaluasi Terpisah",
       "parameters": [
         {
-          "id": 3289,
+          "id": 3655,
           "kk_id": "KK3.4",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",
@@ -50416,7 +50482,7 @@
           "detail_kode": "5.2.1"
         },
         {
-          "id": 3290,
+          "id": 3656,
           "kk_id": "KK3.4",
           "kode": "5.2",
           "matrix_subunsur_name": "Evaluasi Terpisah",

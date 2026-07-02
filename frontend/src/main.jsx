@@ -42,9 +42,10 @@ function App() {
   const [kkFilter, setKkFilter] = useState("Semua");
   const [selected, setSelected] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [detailSyncing, setDetailSyncing] = useState(false);
 
-  async function loadData() {
-    setLoading(true);
+  async function loadData({ silent = false } = {}) {
+    if (!silent) setLoading(true);
     setError("");
     try {
       const [dashboardData, metaData] = await Promise.all([
@@ -56,7 +57,7 @@ function App() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }
 
@@ -90,9 +91,47 @@ function App() {
     }
   }
 
+  async function refreshDetail(kkId, kode) {
+    const detail = await apiGet(`/api/subunsur/${encodeURIComponent(kkId)}/${encodeURIComponent(kode)}`);
+    setSelected(detail);
+    return detail;
+  }
+
+  async function syncSelectedDetail() {
+    if (!selected || staticSnapshot || detailSyncing) return;
+    setDetailSyncing(true);
+    setError("");
+    try {
+      await apiPost(`/api/sync/${encodeURIComponent(selected.kk_id)}/${encodeURIComponent(selected.kode)}`);
+      await Promise.all([
+        refreshDetail(selected.kk_id, selected.kode),
+        loadData({ silent: true }),
+      ]);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDetailSyncing(false);
+    }
+  }
+
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      loadData({ silent: true });
+    }, 60000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!selected || staticSnapshot) return undefined;
+    const intervalId = window.setInterval(() => {
+      syncSelectedDetail();
+    }, 60000);
+    return () => window.clearInterval(intervalId);
+  }, [selected?.kk_id, selected?.kode, staticSnapshot, detailSyncing]);
 
   const folders = dashboard?.folders ?? [];
   const filteredFolders = useMemo(() => {
@@ -146,6 +185,9 @@ function App() {
           detail={selected}
           meta={meta}
           onBack={() => setSelected(null)}
+          onSync={syncSelectedDetail}
+          syncing={detailSyncing}
+          staticSnapshot={staticSnapshot}
         />
       ) : loading ? (
         <section className="loading-state">
@@ -318,7 +360,7 @@ function FolderTable({ folders, statusExplanations, onOpenDetail }) {
   );
 }
 
-function DetailPage({ detail, meta, onBack }) {
+function DetailPage({ detail, meta, onBack, onSync, syncing, staticSnapshot }) {
   const files = detail.files ?? [];
   return (
     <section className="detail-page">
@@ -333,7 +375,20 @@ function DetailPage({ detail, meta, onBack }) {
           <h2>{detail.subunsur_name}</h2>
           <p>{detail.unsur}</p>
         </div>
-        <StatusPill status={detail.status} explanation={meta?.status_explanations?.[detail.status]} />
+        <div className="detail-header-actions">
+          <StatusPill status={detail.status} explanation={meta?.status_explanations?.[detail.status]} />
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={onSync}
+            disabled={syncing || staticSnapshot}
+            title={staticSnapshot ? "Versi snapshot tidak bisa sinkronisasi live" : "Sinkronkan hanya subunsur ini"}
+          >
+            {syncing ? <Loader2 className="spin" size={16} /> : <RefreshCw size={16} />}
+            Sinkronkan Subunsur Ini
+          </button>
+          <span className="autosync-note">Auto-sync tiap 60 detik saat halaman ini terbuka.</span>
+        </div>
       </div>
 
       <div className="detail-status">

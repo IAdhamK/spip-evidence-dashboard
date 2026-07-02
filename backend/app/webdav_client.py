@@ -70,6 +70,34 @@ class PublicShareWebDavClient:
 
         return parse_propfind_response(xml_data, folder_path)
 
+    def list_files_recursive(self, folder_path: str, max_depth: int = 4) -> list[WebDavItem]:
+        root_path = folder_path.strip("/")
+        files: list[WebDavItem] = []
+        queue: list[tuple[str, int]] = [(root_path, 0)]
+
+        while queue:
+            current_path, depth = queue.pop(0)
+            for item in self.list_folder(current_path):
+                item_path = "/".join([current_path, item.name]).strip("/")
+                if item.is_folder:
+                    if depth < max_depth:
+                        queue.append((item_path, depth + 1))
+                    continue
+
+                relative_name = item_path.removeprefix(root_path).lstrip("/")
+                files.append(
+                    WebDavItem(
+                        name=relative_name or item.name,
+                        href=item.href,
+                        is_folder=False,
+                        size_bytes=item.size_bytes,
+                        mime_type=item.mime_type,
+                        modified_at=item.modified_at,
+                    )
+                )
+
+        return files
+
 
 def encode_path(path: str) -> str:
     return "/".join(quote(part, safe="") for part in path.strip("/").split("/"))
@@ -128,4 +156,3 @@ def normalize_http_date(value: str | None) -> str | None:
         return parsedate_to_datetime(value).isoformat()
     except (TypeError, ValueError):
         return value
-
