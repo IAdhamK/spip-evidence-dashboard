@@ -102,11 +102,14 @@ def create_router(db: Database) -> APIRouter:
         if not folder:
             raise HTTPException(status_code=404, detail="Subunsur tidak ditemukan.")
         parameters = db.parameters(kk_id, kode)
+        slots = [with_slot_public_url(slot) for slot in db.evidence_slots(kk_id, kode)]
+        attach_slots(parameters, slots)
         matrix_subunsur_name = parameters[0]["matrix_subunsur_name"] if parameters else None
         return {
             **with_public_url(folder),
             "matrix_subunsur_name": matrix_subunsur_name,
             "parameters": parameters,
+            "evidence_slots": slots,
             "files": db.files(kk_id, kode),
         }
 
@@ -132,3 +135,26 @@ def create_router(db: Database) -> APIRouter:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return router
+
+
+def attach_slots(parameters: list[dict], slots: list[dict]) -> None:
+    slot_map: dict[tuple[str, str], list[dict]] = {}
+    for slot in slots:
+        slot_map.setdefault((slot["detail_kode"], slot["grade"]), []).append(slot)
+
+    for parameter in parameters:
+        detail_kode = parameter.get("detail_kode")
+        for grade in parameter.get("grades", []):
+            grade_value = str(grade.get("grade") or "").strip().upper()
+            grade["evidence_folders"] = slot_map.get((detail_kode, grade_value), [])
+
+
+def with_slot_public_url(slot: dict) -> dict:
+    settings = get_settings()
+    if not settings.has_share_token:
+        return slot
+    return {
+        **slot,
+        "public_url": slot.get("public_url")
+        or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, slot["folder_path"]),
+    }

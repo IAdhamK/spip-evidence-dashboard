@@ -62,11 +62,14 @@ def build_snapshot_from_database(settings) -> dict:
     subunsur_details = {}
     for folder in folders:
         parameters = db.parameters(folder["kk_id"], folder["kode"])
+        slots = [with_public_url(slot, settings) for slot in db.evidence_slots(folder["kk_id"], folder["kode"])]
+        attach_slots(parameters, slots)
         matrix_subunsur_name = parameters[0]["matrix_subunsur_name"] if parameters else None
         subunsur_details[f'{folder["kk_id"]}::{folder["kode"]}'] = {
             **folder,
             "matrix_subunsur_name": matrix_subunsur_name,
             "parameters": parameters,
+            "evidence_slots": slots,
             "files": [sanitize_file(file) for file in db.files(folder["kk_id"], folder["kode"])],
         }
 
@@ -114,6 +117,18 @@ def inject_public_urls(payload: dict, settings) -> None:
 
 def sanitize_file(file: dict) -> dict:
     return {**file, "href": ""}
+
+
+def attach_slots(parameters: list[dict], slots: list[dict]) -> None:
+    slot_map: dict[tuple[str, str], list[dict]] = {}
+    for slot in slots:
+        slot_map.setdefault((slot["detail_kode"], slot["grade"]), []).append(slot)
+
+    for parameter in parameters:
+        detail_kode = parameter.get("detail_kode")
+        for grade in parameter.get("grades", []):
+            grade_value = str(grade.get("grade") or "").strip().upper()
+            grade["evidence_folders"] = slot_map.get((detail_kode, grade_value), [])
 
 
 def build_dashboard(folders: list[dict]) -> dict:

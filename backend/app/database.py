@@ -6,6 +6,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator
 
+from app.evidence_structure import slot_folder_path
 from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
 
 
@@ -56,8 +57,26 @@ CREATE TABLE IF NOT EXISTS parameters (
     grade_sample TEXT,
     kriteria_sample TEXT,
     penjelasan_sample TEXT,
+    grades_json TEXT NOT NULL DEFAULT '[]',
     cara_pengujian TEXT,
     UNIQUE (kk_id, kode, source_row, uraian)
+);
+
+CREATE TABLE IF NOT EXISTS evidence_slots (
+    kk_id TEXT NOT NULL,
+    kode TEXT NOT NULL,
+    detail_kode TEXT NOT NULL,
+    parameter_no TEXT NOT NULL,
+    grade TEXT NOT NULL,
+    category_name TEXT NOT NULL,
+    category_folder TEXT NOT NULL,
+    folder_path TEXT NOT NULL,
+    public_url TEXT,
+    file_count INTEGER NOT NULL DEFAULT 0,
+    total_size_bytes INTEGER NOT NULL DEFAULT 0,
+    last_scanned_at TEXT,
+    error_message TEXT,
+    PRIMARY KEY (kk_id, kode, detail_kode, grade, category_name)
 );
 """
 
@@ -81,6 +100,12 @@ class Database:
     def init(self) -> None:
         with self.connect() as conn:
             conn.executescript(SCHEMA)
+            columns = {
+                row["name"]
+                for row in conn.execute("PRAGMA table_info(parameters)").fetchall()
+            }
+            if "grades_json" not in columns:
+                conn.execute("ALTER TABLE parameters ADD COLUMN grades_json TEXT NOT NULL DEFAULT '[]'")
 
     def ensure_mapping(self) -> None:
         with self.connect() as conn:
@@ -122,19 +147,27 @@ class Database:
         payload = json.loads(parameter_path.read_text(encoding="utf-8"))
         with self.connect() as conn:
             conn.execute("DELETE FROM parameters")
+            conn.execute("DELETE FROM evidence_slots")
             for kk_id, codes in payload.items():
                 for kode, group in codes.items():
                     matrix_subunsur_name = group.get("matrix_subunsur_name", "")
+                    folder_row = conn.execute(
+                        "SELECT folder_path FROM folders WHERE kk_id = ? AND kode = ?",
+                        (kk_id, kode),
+                    ).fetchone()
+                    subunsur_folder_path = folder_row["folder_path"] if folder_row else ""
                     for item in group.get("parameters", []):
                         kode_parameter = item.get("kode_parameter", {})
+                        parameter_no = str(item.get("no") or "").strip()
+                        detail_kode = item.get("detail_kode") or f"{kode}.{parameter_no}"
                         conn.execute(
                             """
                             INSERT INTO parameters (
                                 kk_id, kode, matrix_subunsur_name, source_row, parameter_no,
                                 uraian, kode_spip, kode_mri, kode_iepk, grade_sample,
-                                kriteria_sample, penjelasan_sample, cara_pengujian
+                                kriteria_sample, penjelasan_sample, grades_json, cara_pengujian
                             )
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
                                 kk_id,
@@ -149,9 +182,39 @@ class Database:
                                 item.get("grade_sample"),
                                 item.get("kriteria_sample"),
                                 item.get("penjelasan_sample"),
+                                json.dumps(item.get("grades", []), ensure_ascii=False),
                                 item.get("cara_pengujian"),
                             ),
                         )
+                        for grade in item.get("grades", []):
+                            grade_value = str(grade.get("grade") or "").strip().upper()
+                            if not grade_value:
+                                continue
+                            path = slot_folder_path(
+                                subunsur_folder_path,
+                                detail_kode,
+                                item.get("uraian", ""),
+                                grade_value,
+                            )
+                            conn.execute(
+                                """
+                                INSERT INTO evidence_slots (
+                                    kk_id, kode, detail_kode, parameter_no, grade,
+                                    category_name, category_folder, folder_path
+                                )
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                """,
+                                (
+                                    kk_id,
+                                    kode,
+                                    detail_kode,
+                                    parameter_no,
+                                    grade_value,
+                                    "Evidence Grade",
+                                    "",
+                                    path,
+                                ),
+                            )
 
     def folders(self, kk_id: str | None = None) -> list[dict]:
         query = "SELECT * FROM folders"
@@ -185,14 +248,97 @@ class Database:
                 """
                 SELECT id, kk_id, kode, matrix_subunsur_name, source_row, parameter_no,
                        uraian, kode_spip, kode_mri, kode_iepk, grade_sample,
-                       kriteria_sample, penjelasan_sample, cara_pengujian
+                       kriteria_sample, penjelasan_sample, grades_json, cara_pengujian
                 FROM parameters
                 WHERE kk_id = ? AND kode = ?
                 ORDER BY source_row, id
                 """,
                 (kk_id, kode),
             ).fetchall()
+            parameters = []
+            for row in rows:
+                item = dict(row)
+                item["grades"] = json.loads(item.pop("grades_json") or "[]")
+                item["detail_kode"] = f"{item['kode']}.{item['parameter_no']}" if item.get("parameter_no") else item["kode"]
+                parameters.append(item)
+            return parameters
+
+    def evidence_slots(self, kk_id: str, kode: str) -> list[dict]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT *
+                FROM evidence_slots
+                WHERE kk_id = ? AND kode = ?
+                ORDER BY detail_kode, grade, category_folder
+                """,
+                (kk_id, kode),
+            ).fetchall()
             return [dict(row) for row in rows]
+
+    def update_evidence_slot_scan(
+        self,
+        kk_id: str,
+        kode: str,
+        detail_kode: str,
+        grade: str,
+        category_name: str,
+        public_url: str,
+        file_count: int,
+        total_size_bytes: int,
+        scanned_at: str,
+        error_message: str | None = None,
+    ) -> None:
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE evidence_slots
+                SET public_url = ?, file_count = ?, total_size_bytes = ?,
+                    last_scanned_at = ?, error_message = ?
+                WHERE kk_id = ? AND kode = ? AND detail_kode = ? AND grade = ? AND category_name = ?
+                """,
+                (
+                    public_url,
+                    file_count,
+                    total_size_bytes,
+                    scanned_at,
+                    error_message,
+                    kk_id,
+                    kode,
+                    detail_kode,
+                    grade,
+                    category_name,
+                ),
+            )
+
+    def update_folder_rollup(
+        self,
+        kk_id: str,
+        kode: str,
+        status: str,
+        status_reason: str,
+        file_count: int,
+        total_size_bytes: int,
+        scanned_at: str,
+    ) -> None:
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE folders
+                SET status = ?, status_reason = ?, file_count = ?,
+                    total_size_bytes = ?, last_scanned_at = ?, error_message = NULL
+                WHERE kk_id = ? AND kode = ?
+                """,
+                (
+                    status,
+                    status_reason,
+                    file_count,
+                    total_size_bytes,
+                    scanned_at,
+                    kk_id,
+                    kode,
+                ),
+            )
 
     def replace_scan_result(
         self,

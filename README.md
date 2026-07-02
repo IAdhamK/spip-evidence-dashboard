@@ -13,9 +13,10 @@ Aplikasi internal untuk membaca metadata file evidence dari Lumbung File Kemende
   - `Terisi`: minimal 4 file.
   - `Perlu Kurasi`: ada nama file yang ambigu.
   - `Final`: disiapkan untuk verifikasi manual tahap berikutnya.
-- Tooltip hover untuk penjelasan status, metrik, dan kategori evidence.
+- Tooltip hover untuk penjelasan status, metrik, dan acuan parameter.
 - Detail panel per subunsur dengan daftar file dan tombol buka folder Lumbung File.
-- Acuan parameter matriks disimpan per kombinasi `KK + kode subunsur`, sehingga `KK3.1/1.1`, `KK3.2/1.1`, dan `KK3.3/1.1` dapat memiliki uraian parameter berbeda sesuai workbook.
+- Acuan parameter matriks disimpan per kombinasi `KK + kode subunsur + nomor parameter + grade`, sehingga detail seperti `KK3.1/1.3.1/Grade A` sampai `Grade E` dapat ditampilkan sesuai workbook.
+- Folder evidence detail dapat ditrack sampai level `detail parameter -> grade`, lengkap dengan link Lumbung File dan jumlah file per grade.
 
 ## Menjalankan Dengan Docker
 
@@ -104,4 +105,4 @@ Versi Pages hanya snapshot read-only dari data terakhir yang diekspor ke `fronte
 
 Aplikasi tahap ini hanya membaca metadata file. Upload, rename, delete, login, role PIC/admin, dan verifikasi manual final belum dimasukkan ke MVP.
 
-Data `Acuan Parameter Matriks` pada detail subunsur diekstrak dari workbook `Kertas Kerja PM SPIP 2026.xlsx` ke `backend/app/spip_parameters.json`. Panduan evidence umum tetap dipakai sebagai bantuan awal, bukan pengganti parameter resmi matriks.
+Data `Acuan Parameter Matriks` pada detail subunsur diekstrak dari workbook `Kertas Kerja PM SPIP 2026.xlsx` ke `backend/app/spip_parameters.json`. Setiap parameter menyimpan daftar grade A-E berisi kriteria, penjelasan, kode parameter, cara pengujian, serta slot folder evidence per grade. Panduan evidence umum tetap dipakai sebagai bantuan awal, bukan pengganti parameter resmi matriks.

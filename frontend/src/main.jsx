@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   AlertCircle,
+  ArrowLeft,
   ArrowUpDown,
   CheckCircle2,
   Database,
@@ -16,7 +17,6 @@ import {
   Search,
   ShieldCheck,
   TriangleAlert,
-  X,
 } from "lucide-react";
 import { apiGet, apiPost, isStaticSnapshot } from "./lib/api.js";
 import "./styles/main.css";
@@ -79,6 +79,7 @@ function App() {
 
   async function openDetail(folder) {
     setDetailLoading(true);
+    setSelected(null);
     try {
       const detail = await apiGet(`/api/subunsur/${encodeURIComponent(folder.kk_id)}/${encodeURIComponent(folder.kode)}`);
       setSelected(detail);
@@ -135,7 +136,18 @@ function App() {
       {staticSnapshot ? <Notice tone="info" text="Mode online: snapshot read-only dari data terakhir. Tombol Buka Folder tetap mengarah ke Lumbung File." /> : null}
       {error ? <Notice tone="danger" text={error} /> : null}
 
-      {loading ? (
+      {detailLoading ? (
+        <section className="detail-page loading-state">
+          <Loader2 className="spin" size={28} />
+          <span>Memuat halaman detail...</span>
+        </section>
+      ) : selected ? (
+        <DetailPage
+          detail={selected}
+          meta={meta}
+          onBack={() => setSelected(null)}
+        />
+      ) : loading ? (
         <section className="loading-state">
           <Loader2 className="spin" size={28} />
           <span>Memuat dashboard evidence...</span>
@@ -161,7 +173,7 @@ function App() {
             />
             <SegmentedControl
               label="Filter KK"
-              options={["Semua", "KK3.1", "KK3.2", "KK3.3"]}
+              options={["Semua", "KK3.1", "KK3.2", "KK3.3", "KK3.4"]}
               value={kkFilter}
               onChange={setKkFilter}
             />
@@ -171,14 +183,7 @@ function App() {
             <FolderTable
               folders={filteredFolders}
               statusExplanations={meta?.status_explanations ?? {}}
-              onSelect={openDetail}
-              selected={selected}
-            />
-            <DetailPanel
-              detail={selected}
-              loading={detailLoading}
-              meta={meta}
-              onClose={() => setSelected(null)}
+              onOpenDetail={openDetail}
             />
           </section>
         </>
@@ -191,7 +196,7 @@ function Summary({ dashboard, meta }) {
   const counts = dashboard?.status_counts ?? {};
   return (
     <section className="summary-grid">
-      <Metric label="Total Subunsur" value={dashboard?.total_folders ?? 0} hint="Total folder subunsur yang dipantau dari KK 3.1 sampai KK 3.3." />
+      <Metric label="Total Subunsur" value={dashboard?.total_folders ?? 0} hint="Total folder subunsur yang dipantau dari KK 3.1 sampai KK 3.4." />
       <Metric label="Total File" value={dashboard?.total_files ?? 0} hint="Jumlah file evidence yang sudah terbaca dari hasil sinkronisasi terakhir." />
       <Metric label="Terisi" value={counts.Terisi ?? 0} tone="success" hint={meta?.status_explanations?.Terisi} />
       <Metric label="Perlu Kurasi" value={counts["Perlu Kurasi"] ?? 0} tone="warning" hint={meta?.status_explanations?.["Perlu Kurasi"]} />
@@ -211,7 +216,7 @@ function Metric({ label, value, hint, tone = "neutral" }) {
   );
 }
 
-function FolderTable({ folders, statusExplanations, onSelect, selected }) {
+function FolderTable({ folders, statusExplanations, onOpenDetail }) {
   return (
     <section className="table-panel">
       <div className="section-heading">
@@ -237,8 +242,6 @@ function FolderTable({ folders, statusExplanations, onSelect, selected }) {
             {folders.map((folder) => (
               <tr
                 key={`${folder.kk_id}-${folder.kode}`}
-                className={selected?.kk_id === folder.kk_id && selected?.kode === folder.kode ? "selected-row" : ""}
-                onClick={() => onSelect(folder)}
               >
                 <td className="code-cell">{folder.kode}</td>
                 <td>
@@ -253,23 +256,32 @@ function FolderTable({ folders, statusExplanations, onSelect, selected }) {
                 </td>
                 <td className="numeric">{folder.file_count}</td>
                 <td>
-                  {folder.public_url ? (
-                    <a
-                      className="row-link-button"
-                      href={folder.public_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(event) => event.stopPropagation()}
-                      title="Buka folder Lumbung File untuk upload evidence"
+                  <div className="row-actions">
+                    <button
+                      className="row-action-button"
+                      type="button"
+                      onClick={() => onOpenDetail(folder)}
+                      title="Buka halaman detail parameter dan grade"
                     >
-                      <ExternalLink size={15} />
-                      Buka
-                    </a>
-                  ) : (
-                    <span className="row-link-disabled" title="Isi LUMBUNG_SHARE_TOKEN untuk membuat link folder">
-                      Belum aktif
-                    </span>
-                  )}
+                      Detail
+                    </button>
+                    {folder.public_url ? (
+                      <a
+                        className="row-link-button"
+                        href={folder.public_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Buka folder Lumbung File untuk upload evidence"
+                      >
+                        <ExternalLink size={15} />
+                        Lumbung
+                      </a>
+                    ) : (
+                      <span className="row-link-disabled" title="Isi LUMBUNG_SHARE_TOKEN untuk membuat link folder">
+                        Lumbung
+                      </span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -281,39 +293,22 @@ function FolderTable({ folders, statusExplanations, onSelect, selected }) {
   );
 }
 
-function DetailPanel({ detail, loading, meta, onClose }) {
-  if (loading) {
-    return (
-      <aside className="detail-panel">
-        <div className="loading-inline">
-          <Loader2 className="spin" size={20} />
-          Memuat detail...
-        </div>
-      </aside>
-    );
-  }
-
-  if (!detail) {
-    return (
-      <aside className="detail-panel empty-detail">
-        <FolderOpen size={30} />
-        <h2>Pilih subunsur</h2>
-        <p>Detail folder, alasan status, dan daftar file akan muncul di sini.</p>
-      </aside>
-    );
-  }
-
+function DetailPage({ detail, meta, onBack }) {
   const files = detail.files ?? [];
   return (
-    <aside className="detail-panel">
-      <div className="detail-header">
+    <section className="detail-page">
+      <button className="back-button" type="button" onClick={onBack}>
+        <ArrowLeft size={18} />
+        Daftar Subunsur
+      </button>
+
+      <div className="detail-page-header">
         <div>
           <p className="eyebrow">{detail.kk_id} / {detail.kode}</p>
           <h2>{detail.subunsur_name}</h2>
+          <p>{detail.unsur}</p>
         </div>
-        <button className="icon-button" onClick={onClose} aria-label="Tutup panel detail" title="Tutup panel detail">
-          <X size={18} />
-        </button>
+        <StatusPill status={detail.status} explanation={meta?.status_explanations?.[detail.status]} />
       </div>
 
       <div className="detail-status">
@@ -328,19 +323,6 @@ function DetailPanel({ detail, loading, meta, onClose }) {
       <ParameterList parameters={detail.parameters ?? []} kkId={detail.kk_id} kode={detail.kode} />
 
       <InfoBlock label="Panduan Evidence Umum" text={detail.evidence_hint} />
-
-      <section className="category-list">
-        <h3>
-          Kategori Minimal
-          <Tooltip text="Empat kategori ini menjadi acuan awal. Status otomatis belum menggantikan verifikasi substansi." />
-        </h3>
-        {meta?.evidence_categories?.map((category) => (
-          <div className="category-item" key={category.name}>
-            <strong>{category.name}</strong>
-            <span>{category.description}</span>
-          </div>
-        ))}
-      </section>
 
       <div className="detail-actions">
         {detail.public_url ? (
@@ -361,7 +343,7 @@ function DetailPanel({ detail, loading, meta, onClose }) {
           files.map((file) => <FileItem file={file} key={file.id} />)
         )}
       </section>
-    </aside>
+    </section>
   );
 }
 
@@ -378,11 +360,13 @@ function ParameterList({ parameters, kkId, kode }) {
         parameters.map((parameter) => (
           <article className="parameter-item" key={parameter.id}>
             <div className="parameter-meta">
+              <span>Detail {parameter.detail_kode || `${kode}.${parameter.parameter_no || "-"}`}</span>
               <span>No {parameter.parameter_no || "-"}</span>
               <span>Baris {parameter.source_row}</span>
               <span>{compactCodes(parameter)}</span>
             </div>
             <p className="parameter-statement">{parameter.uraian}</p>
+            <GradeMatrix parameter={parameter} />
             {parameter.cara_pengujian ? (
               <div className="test-method">
                 <strong>
@@ -404,6 +388,87 @@ function ParameterList({ parameters, kkId, kode }) {
         ))
       )}
     </section>
+  );
+}
+
+function GradeMatrix({ parameter }) {
+  const grades = parameter.grades?.length
+    ? parameter.grades
+    : [
+        {
+          grade: parameter.grade_sample,
+          kriteria: parameter.kriteria_sample,
+          penjelasan: parameter.penjelasan_sample,
+        },
+      ];
+
+  return (
+    <div className="grade-matrix" aria-label="Rincian grade kertas kerja">
+      {grades.map((grade) => (
+        <article className="grade-row" key={`${parameter.id}-${grade.grade}`}>
+          <div className="grade-badge">
+            <span>Grad.</span>
+            <strong>{grade.grade || "-"}</strong>
+          </div>
+          <div className="grade-copy">
+            <MatrixField label="Kriteria" text={grade.kriteria} />
+            <MatrixField label="Penjelasan" text={grade.penjelasan} />
+            <GradeEvidenceFolder folder={grade.evidence_folders?.[0]} />
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function GradeEvidenceFolder({ folder }) {
+  if (!folder) {
+    return (
+      <div className="grade-folder-slot empty-evidence-folders">
+        Folder evidence grade belum tersedia.
+      </div>
+    );
+  }
+
+  const status = evidenceFolderStatus(folder);
+  const Icon = status.icon;
+  return (
+    <article className={`grade-folder-slot evidence-folder-${status.tone}`}>
+      <div>
+        <span className="evidence-folder-title">
+          <Icon size={15} />
+          Folder Evidence Grade {folder.grade}
+        </span>
+        <strong>{folder.file_count ?? 0} file</strong>
+      </div>
+      {folder.public_url ? (
+        <a href={folder.public_url} target="_blank" rel="noreferrer" title="Buka folder grade di Lumbung File">
+          <ExternalLink size={15} />
+          Buka
+        </a>
+      ) : (
+        <small>Link belum aktif</small>
+      )}
+    </article>
+  );
+}
+
+function evidenceFolderStatus(folder) {
+  if (folder.error_message) {
+    return { tone: "warning", icon: TriangleAlert };
+  }
+  if ((folder.file_count ?? 0) > 0) {
+    return { tone: "success", icon: CheckCircle2 };
+  }
+  return { tone: "empty", icon: AlertCircle };
+}
+
+function MatrixField({ label, text }) {
+  return (
+    <div className="matrix-field">
+      <span>{label}</span>
+      <p>{text || "Belum tersedia pada data matriks."}</p>
+    </div>
   );
 }
 

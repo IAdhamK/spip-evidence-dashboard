@@ -36,6 +36,12 @@ KK_LIST: list[Kk] = [
         folder_name="KK 3.3 PENGAMANAN ASET NEGARA DAERAH",
         description="Evidence untuk kecukupan pengendalian atas pengamanan aset.",
     ),
+    Kk(
+        id="KK3.4",
+        title="KK 3.4 Ketaatan pada Peraturan Perundang-undangan",
+        folder_name="KK 3.4 KETAATAN PADA PERATURAN PERUNDANG UNDANGAN",
+        description="Evidence untuk kecukupan pengendalian atas ketaatan pada peraturan perundang-undangan.",
+    ),
 ]
 
 
@@ -103,4 +109,3 @@ def kk_by_id(kk_id: str) -> Kk | None:
 
 def subunsur_by_kode(kode: str) -> Subunsur | None:
     return next((item for item in SUBUNSUR_LIST if item.kode == kode), None)
-
