@@ -6,7 +6,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator
 
-from app.evidence_structure import slot_folder_path
+from app.evidence_structure import parameter_folder, slot_folder_path
 from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
 
 
@@ -152,10 +152,25 @@ class Database:
                 for kode, group in codes.items():
                     matrix_subunsur_name = group.get("matrix_subunsur_name", "")
                     folder_row = conn.execute(
-                        "SELECT folder_path FROM folders WHERE kk_id = ? AND kode = ?",
+                        "SELECT kk_folder, folder_path FROM folders WHERE kk_id = ? AND kode = ?",
                         (kk_id, kode),
                     ).fetchone()
                     subunsur_folder_path = folder_row["folder_path"] if folder_row else ""
+                    if folder_row and matrix_subunsur_name:
+                        subunsur_folder_path = "/".join(
+                            [
+                                folder_row["kk_folder"].strip("/"),
+                                parameter_folder(kode, matrix_subunsur_name),
+                            ]
+                        )
+                        conn.execute(
+                            """
+                            UPDATE folders
+                            SET folder_path = ?
+                            WHERE kk_id = ? AND kode = ?
+                            """,
+                            (subunsur_folder_path, kk_id, kode),
+                        )
                     for item in group.get("parameters", []):
                         kode_parameter = item.get("kode_parameter", {})
                         parameter_no = str(item.get("no") or "").strip()
