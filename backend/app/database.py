@@ -147,7 +147,7 @@ class Database:
         payload = json.loads(parameter_path.read_text(encoding="utf-8"))
         with self.connect() as conn:
             conn.execute("DELETE FROM parameters")
-            conn.execute("DELETE FROM evidence_slots")
+            expected_slots: set[tuple[str, str, str, str, str]] = set()
             for kk_id, codes in payload.items():
                 for kode, group in codes.items():
                     matrix_subunsur_name = group.get("matrix_subunsur_name", "")
@@ -211,6 +211,8 @@ class Database:
                                 item.get("uraian", ""),
                                 grade_value,
                             )
+                            category_name = "Evidence Grade"
+                            expected_slots.add((kk_id, kode, detail_kode, grade_value, category_name))
                             conn.execute(
                                 """
                                 INSERT INTO evidence_slots (
@@ -218,6 +220,35 @@ class Database:
                                     category_name, category_folder, folder_path
                                 )
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                ON CONFLICT(kk_id, kode, detail_kode, grade, category_name) DO UPDATE SET
+                                    parameter_no=excluded.parameter_no,
+                                    category_folder=excluded.category_folder,
+                                    public_url=CASE
+                                        WHEN evidence_slots.folder_path = excluded.folder_path
+                                        THEN evidence_slots.public_url
+                                        ELSE NULL
+                                    END,
+                                    file_count=CASE
+                                        WHEN evidence_slots.folder_path = excluded.folder_path
+                                        THEN evidence_slots.file_count
+                                        ELSE 0
+                                    END,
+                                    total_size_bytes=CASE
+                                        WHEN evidence_slots.folder_path = excluded.folder_path
+                                        THEN evidence_slots.total_size_bytes
+                                        ELSE 0
+                                    END,
+                                    last_scanned_at=CASE
+                                        WHEN evidence_slots.folder_path = excluded.folder_path
+                                        THEN evidence_slots.last_scanned_at
+                                        ELSE NULL
+                                    END,
+                                    error_message=CASE
+                                        WHEN evidence_slots.folder_path = excluded.folder_path
+                                        THEN evidence_slots.error_message
+                                        ELSE NULL
+                                    END,
+                                    folder_path=excluded.folder_path
                                 """,
                                 (
                                     kk_id,
@@ -225,11 +256,25 @@ class Database:
                                     detail_kode,
                                     parameter_no,
                                     grade_value,
-                                    "Evidence Grade",
+                                    category_name,
                                     "",
                                     path,
                                 ),
                             )
+            existing_slots = conn.execute(
+                "SELECT kk_id, kode, detail_kode, grade, category_name FROM evidence_slots"
+            ).fetchall()
+            for row in existing_slots:
+                key = (row["kk_id"], row["kode"], row["detail_kode"], row["grade"], row["category_name"])
+                if key in expected_slots:
+                    continue
+                conn.execute(
+                    """
+                    DELETE FROM evidence_slots
+                    WHERE kk_id = ? AND kode = ? AND detail_kode = ? AND grade = ? AND category_name = ?
+                    """,
+                    key,
+                )
 
     def folders(self, kk_id: str | None = None) -> list[dict]:
         query = "SELECT * FROM folders"
