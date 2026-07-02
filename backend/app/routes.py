@@ -6,7 +6,11 @@ from app.config import get_settings
 from app.database import Database
 from app.scanner import EvidenceScanner
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS
+from app.sync_manager import SyncManager
 from app.webdav_client import WebDavError, public_folder_link
+
+
+sync_manager = SyncManager()
 
 
 def create_router(db: Database) -> APIRouter:
@@ -124,6 +128,23 @@ def create_router(db: Database) -> APIRouter:
         settings = get_settings()
         scanner = EvidenceScanner(db, settings)
         return scanner.sync_all()
+
+    @router.post("/sync/background")
+    def sync_background() -> dict:
+        settings = get_settings()
+        return sync_manager.start_full(db, settings)
+
+    @router.post("/sync/background/{kk_id}/{kode}")
+    def sync_background_one(kk_id: str, kode: str) -> dict:
+        settings = get_settings()
+        try:
+            return sync_manager.start_folder(db, settings, kk_id, kode)
+        except WebDavError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @router.get("/sync/status")
+    def sync_status() -> dict:
+        return sync_manager.status()
 
     @router.post("/sync/{kk_id}/{kode}")
     def sync_one(kk_id: str, kode: str) -> dict:

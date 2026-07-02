@@ -43,10 +43,12 @@ function App() {
   const [selected, setSelected] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailSyncing, setDetailSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState(null);
+  const [watchedFolder, setWatchedFolder] = useState(null);
 
   async function loadData({ silent = false } = {}) {
     if (!silent) setLoading(true);
-    setError("");
+    if (!silent) setError("");
     try {
       const [dashboardData, metaData] = await Promise.all([
         apiGet("/api/dashboard"),
@@ -55,7 +57,7 @@ function App() {
       setDashboard(dashboardData);
       setMeta(metaData);
     } catch (err) {
-      setError(err.message);
+      if (!silent) setError(err.message);
     } finally {
       if (!silent) setLoading(false);
     }
@@ -69,8 +71,9 @@ function App() {
     setSyncing(true);
     setError("");
     try {
-      await apiPost("/api/sync");
-      await loadData();
+      const status = await apiPost("/api/sync/background");
+      setSyncStatus(status);
+      await loadData({ silent: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -84,6 +87,7 @@ function App() {
     try {
       const detail = await apiGet(`/api/subunsur/${encodeURIComponent(folder.kk_id)}/${encodeURIComponent(folder.kode)}`);
       setSelected(detail);
+      startFolderBackgroundSync(folder.kk_id, folder.kode);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -97,16 +101,36 @@ function App() {
     return detail;
   }
 
+  async function loadSyncStatus() {
+    if (staticSnapshot) return null;
+    try {
+      const status = await apiGet("/api/sync/status");
+      setSyncStatus(status);
+      return status;
+    } catch {
+      return null;
+    }
+  }
+
+  async function startFolderBackgroundSync(kkId, kode) {
+    if (staticSnapshot) return null;
+    try {
+      const status = await apiPost(`/api/sync/background/${encodeURIComponent(kkId)}/${encodeURIComponent(kode)}`);
+      setSyncStatus(status);
+      return status;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    }
+  }
+
   async function syncSelectedDetail() {
     if (!selected || staticSnapshot || detailSyncing) return;
     setDetailSyncing(true);
     setError("");
     try {
-      await apiPost(`/api/sync/${encodeURIComponent(selected.kk_id)}/${encodeURIComponent(selected.kode)}`);
-      await Promise.all([
-        refreshDetail(selected.kk_id, selected.kode),
-        loadData({ silent: true }),
-      ]);
+      await startFolderBackgroundSync(selected.kk_id, selected.kode);
+      await loadData({ silent: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,14 +138,25 @@ function App() {
     }
   }
 
+  function watchFolder(folder) {
+    if (staticSnapshot || !folder?.kk_id || !folder?.kode) return;
+    setWatchedFolder({
+      kkId: folder.kk_id,
+      kode: folder.kode,
+      expiresAt: Date.now() + 120000,
+    });
+    startFolderBackgroundSync(folder.kk_id, folder.kode);
+  }
+
   useEffect(() => {
     loadData();
+    loadSyncStatus();
   }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       loadData({ silent: true });
-    }, 60000);
+    }, 1000);
     return () => window.clearInterval(intervalId);
   }, []);
 
@@ -129,9 +164,37 @@ function App() {
     if (!selected || staticSnapshot) return undefined;
     const intervalId = window.setInterval(() => {
       syncSelectedDetail();
-    }, 60000);
+    }, 5000);
     return () => window.clearInterval(intervalId);
   }, [selected?.kk_id, selected?.kode, staticSnapshot, detailSyncing]);
+
+  useEffect(() => {
+    if (!selected) return undefined;
+    const intervalId = window.setInterval(() => {
+      refreshDetail(selected.kk_id, selected.kode);
+    }, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [selected?.kk_id, selected?.kode]);
+
+  useEffect(() => {
+    if (staticSnapshot) return undefined;
+    const intervalId = window.setInterval(() => {
+      loadSyncStatus();
+    }, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [staticSnapshot]);
+
+  useEffect(() => {
+    if (!watchedFolder || staticSnapshot) return undefined;
+    const intervalId = window.setInterval(() => {
+      if (Date.now() > watchedFolder.expiresAt) {
+        setWatchedFolder(null);
+        return;
+      }
+      startFolderBackgroundSync(watchedFolder.kkId, watchedFolder.kode);
+    }, 5000);
+    return () => window.clearInterval(intervalId);
+  }, [watchedFolder?.kkId, watchedFolder?.kode, watchedFolder?.expiresAt, staticSnapshot]);
 
   const folders = dashboard?.folders ?? [];
   const filteredFolders = useMemo(() => {
@@ -163,16 +226,18 @@ function App() {
           <button
             className="primary-button"
             onClick={runSync}
-            disabled={syncing || staticSnapshot}
-            title={staticSnapshot ? "Versi online memakai snapshot read-only" : "Sinkronkan dengan Lumbung File"}
+            disabled={syncing || syncStatus?.is_running || staticSnapshot}
+            title={staticSnapshot ? "Versi online memakai snapshot read-only" : "Mulai sinkronisasi background dengan Lumbung File"}
           >
-            {syncing ? <Loader2 className="spin" size={18} /> : <Database size={18} />}
-            {staticSnapshot ? "Snapshot" : "Sinkronkan"}
+            {syncing || syncStatus?.is_running ? <Loader2 className="spin" size={18} /> : <Database size={18} />}
+            {staticSnapshot ? "Snapshot" : syncStatus?.is_running ? "Sinkronisasi..." : "Sinkronkan"}
           </button>
         </div>
       </header>
 
       {staticSnapshot ? <Notice tone="info" text="Mode online: snapshot read-only dari data terakhir. Tombol Buka Folder tetap mengarah ke Lumbung File." /> : null}
+      {syncStatus?.is_running ? <Notice tone="info" text={`Sinkronisasi ${syncStatus.scope} berjalan di background: ${syncStatus.synced}/${syncStatus.total} selesai.`} /> : null}
+      {watchedFolder ? <Notice tone="info" text={`Mode pantau cepat aktif untuk ${watchedFolder.kkId}/${watchedFolder.kode}. Dashboard membaca data lokal tiap 1 detik.`} /> : null}
       {error ? <Notice tone="danger" text={error} /> : null}
 
       {detailLoading ? (
@@ -186,6 +251,7 @@ function App() {
           meta={meta}
           onBack={() => setSelected(null)}
           onSync={syncSelectedDetail}
+          onWatchFolder={watchFolder}
           syncing={detailSyncing}
           staticSnapshot={staticSnapshot}
         />
@@ -226,6 +292,7 @@ function App() {
               folders={filteredFolders}
               statusExplanations={meta?.status_explanations ?? {}}
               onOpenDetail={openDetail}
+              onWatchFolder={watchFolder}
             />
           </section>
         </>
@@ -283,7 +350,7 @@ function KkFilterBand({ value, onChange, folders }) {
   );
 }
 
-function FolderTable({ folders, statusExplanations, onOpenDetail }) {
+function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder }) {
   return (
     <section className="table-panel">
       <div className="section-heading">
@@ -338,6 +405,7 @@ function FolderTable({ folders, statusExplanations, onOpenDetail }) {
                         href={folder.public_url}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={() => onWatchFolder(folder)}
                         title="Buka folder Lumbung File untuk upload evidence"
                       >
                         <ExternalLink size={15} />
@@ -360,7 +428,7 @@ function FolderTable({ folders, statusExplanations, onOpenDetail }) {
   );
 }
 
-function DetailPage({ detail, meta, onBack, onSync, syncing, staticSnapshot }) {
+function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, staticSnapshot }) {
   const files = detail.files ?? [];
   return (
     <section className="detail-page">
@@ -387,7 +455,7 @@ function DetailPage({ detail, meta, onBack, onSync, syncing, staticSnapshot }) {
             {syncing ? <Loader2 className="spin" size={16} /> : <RefreshCw size={16} />}
             Sinkronkan Subunsur Ini
           </button>
-          <span className="autosync-note">Auto-sync tiap 60 detik saat halaman ini terbuka.</span>
+          <span className="autosync-note">Auto-sync subunsur aktif tiap 5 detik.</span>
         </div>
       </div>
 
@@ -406,7 +474,13 @@ function DetailPage({ detail, meta, onBack, onSync, syncing, staticSnapshot }) {
 
       <div className="detail-actions">
         {detail.public_url ? (
-          <a className="primary-button link-button" href={detail.public_url} target="_blank" rel="noreferrer">
+          <a
+            className="primary-button link-button"
+            href={detail.public_url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => onWatchFolder(detail)}
+          >
             <ExternalLink size={18} />
             Buka Folder
           </a>
