@@ -171,13 +171,13 @@ function App() {
               value={statusFilter}
               onChange={setStatusFilter}
             />
-            <SegmentedControl
-              label="Filter KK"
-              options={["Semua", "KK3.1", "KK3.2", "KK3.3", "KK3.4"]}
-              value={kkFilter}
-              onChange={setKkFilter}
-            />
           </section>
+
+          <KkFilterBand
+            value={kkFilter}
+            onChange={setKkFilter}
+            folders={folders}
+          />
 
           <section className="content-grid">
             <FolderTable
@@ -213,6 +213,31 @@ function Metric({ label, value, hint, tone = "neutral" }) {
       </div>
       <strong>{value}</strong>
     </article>
+  );
+}
+
+function KkFilterBand({ value, onChange, folders }) {
+  const options = ["Semua", "KK3.1", "KK3.2", "KK3.3", "KK3.4"];
+  const activeLabel = value === "Semua" ? "Semua KK" : value;
+  const activeCount = value === "Semua"
+    ? folders.length
+    : folders.filter((folder) => folder.kk_id === value).length;
+
+  return (
+    <section className="kk-filter-band" aria-label="Filter KK">
+      <div className="kk-filter-copy">
+        <span>Filter KK</span>
+        <strong>{activeLabel}</strong>
+        <small>{activeCount} folder subunsur</small>
+      </div>
+      <SegmentedControl
+        label="Filter KK"
+        options={options}
+        value={value}
+        onChange={onChange}
+        variant="kk"
+      />
+    </section>
   );
 }
 
@@ -554,9 +579,9 @@ function Legend({ statusExplanations }) {
   );
 }
 
-function SegmentedControl({ label, options, value, onChange }) {
+function SegmentedControl({ label, options, value, onChange, variant = "default" }) {
   return (
-    <div className="segmented" aria-label={label}>
+    <div className={`segmented segmented-${variant}`} aria-label={label}>
       {options.map((option) => (
         <button
           key={option}

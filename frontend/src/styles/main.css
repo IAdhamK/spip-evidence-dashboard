@@ -172,10 +172,10 @@ h3 {
 
 .control-band {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto auto;
+  grid-template-columns: minmax(260px, 1fr) auto;
   gap: 10px;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .search-box {
@@ -221,6 +221,76 @@ h3 {
 .segmented button.active {
   color: #ffffff;
   background: var(--text);
+}
+
+.kk-filter-band {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) 1fr;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(90deg, #ecfdf5 0%, #f0f9ff 100%);
+  border: 1px solid #9dd6cf;
+  border-left: 5px solid var(--primary);
+  border-radius: 8px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+.kk-filter-copy {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 0 4px;
+}
+
+.kk-filter-copy span {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.kk-filter-copy strong {
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.kk-filter-copy small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.segmented-kk {
+  justify-content: stretch;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.78);
+  border-color: #b6ded9;
+}
+
+.segmented-kk button {
+  flex: 1 1 0;
+  min-height: 42px;
+  padding: 0 14px;
+  color: #275d66;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.segmented-kk button:hover {
+  color: var(--primary);
+  background: #effaf7;
+  border-color: #a8ddd5;
+}
+
+.segmented-kk button.active {
+  color: #ffffff;
+  background: var(--primary);
+  box-shadow: 0 10px 22px rgba(13, 122, 111, 0.25);
 }
 
 .content-grid {
@@ -998,6 +1068,7 @@ tbody tr:hover {
   }
 
   .control-band,
+  .kk-filter-band,
   .content-grid {
     grid-template-columns: 1fr;
   }
@@ -1041,6 +1112,14 @@ tbody tr:hover {
 
   .segmented {
     width: 100%;
+  }
+
+  .segmented-kk {
+    flex-wrap: wrap;
+  }
+
+  .segmented-kk button {
+    flex-basis: calc(50% - 6px);
   }
 
   .section-heading {
