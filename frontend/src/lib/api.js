@@ -89,6 +89,6 @@ function detailKey(kkId, kode) {
 
 function normalizeApiBaseUrl(value) {
   if (value === "same-origin") return "";
-  if (value === undefined) return "http://localhost:8000";
+  if (value === undefined) return "";
   return value.replace(/\/$/, "");
 }
