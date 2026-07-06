@@ -50,6 +50,7 @@ def create_router(db: Database) -> APIRouter:
             "allow_real_upload": settings.smart_upload_allow_real_upload,
             "require_confirmation": settings.smart_upload_require_confirmation,
             "ai_reasoning_enabled": settings.ai_reasoning_enabled,
+            "require_ai": settings.smart_upload_require_ai,
             "ai_configured": settings.has_ai_key,
             "ai_provider": settings.ai_provider,
             "ai_model": settings.deepseek_model,
@@ -213,7 +214,7 @@ def create_router(db: Database) -> APIRouter:
                 skip_ai_message=skip_ai_message,
             )
             results.append(result)
-            if result.get("ai", {}).get("status") == "unavailable" and not skip_ai_message:
+            if result.get("ai", {}).get("status") == "unavailable" and not skip_ai_message and not settings.smart_upload_require_ai:
                 skip_ai_message = "AI gateway sementara tidak tersedia; file berikutnya memakai rekomendasi lokal tanpa memanggil AI ulang."
         return {"count": len(results), "results": results}
 

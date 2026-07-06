@@ -57,6 +57,15 @@ class SmartUploadService:
             ai_result = self._rerank_with_ai(file_name, content_type, len(payload), extraction["text"], candidates)
         if ai_result["status"] == "ok":
             candidates = merge_ai_result(candidates, ai_result.get("candidates", []))
+        elif self.settings.smart_upload_require_ai:
+            candidates = []
+            ai_result = {
+                **ai_result,
+                "message": (
+                    (ai_result.get("message") or "AI DeepSeek V4 belum berhasil merespons.")
+                    + " Mode ini mewajibkan eksekusi melalui API DeepSeek V4, sehingga rekomendasi lokal tidak ditampilkan."
+                ),
+            }
 
         review_id = self.db.record_smart_upload_review(
             file_name=file_name,
@@ -150,6 +159,14 @@ class SmartUploadService:
         }
         result = call_chat_completion(self.settings, body)
         if result["status"] != "ok":
+            if self.settings.smart_upload_require_ai:
+                return {
+                    **result,
+                    "message": (
+                        (result.get("message") or "AI DeepSeek V4 belum berhasil merespons.")
+                        + " Mode AI wajib aktif; aplikasi tidak akan memakai rekomendasi lokal sebagai pengganti."
+                    ),
+                }
             return result
         try:
             content = result["payload"]["choices"][0]["message"]["content"]
@@ -533,9 +550,9 @@ def sanitize_http_error_detail(value: str) -> str:
     text = text.replace("DOCTYPE html", "").replace('html lang="en"', "")
     text = normalize_text(text)
     if not text:
-        return "Gateway mengembalikan respons kosong. Rekomendasi lokal tetap dipakai."
+        return "Gateway mengembalikan respons kosong."
     if "Internal Server Error" in text:
-        return "Internal Server Error dari gateway AI. Rekomendasi lokal tetap dipakai."
+        return "Internal Server Error dari gateway AI."
     return text[:180]
 
 

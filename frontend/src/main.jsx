@@ -580,14 +580,14 @@ function SmartUploadPage({ onBack }) {
         <div>
           <p className="eyebrow">DEV Preparation</p>
           <h2>Upload Evidence Pintar</h2>
-          <p>Analisis file untuk menemukan kandidat KK, detail parameter, dan Grade tujuan sebelum upload ke Lumbung File.</p>
+          <p>Analisis file wajib memakai API DeepSeek V4 untuk menentukan kandidat KK, detail parameter, dan Grade tujuan.</p>
         </div>
         <div className="smart-upload-mode">
           <StatusPill
             status={config?.enabled ? "Terisi Sebagian" : "Kosong"}
             explanation={config?.enabled ? "Fitur aktif di DEV, tetapi upload otomatis tetap menunggu konfirmasi." : "Fitur belum diaktifkan di environment ini."}
           />
-          <small>{config?.ai_provider || "deepseek"} · {config?.ai_model || "deepseek-v4-flash"}</small>
+          <small>{config?.ai_provider || "deepseek"} · {config?.ai_model || "deepseek-v4-flash"}{config?.require_ai ? " · AI wajib" : ""}</small>
           <button className="row-action-button" type="button" onClick={testAiConnection} disabled={aiTesting || !config?.ai_reasoning_enabled}>
             {aiTesting ? <Loader2 className="spin" size={15} /> : <Sparkles size={15} />}
             Tes AI
@@ -618,7 +618,8 @@ function SmartUploadPage({ onBack }) {
 
       {error ? <Notice tone="danger" text={error} /> : null}
       {aiDiagnostic ? <Notice tone={noticeToneForAi(aiDiagnostic.status)} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
-      {config && !config.ai_configured ? <Notice tone="info" text="AI key belum terbaca. Sistem tetap memakai pencocokan knowledge base lokal." /> : null}
+      {config && !config.ai_configured ? <Notice tone="danger" text="AI key belum terbaca. Mode ini mewajibkan API DeepSeek V4, sehingga analisis tidak dapat dijalankan." /> : null}
+      {config?.require_ai ? <Notice tone="info" text="Mode AI wajib aktif: rekomendasi lokal tidak ditampilkan sebagai hasil final bila DeepSeek V4 gagal merespons." /> : null}
       {result ? <SmartUploadResults result={result} /> : null}
     </section>
   );
@@ -733,7 +734,7 @@ function SmartUploadResult({ result, ordinal }) {
           </article>
         ))}
       </div>
-      {candidates.length === 0 ? <EmptyState text="Belum ada kandidat yang cukup kuat. File ini perlu kurasi manual." /> : null}
+      {candidates.length === 0 ? <EmptyState text={result.ai?.status === "ok" ? "Belum ada kandidat yang cukup kuat dari DeepSeek V4." : "DeepSeek V4 belum berhasil merespons, sehingga aplikasi tidak menampilkan rekomendasi lokal."} /> : null}
     </section>
   );
 }
