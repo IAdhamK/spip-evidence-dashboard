@@ -186,21 +186,33 @@ def create_router(db: Database) -> APIRouter:
         settings = get_settings()
         if not settings.smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
-        if settings.smart_upload_max_bytes > 0:
-            payload = await file.read(settings.smart_upload_max_bytes + 1)
-            if len(payload) > settings.smart_upload_max_bytes:
-                raise HTTPException(
-                    status_code=413,
-                    detail=f"Ukuran file melebihi batas persiapan {settings.smart_upload_max_bytes} byte.",
-                )
-        else:
-            payload = await file.read()
+        payload = await read_smart_upload_payload(file, settings.smart_upload_max_bytes)
         service = SmartUploadService(db, settings)
         return service.recommend(
             file_name=file.filename or "evidence",
             content_type=file.content_type,
             payload=payload,
         )
+
+    @router.post("/smart-upload/recommendations/batch")
+    async def smart_upload_recommendations_batch(files: list[UploadFile] = File(...)) -> dict:
+        settings = get_settings()
+        if not settings.smart_upload_enabled:
+            raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        if not files:
+            raise HTTPException(status_code=400, detail="Pilih minimal satu file evidence.")
+        service = SmartUploadService(db, settings)
+        results = []
+        for upload in files:
+            payload = await read_smart_upload_payload(upload, settings.smart_upload_max_bytes)
+            results.append(
+                service.recommend(
+                    file_name=upload.filename or "evidence",
+                    content_type=upload.content_type,
+                    payload=payload,
+                )
+            )
+        return {"count": len(results), "results": results}
 
     @router.post("/smart-upload/confirm-upload")
     def smart_upload_confirm_upload(payload: SmartUploadConfirmRequest) -> dict:
@@ -239,3 +251,15 @@ def with_slot_public_url(slot: dict) -> dict:
         "public_url": slot.get("public_url")
         or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, slot["folder_path"]),
     }
+
+
+async def read_smart_upload_payload(file: UploadFile, max_bytes: int) -> bytes:
+    if max_bytes > 0:
+        payload = await file.read(max_bytes + 1)
+        if len(payload) > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Ukuran file melebihi batas persiapan {max_bytes} byte.",
+            )
+        return payload
+    return await file.read()

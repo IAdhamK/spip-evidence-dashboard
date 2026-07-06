@@ -20,7 +20,7 @@ import {
   TriangleAlert,
   UploadCloud,
 } from "lucide-react";
-import { apiGet, apiPost, apiUpload, isStaticSnapshot } from "./lib/api.js";
+import { apiGet, apiPost, apiUpload, apiUploadMany, isStaticSnapshot } from "./lib/api.js";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
@@ -521,7 +521,7 @@ function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, stat
 
 function SmartUploadPage({ onBack }) {
   const [config, setConfig] = useState(null);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [aiTesting, setAiTesting] = useState(false);
@@ -550,15 +550,17 @@ function SmartUploadPage({ onBack }) {
 
   async function analyzeFile(event) {
     event.preventDefault();
-    if (!file) {
-      setError("Pilih satu file evidence terlebih dahulu.");
+    if (files.length === 0) {
+      setError("Pilih minimal satu file evidence terlebih dahulu.");
       return;
     }
     setLoading(true);
     setError("");
     setResult(null);
     try {
-      const data = await apiUpload("/api/smart-upload/recommendations", file);
+      const data = files.length === 1
+        ? await apiUpload("/api/smart-upload/recommendations", files[0])
+        : await apiUploadMany("/api/smart-upload/recommendations/batch", files);
       setResult(data);
     } catch (err) {
       setError(err.message);
@@ -596,9 +598,9 @@ function SmartUploadPage({ onBack }) {
       <form className="upload-analyzer" onSubmit={analyzeFile}>
         <label className="file-drop-zone">
           <UploadCloud size={28} />
-          <span>{file ? file.name : "Pilih file evidence untuk dianalisis"}</span>
-          <small>{file ? `${formatBytes(file.size)} · ${file.type || "tipe tidak terbaca"}` : "V1 membaca nama file, metadata, dan teks ringan untuk membangun rekomendasi awal."}</small>
-          <input type="file" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+          <span>{files.length > 0 ? `${files.length} file siap dianalisis` : "Pilih satu atau banyak file evidence"}</span>
+          <small>{files.length > 0 ? `${formatBytes(files.reduce((total, item) => total + item.size, 0))} total` : "PDF, DOCX, XLSX, CSV, dan TXT dapat dianalisis sekaligus."}</small>
+          <input type="file" multiple onChange={(event) => setFiles(Array.from(event.target.files ?? []))} />
         </label>
         <button className="primary-button" type="submit" disabled={loading || !config?.enabled}>
           {loading ? <Loader2 className="spin" size={18} /> : <Sparkles size={18} />}
@@ -606,15 +608,44 @@ function SmartUploadPage({ onBack }) {
         </button>
       </form>
 
+      {files.length > 0 ? (
+        <div className="selected-file-list">
+          {files.map((item) => (
+            <span key={`${item.name}-${item.size}-${item.lastModified}`}>{item.name} · {formatBytes(item.size)}</span>
+          ))}
+        </div>
+      ) : null}
+
       {error ? <Notice tone="danger" text={error} /> : null}
       {aiDiagnostic ? <Notice tone={aiDiagnostic.status === "ok" ? "info" : "danger"} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
       {config && !config.ai_configured ? <Notice tone="info" text="AI key belum terbaca. Sistem tetap memakai pencocokan knowledge base lokal." /> : null}
-      {result ? <SmartUploadResult result={result} /> : null}
+      {result ? <SmartUploadResults result={result} /> : null}
     </section>
   );
 }
 
-function SmartUploadResult({ result }) {
+function SmartUploadResults({ result }) {
+  if (Array.isArray(result?.results)) {
+    return (
+      <section className="batch-result-panel">
+        <div className="section-heading compact-heading">
+          <div>
+            <h3>Hasil Analisis Batch</h3>
+            <p>{result.count} file selesai dianalisis.</p>
+          </div>
+        </div>
+        <div className="batch-result-list">
+          {result.results.map((item, index) => (
+            <SmartUploadResult key={item.review_id || index} result={item} ordinal={index + 1} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+  return <SmartUploadResult result={result} />;
+}
+
+function SmartUploadResult({ result, ordinal }) {
   const candidates = result.candidates ?? [];
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
@@ -642,7 +673,7 @@ function SmartUploadResult({ result }) {
     <section className="smart-result-panel">
       <div className="section-heading compact-heading">
         <div>
-          <h3>Hasil Rekomendasi</h3>
+          <h3>{ordinal ? `Hasil Rekomendasi #${ordinal}` : "Hasil Rekomendasi"}</h3>
           <p>{result.file?.name} · {formatBytes(result.file?.size_bytes)}</p>
         </div>
         <div className="ai-status-box">

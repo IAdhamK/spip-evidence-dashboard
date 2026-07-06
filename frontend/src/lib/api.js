@@ -23,6 +23,15 @@ export async function apiUpload(path, file) {
   });
 }
 
+export async function apiUploadMany(path, files) {
+  const body = new FormData();
+  files.forEach((file) => body.append("files", file));
+  return request(path, {
+    method: "POST",
+    body,
+  });
+}
+
 export function isStaticSnapshot() {
   return STATIC_SNAPSHOT;
 }
