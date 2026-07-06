@@ -48,10 +48,13 @@ class SmartUploadService:
         self.db = db
         self.settings = settings
 
-    def recommend(self, file_name: str, content_type: str | None, payload: bytes) -> dict:
+    def recommend(self, file_name: str, content_type: str | None, payload: bytes, skip_ai_message: str | None = None) -> dict:
         extraction = extract_preview_text(file_name, content_type, payload, self.settings.ai_send_full_document)
         candidates = self._local_candidates(file_name, extraction["text"])
-        ai_result = self._rerank_with_ai(file_name, content_type, len(payload), extraction["text"], candidates)
+        if skip_ai_message:
+            ai_result = {"status": "skipped", "message": skip_ai_message}
+        else:
+            ai_result = self._rerank_with_ai(file_name, content_type, len(payload), extraction["text"], candidates)
         if ai_result["status"] == "ok":
             candidates = merge_ai_result(candidates, ai_result.get("candidates", []))
 
@@ -298,8 +301,8 @@ class SmartUploadError(RuntimeError):
 
 def call_chat_completion(settings: Settings, body: dict) -> dict:
     request = Request(
-        settings.deepseek_base_url.rstrip("/") + "/chat/completions",
-        data=json.dumps(body).encode("utf-8"),
+        chat_completion_url(settings),
+        data=json.dumps(prepare_chat_body(settings, body)).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {settings.deepseek_api_key}",
             "Content-Type": "application/json",
@@ -322,6 +325,29 @@ def call_chat_completion(settings: Settings, body: dict) -> dict:
         return {"status": "error", "message": "AI timeout."}
     except json.JSONDecodeError as exc:
         return {"status": "error", "message": f"Respons AI bukan JSON: {exc}"}
+
+
+def chat_completion_url(settings: Settings) -> str:
+    base_url = settings.deepseek_base_url.rstrip("/")
+    if base_url.endswith("/chat/completions"):
+        return base_url
+    path = (settings.deepseek_chat_path or "/chat/completions").strip()
+    if not path.startswith("/"):
+        path = f"/{path}"
+    return f"{base_url}{path}"
+
+
+def prepare_chat_body(settings: Settings, body: dict) -> dict:
+    prepared = dict(body)
+    prepared.setdefault("stream", False)
+    thinking_mode = (settings.deepseek_thinking_mode or "").strip().lower()
+    if thinking_mode in {"enabled", "disabled"}:
+        prepared["thinking"] = {"type": thinking_mode}
+    if thinking_mode == "enabled":
+        prepared.setdefault("reasoning_effort", "high")
+        for key in ("temperature", "top_p", "presence_penalty", "frequency_penalty"):
+            prepared.pop(key, None)
+    return prepared
 
 
 def extract_preview_text(file_name: str, content_type: str | None, payload: bytes, allow_full_document: bool) -> dict:

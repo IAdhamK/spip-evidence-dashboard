@@ -19,8 +19,10 @@ class Settings(BaseSettings):
     ai_reasoning_enabled: bool = False
     ai_provider: str = "deepseek"
     deepseek_api_key: str = ""
-    deepseek_base_url: str = "https://api.deepseek.com/v1"
+    deepseek_base_url: str = "https://api.deepseek.com"
+    deepseek_chat_path: str = "/chat/completions"
     deepseek_model: str = "deepseek-v4-flash"
+    deepseek_thinking_mode: str = "disabled"
     ai_send_full_document: bool = False
     ai_max_candidates: int = 5
     ai_timeout_seconds: int = 20

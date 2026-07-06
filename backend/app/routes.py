@@ -203,15 +203,18 @@ def create_router(db: Database) -> APIRouter:
             raise HTTPException(status_code=400, detail="Pilih minimal satu file evidence.")
         service = SmartUploadService(db, settings)
         results = []
+        skip_ai_message = None
         for upload in files:
             payload = await read_smart_upload_payload(upload, settings.smart_upload_max_bytes)
-            results.append(
-                service.recommend(
-                    file_name=upload.filename or "evidence",
-                    content_type=upload.content_type,
-                    payload=payload,
-                )
+            result = service.recommend(
+                file_name=upload.filename or "evidence",
+                content_type=upload.content_type,
+                payload=payload,
+                skip_ai_message=skip_ai_message,
             )
+            results.append(result)
+            if result.get("ai", {}).get("status") == "unavailable" and not skip_ai_message:
+                skip_ai_message = "AI gateway sementara tidak tersedia; file berikutnya memakai rekomendasi lokal tanpa memanggil AI ulang."
         return {"count": len(results), "results": results}
 
     @router.post("/smart-upload/confirm-upload")
