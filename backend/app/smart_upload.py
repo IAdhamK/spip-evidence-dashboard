@@ -313,8 +313,9 @@ def call_chat_completion(settings: Settings, body: dict) -> dict:
             raw = response.read().decode("utf-8", errors="replace")
             return {"status": "ok", "message": "AI endpoint merespons.", "payload": json.loads(raw)}
     except HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")[:220]
-        return {"status": "error", "message": f"AI gagal: HTTP {exc.code}. {detail}"}
+        detail = sanitize_http_error_detail(exc.read().decode("utf-8", errors="replace"))
+        status = "unavailable" if exc.code >= 500 else "error"
+        return {"status": status, "message": f"AI belum tersedia dari gateway: HTTP {exc.code}. {detail}"}
     except URLError as exc:
         return {"status": "error", "message": f"AI gagal tersambung: {exc.reason}"}
     except TimeoutError:
@@ -498,6 +499,18 @@ def merge_ai_result(local_candidates: list[dict], ai_candidates: list[dict]) -> 
         if index not in used_indexes:
             ranked.append(candidate)
     return ranked[: len(local_candidates)]
+
+
+def sanitize_http_error_detail(value: str) -> str:
+    text = re.sub(r"<[^>]+>", " ", value)
+    text = normalize_text(text)
+    text = text.replace("DOCTYPE html", "").replace('html lang="en"', "")
+    text = normalize_text(text)
+    if not text:
+        return "Gateway mengembalikan respons kosong. Rekomendasi lokal tetap dipakai."
+    if "Internal Server Error" in text:
+        return "Internal Server Error dari gateway AI. Rekomendasi lokal tetap dipakai."
+    return text[:180]
 
 
 def parse_json_object(value: str) -> dict:

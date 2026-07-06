@@ -617,7 +617,7 @@ function SmartUploadPage({ onBack }) {
       ) : null}
 
       {error ? <Notice tone="danger" text={error} /> : null}
-      {aiDiagnostic ? <Notice tone={aiDiagnostic.status === "ok" ? "info" : "danger"} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
+      {aiDiagnostic ? <Notice tone={noticeToneForAi(aiDiagnostic.status)} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
       {config && !config.ai_configured ? <Notice tone="info" text="AI key belum terbaca. Sistem tetap memakai pencocokan knowledge base lokal." /> : null}
       {result ? <SmartUploadResults result={result} /> : null}
     </section>
@@ -682,7 +682,7 @@ function SmartUploadResult({ result, ordinal }) {
         </div>
       </div>
       {result.extraction ? <Notice tone={result.extraction.status === "ok" ? "info" : "neutral"} text={`Ekstraksi ${result.extraction.method}: ${result.extraction.message || result.extraction.status}`} /> : null}
-      {result.ai?.message ? <Notice tone={result.ai.status === "ok" ? "info" : "danger"} text={result.ai.message} /> : null}
+      {result.ai?.message ? <Notice tone={noticeToneForAi(result.ai.status)} text={result.ai.message} /> : null}
       {!uploadAllowed ? <Notice tone="info" text="Upload sungguhan masih dikunci di DEV. Ubah SMART_UPLOAD_ALLOW_REAL_UPLOAD=true hanya saat siap mengirim file ke Lumbung File." /> : null}
       {uploadError ? <Notice tone="danger" text={uploadError} /> : null}
       {uploadResult ? <Notice tone="info" text={`Upload berhasil: ${uploadResult.message}`} /> : null}
@@ -960,6 +960,12 @@ function SegmentedControl({ label, options, value, onChange, variant = "default"
       ))}
     </div>
   );
+}
+
+function noticeToneForAi(status) {
+  if (status === "ok") return "info";
+  if (status === "unavailable" || status === "skipped") return "neutral";
+  return "danger";
 }
 
 function Notice({ text, tone = "neutral" }) {
