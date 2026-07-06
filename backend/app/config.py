@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     smart_upload_enabled: bool = False
     smart_upload_allow_real_upload: bool = False
     smart_upload_require_confirmation: bool = True
-    smart_upload_max_bytes: int = 2_000_000
+    smart_upload_max_bytes: int = 0
 
     ai_reasoning_enabled: bool = False
     ai_provider: str = "deepseek"

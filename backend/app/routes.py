@@ -186,12 +186,15 @@ def create_router(db: Database) -> APIRouter:
         settings = get_settings()
         if not settings.smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
-        payload = await file.read(settings.smart_upload_max_bytes + 1)
-        if len(payload) > settings.smart_upload_max_bytes:
-            raise HTTPException(
-                status_code=413,
-                detail=f"Ukuran file melebihi batas persiapan {settings.smart_upload_max_bytes} byte.",
-            )
+        if settings.smart_upload_max_bytes > 0:
+            payload = await file.read(settings.smart_upload_max_bytes + 1)
+            if len(payload) > settings.smart_upload_max_bytes:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"Ukuran file melebihi batas persiapan {settings.smart_upload_max_bytes} byte.",
+                )
+        else:
+            payload = await file.read()
         service = SmartUploadService(db, settings)
         return service.recommend(
             file_name=file.filename or "evidence",
