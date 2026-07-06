@@ -548,11 +548,16 @@ def sanitize_http_error_detail(value: str) -> str:
     text = re.sub(r"<[^>]+>", " ", value)
     text = normalize_text(text)
     text = text.replace("DOCTYPE html", "").replace('html lang="en"', "")
+    text = re.sub(r"sk-[A-Za-z0-9_-]+", "sk-...", text)
+    text = re.sub(r"Received API Key\s*=\s*[^,} ]+", "Received API Key = sk-...", text)
+    text = re.sub(r"Key Hash \(Token\)\s*=\s*[A-Za-z0-9]+", "Key Hash (Token) = [redacted]", text)
     text = normalize_text(text)
     if not text:
         return "Gateway mengembalikan respons kosong."
     if "Internal Server Error" in text:
         return "Internal Server Error dari gateway AI."
+    if "Authentication Error" in text or "Invalid proxy server token" in text:
+        return "Authentication Error dari Sumopod: API key/token ditolak. Pastikan key disalin langsung dari tombol copy Sumopod dan masih aktif."
     return text[:180]
 
 
