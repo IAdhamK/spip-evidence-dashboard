@@ -1,5 +1,6 @@
 .DS_Store
 .env
+.env.dev
 .venv/
 __pycache__/
 *.pyc
@@ -7,6 +8,7 @@ backend/data/*.db
 backend/data/*.db-*
 data/*.db
 data/*.db-*
+data-dev/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/

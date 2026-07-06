@@ -1,0 +1,21 @@
+services:
+  app-dev:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: same-origin
+    env_file:
+      - .env.dev
+    environment:
+      APP_ENV: dev
+      DATABASE_PATH: /app/data/evidence-dev.db
+      SMART_UPLOAD_ENABLED: "true"
+      SMART_UPLOAD_ALLOW_REAL_UPLOAD: "false"
+      SMART_UPLOAD_REQUIRE_CONFIRMATION: "true"
+      LUMBUNG_MODE: test
+      LUMBUNG_REMOTE_ROOT: TEST_UPLOAD_SMART_EVIDENCE
+    ports:
+      - "${DEV_APP_PORT:-8081}:8000"
+    volumes:
+      - ./data-dev:/app/data
+    restart: unless-stopped
