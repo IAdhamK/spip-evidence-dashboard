@@ -14,6 +14,15 @@ export async function apiPost(path, body) {
   });
 }
 
+export async function apiUpload(path, file) {
+  const body = new FormData();
+  body.append("file", file);
+  return request(path, {
+    method: "POST",
+    body,
+  });
+}
+
 export function isStaticSnapshot() {
   return STATIC_SNAPSHOT;
 }

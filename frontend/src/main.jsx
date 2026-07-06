@@ -16,9 +16,11 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
+  Sparkles,
   TriangleAlert,
+  UploadCloud,
 } from "lucide-react";
-import { apiGet, apiPost, isStaticSnapshot } from "./lib/api.js";
+import { apiGet, apiPost, apiUpload, isStaticSnapshot } from "./lib/api.js";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
@@ -45,6 +47,7 @@ function App() {
   const [detailSyncing, setDetailSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
   const [watchedFolder, setWatchedFolder] = useState(null);
+  const [smartUploadOpen, setSmartUploadOpen] = useState(false);
 
   async function loadData({ silent = false } = {}) {
     if (!silent) setLoading(true);
@@ -224,6 +227,18 @@ function App() {
             <RefreshCw size={18} />
           </button>
           <button
+            className="secondary-button"
+            type="button"
+            onClick={() => {
+              setSelected(null);
+              setSmartUploadOpen(true);
+            }}
+            title="Buka halaman rekomendasi folder evidence berbasis knowledge base"
+          >
+            <Sparkles size={18} />
+            Upload Pintar
+          </button>
+          <button
             className="primary-button"
             onClick={runSync}
             disabled={syncing || syncStatus?.is_running || staticSnapshot}
@@ -260,6 +275,8 @@ function App() {
           <Loader2 className="spin" size={28} />
           <span>Memuat dashboard evidence...</span>
         </section>
+      ) : smartUploadOpen ? (
+        <SmartUploadPage onBack={() => setSmartUploadOpen(false)} />
       ) : (
         <>
           <Summary dashboard={dashboard} meta={meta} />
@@ -497,6 +514,195 @@ function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, stat
           files.map((file) => <FileItem file={file} key={file.id} />)
         )}
       </section>
+    </section>
+  );
+}
+
+
+function SmartUploadPage({ onBack }) {
+  const [config, setConfig] = useState(null);
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [aiTesting, setAiTesting] = useState(false);
+  const [aiDiagnostic, setAiDiagnostic] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    apiGet("/api/smart-upload/config")
+      .then(setConfig)
+      .catch((err) => setError(err.message));
+  }, []);
+
+  async function testAiConnection() {
+    setAiTesting(true);
+    setError("");
+    setAiDiagnostic(null);
+    try {
+      const data = await apiGet("/api/smart-upload/ai-diagnostics");
+      setAiDiagnostic(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAiTesting(false);
+    }
+  }
+
+  async function analyzeFile(event) {
+    event.preventDefault();
+    if (!file) {
+      setError("Pilih satu file evidence terlebih dahulu.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setResult(null);
+    try {
+      const data = await apiUpload("/api/smart-upload/recommendations", file);
+      setResult(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="smart-upload-page">
+      <button className="back-button" type="button" onClick={onBack}>
+        <ArrowLeft size={18} />
+        Daftar Subunsur
+      </button>
+
+      <div className="smart-upload-header">
+        <div>
+          <p className="eyebrow">DEV Preparation</p>
+          <h2>Upload Evidence Pintar</h2>
+          <p>Analisis file untuk menemukan kandidat KK, detail parameter, dan Grade tujuan sebelum upload ke Lumbung File.</p>
+        </div>
+        <div className="smart-upload-mode">
+          <StatusPill
+            status={config?.enabled ? "Terisi Sebagian" : "Kosong"}
+            explanation={config?.enabled ? "Fitur aktif di DEV, tetapi upload otomatis tetap menunggu konfirmasi." : "Fitur belum diaktifkan di environment ini."}
+          />
+          <small>{config?.ai_provider || "deepseek"} · {config?.ai_model || "deepseek-v4-flash"}</small>
+          <button className="row-action-button" type="button" onClick={testAiConnection} disabled={aiTesting || !config?.ai_reasoning_enabled}>
+            {aiTesting ? <Loader2 className="spin" size={15} /> : <Sparkles size={15} />}
+            Tes AI
+          </button>
+        </div>
+      </div>
+
+      <form className="upload-analyzer" onSubmit={analyzeFile}>
+        <label className="file-drop-zone">
+          <UploadCloud size={28} />
+          <span>{file ? file.name : "Pilih file evidence untuk dianalisis"}</span>
+          <small>{file ? `${formatBytes(file.size)} · ${file.type || "tipe tidak terbaca"}` : "V1 membaca nama file, metadata, dan teks ringan untuk membangun rekomendasi awal."}</small>
+          <input type="file" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+        </label>
+        <button className="primary-button" type="submit" disabled={loading || !config?.enabled}>
+          {loading ? <Loader2 className="spin" size={18} /> : <Sparkles size={18} />}
+          Analisis Evidence
+        </button>
+      </form>
+
+      {error ? <Notice tone="danger" text={error} /> : null}
+      {aiDiagnostic ? <Notice tone={aiDiagnostic.status === "ok" ? "info" : "danger"} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
+      {config && !config.ai_configured ? <Notice tone="info" text="AI key belum terbaca. Sistem tetap memakai pencocokan knowledge base lokal." /> : null}
+      {result ? <SmartUploadResult result={result} /> : null}
+    </section>
+  );
+}
+
+function SmartUploadResult({ result }) {
+  const candidates = result.candidates ?? [];
+  const [uploadingIndex, setUploadingIndex] = useState(null);
+  const [uploadResult, setUploadResult] = useState(null);
+  const [uploadError, setUploadError] = useState("");
+  const uploadAllowed = Boolean(result.upload?.allow_real_upload);
+
+  async function confirmUpload(index) {
+    setUploadingIndex(index);
+    setUploadError("");
+    setUploadResult(null);
+    try {
+      const data = await apiPost("/api/smart-upload/confirm-upload", {
+        review_id: result.review_id,
+        candidate_index: index,
+      });
+      setUploadResult(data);
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploadingIndex(null);
+    }
+  }
+
+  return (
+    <section className="smart-result-panel">
+      <div className="section-heading compact-heading">
+        <div>
+          <h3>Hasil Rekomendasi</h3>
+          <p>{result.file?.name} · {formatBytes(result.file?.size_bytes)}</p>
+        </div>
+        <div className="ai-status-box">
+          <strong>AI</strong>
+          <span>{result.ai?.status || "skipped"}</span>
+        </div>
+      </div>
+      {result.extraction ? <Notice tone={result.extraction.status === "ok" ? "info" : "neutral"} text={`Ekstraksi ${result.extraction.method}: ${result.extraction.message || result.extraction.status}`} /> : null}
+      {result.ai?.message ? <Notice tone={result.ai.status === "ok" ? "info" : "danger"} text={result.ai.message} /> : null}
+      {!uploadAllowed ? <Notice tone="info" text="Upload sungguhan masih dikunci di DEV. Ubah SMART_UPLOAD_ALLOW_REAL_UPLOAD=true hanya saat siap mengirim file ke Lumbung File." /> : null}
+      {uploadError ? <Notice tone="danger" text={uploadError} /> : null}
+      {uploadResult ? <Notice tone="info" text={`Upload berhasil: ${uploadResult.message}`} /> : null}
+      {result.preview_text ? (
+        <div className="preview-box">
+          <span>Preview Teks</span>
+          <p>{result.preview_text}</p>
+        </div>
+      ) : null}
+      <div className="candidate-list">
+        {candidates.map((candidate, index) => (
+          <article className="candidate-card" key={`${candidate.kk_id}-${candidate.detail_kode}-${candidate.grade}-${index}`}>
+            <div className="candidate-rank">#{index + 1}</div>
+            <div className="candidate-body">
+              <div className="candidate-title-row">
+                <div>
+                  <strong>{candidate.kk_id} / {candidate.kode} / {candidate.detail_kode} · Grade {candidate.grade}</strong>
+                  <p>{candidate.subunsur_name}</p>
+                </div>
+                <span className="confidence-pill">{Math.round((candidate.confidence ?? 0) * 100)}%</span>
+              </div>
+              <p className="candidate-parameter">{candidate.uraian}</p>
+              <div className="candidate-reason">
+                {(candidate.reasons ?? []).map((reason) => <span key={reason}>{reason}</span>)}
+              </div>
+              <div className="candidate-actions">
+                <span>{candidate.folder_path}</span>
+                <div className="candidate-button-group">
+                  {candidate.public_url ? (
+                    <a className="row-link-button" href={candidate.public_url} target="_blank" rel="noreferrer">
+                      <ExternalLink size={15} />
+                      Buka Folder
+                    </a>
+                  ) : null}
+                  <button
+                    className="row-action-button"
+                    type="button"
+                    onClick={() => confirmUpload(index)}
+                    disabled={!uploadAllowed || uploadingIndex !== null}
+                    title={uploadAllowed ? "Konfirmasi upload file ke folder kandidat ini" : "Upload sungguhan masih dikunci di DEV"}
+                  >
+                    {uploadingIndex === index ? <Loader2 className="spin" size={15} /> : <CheckCircle2 size={15} />}
+                    Konfirmasi Upload
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      {candidates.length === 0 ? <EmptyState text="Belum ada kandidat yang cukup kuat. File ini perlu kurasi manual." /> : null}
     </section>
   );
 }

@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
+from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.database import Database
 from app.scanner import EvidenceScanner
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS
+from app.smart_upload import SmartUploadError, SmartUploadService
 from app.sync_manager import SyncManager
 from app.webdav_client import WebDavError, public_folder_link
+
+
+class SmartUploadConfirmRequest(BaseModel):
+    review_id: int = Field(gt=0)
+    candidate_index: int = Field(ge=0)
 
 
 sync_manager = SyncManager()
@@ -34,6 +41,25 @@ def create_router(db: Database) -> APIRouter:
             "service": "spip-evidence-dashboard",
             "webdav_configured": settings.has_share_token,
         }
+
+    @router.get("/smart-upload/config")
+    def smart_upload_config() -> dict:
+        settings = get_settings()
+        return {
+            "enabled": settings.smart_upload_enabled,
+            "allow_real_upload": settings.smart_upload_allow_real_upload,
+            "require_confirmation": settings.smart_upload_require_confirmation,
+            "ai_reasoning_enabled": settings.ai_reasoning_enabled,
+            "ai_configured": settings.has_ai_key,
+            "ai_provider": settings.ai_provider,
+            "ai_model": settings.deepseek_model,
+        }
+
+    @router.get("/smart-upload/ai-diagnostics")
+    def smart_upload_ai_diagnostics() -> dict:
+        settings = get_settings()
+        service = SmartUploadService(db, settings)
+        return service.test_ai_connection()
 
     @router.get("/meta")
     def meta() -> dict:
@@ -152,6 +178,37 @@ def create_router(db: Database) -> APIRouter:
         scanner = EvidenceScanner(db, settings)
         try:
             return scanner.sync_folder(kk_id, kode)
+        except WebDavError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @router.post("/smart-upload/recommendations")
+    async def smart_upload_recommendations(file: UploadFile = File(...)) -> dict:
+        settings = get_settings()
+        if not settings.smart_upload_enabled:
+            raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        payload = await file.read(settings.smart_upload_max_bytes + 1)
+        if len(payload) > settings.smart_upload_max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Ukuran file melebihi batas persiapan {settings.smart_upload_max_bytes} byte.",
+            )
+        service = SmartUploadService(db, settings)
+        return service.recommend(
+            file_name=file.filename or "evidence",
+            content_type=file.content_type,
+            payload=payload,
+        )
+
+    @router.post("/smart-upload/confirm-upload")
+    def smart_upload_confirm_upload(payload: SmartUploadConfirmRequest) -> dict:
+        settings = get_settings()
+        if not settings.smart_upload_enabled:
+            raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        service = SmartUploadService(db, settings)
+        try:
+            return service.confirm_upload(payload.review_id, payload.candidate_index)
+        except SmartUploadError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
         except WebDavError as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 

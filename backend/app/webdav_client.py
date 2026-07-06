@@ -32,6 +32,29 @@ class PublicShareWebDavClient:
     def base_dav_url(self) -> str:
         return f"{self.host}/public.php/dav/files/{self.share_token}/"
 
+    def upload_file(self, folder_path: str, file_name: str, payload: bytes, content_type: str | None = None) -> str:
+        if not self.share_token:
+            raise WebDavError("LUMBUNG_SHARE_TOKEN belum diisi.")
+
+        remote_path = "/".join([folder_path.strip("/"), file_name.strip("/")])
+        url = self.base_dav_url + encode_path(remote_path)
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        if content_type:
+            headers["Content-Type"] = content_type
+        request = Request(url, data=payload, method="PUT", headers=headers)
+
+        try:
+            with urlopen(request, timeout=self.timeout_seconds) as response:
+                if response.status not in {200, 201, 204}:
+                    raise WebDavError(f"WebDAV upload gagal: HTTP {response.status}.")
+        except HTTPError as exc:
+            details = exc.read().decode("utf-8", errors="ignore")[:500]
+            raise WebDavError(f"WebDAV upload gagal: HTTP {exc.code} {exc.reason}. {details}") from exc
+        except URLError as exc:
+            raise WebDavError(f"WebDAV upload gagal tersambung: {exc.reason}") from exc
+
+        return remote_path
+
     def list_folder(self, folder_path: str) -> list[WebDavItem]:
         if not self.share_token:
             raise WebDavError("LUMBUNG_SHARE_TOKEN belum diisi.")
