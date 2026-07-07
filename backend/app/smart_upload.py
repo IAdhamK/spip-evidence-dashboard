@@ -1224,7 +1224,7 @@ def call_chat_completion(settings: Settings, body: dict) -> dict:
         chat_completion_url(settings),
         data=json.dumps(prepare_chat_body(settings, body)).encode("utf-8"),
         headers={
-            "Authorization": f"Bearer {settings.deepseek_api_key}",
+            "Authorization": f"Bearer {settings.resolved_ai_api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
             "User-Agent": "SPIP-Evidence-Dashboard/0.1",

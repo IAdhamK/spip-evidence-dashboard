@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     ai_reasoning_enabled: bool = False
     ai_provider: str = "deepseek"
     deepseek_api_key: str = ""
+    sumopod_api_key: str = ""
+    ai_api_key: str = ""
     deepseek_base_url: str = "https://api.deepseek.com"
     deepseek_chat_path: str = "/chat/completions"
     deepseek_model: str = "deepseek-v4-flash"
@@ -36,7 +38,11 @@ class Settings(BaseSettings):
 
     @property
     def has_ai_key(self) -> bool:
-        return bool(self.deepseek_api_key.strip())
+        return bool(self.resolved_ai_api_key)
+
+    @property
+    def resolved_ai_api_key(self) -> str:
+        return (self.deepseek_api_key or self.sumopod_api_key or self.ai_api_key).strip()
 
 
 @lru_cache
