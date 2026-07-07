@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 from app.config import get_settings  # noqa: E402
 from app.database import Database  # noqa: E402
+from app.recommendations import attach_recommendations  # noqa: E402
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS  # noqa: E402
 from app.webdav_client import public_folder_link  # noqa: E402
 
@@ -64,6 +65,7 @@ def build_snapshot_from_database(settings) -> dict:
         parameters = db.parameters(folder["kk_id"], folder["kode"])
         slots = [with_public_url(slot, settings) for slot in db.evidence_slots(folder["kk_id"], folder["kode"])]
         attach_slots(parameters, slots)
+        attach_recommendations(parameters)
         matrix_subunsur_name = parameters[0]["matrix_subunsur_name"] if parameters else None
         subunsur_details[f'{folder["kk_id"]}::{folder["kode"]}'] = {
             **folder,
