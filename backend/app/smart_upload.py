@@ -65,6 +65,8 @@ READ_LIMIT = 24000
 SMART_UPLOAD_ACTIONS = {"upload_primary", "reference_supporting", "reference_optional", "reject"}
 RELEVANCE_PRIMARY_THRESHOLD = 80
 RELEVANCE_SUPPORTING_THRESHOLD = 70
+SUMMARY_MAX_LENGTH = 1800
+BATCH_SUMMARY_MAX_LENGTH = 2200
 GRADE_ORDER = {"E": 1, "D": 2, "C": 3, "B": 4, "A": 5}
 GRADE_BY_STAGE = {1: "E", 2: "D", 3: "C", 4: "B", 5: "A"}
 EVIDENCE_STAGE_LABELS = {
@@ -883,8 +885,8 @@ def normalize_batch_analysis(value: dict | None) -> dict:
     placements = value.get("placements") if isinstance(value.get("placements"), dict) else {}
     return {
         "package_type": clean_ai_text(value.get("package_type") or value.get("evidence_type"), 120),
-        "summary": clean_ai_text(value.get("summary"), 420),
-        "main_conclusion": clean_ai_text(value.get("main_conclusion") or value.get("conclusion"), 420),
+        "summary": clean_ai_paragraph(value.get("summary"), BATCH_SUMMARY_MAX_LENGTH),
+        "main_conclusion": clean_ai_paragraph(value.get("main_conclusion") or value.get("conclusion"), BATCH_SUMMARY_MAX_LENGTH),
         "upload_strategy": clean_ai_text(value.get("upload_strategy"), 360),
         "missing_evidence": normalize_string_list(value.get("missing_evidence"), 6, 120),
         "placements": {
@@ -952,6 +954,7 @@ def interpret_batch_narrative(settings: Settings, prompt_payload: dict) -> dict:
                     "Jangan balas JSON, jangan menulis kode, dan jangan membuat struktur data. "
                     "Gunakan maturity gate: E kebijakan, D sosialisasi, C implementasi, B evaluasi berkala, A perbaikan organisasi. "
                     "Tuliskan bagian: Kesimpulan Paket Evidence, Grade Aman Paket, Penempatan Utama, Penempatan Pendukung, Yang Kurang, Strategi Upload. "
+                    "Bagian Kesimpulan Paket Evidence wajib berupa satu paragraf utuh 3-5 kalimat, tanpa bullet, dan tidak berhenti di tengah kalimat. "
                     "Jangan membuat KK atau grade di luar kandidat yang tersedia."
                 ),
             },
@@ -993,8 +996,8 @@ def build_narrative_batch_analysis(narrative_text: str, batch_candidates: list[d
 
     return {
         "package_type": "Paket Evidence",
-        "summary": extract_narrative_section(narrative_text, ("kesimpulan paket evidence", "kesimpulan evidence"), 620),
-        "main_conclusion": extract_narrative_section(narrative_text, ("kesimpulan paket evidence", "kesimpulan evidence"), 620),
+        "summary": extract_narrative_section(narrative_text, ("kesimpulan paket evidence", "kesimpulan evidence"), BATCH_SUMMARY_MAX_LENGTH),
+        "main_conclusion": extract_narrative_section(narrative_text, ("kesimpulan paket evidence", "kesimpulan evidence"), BATCH_SUMMARY_MAX_LENGTH),
         "narrative": clean_ai_text(strip_narrative_markup(narrative_text), 2600),
         "upload_strategy": "Gunakan kandidat utama untuk upload. Catat rujukan pendukung bila evidence yang sama relevan lintas KK.",
         "missing_evidence": [],
@@ -1022,7 +1025,7 @@ def normalize_evidence_analysis(value: dict | None) -> dict | None:
     placements = value.get("placements") if isinstance(value.get("placements"), dict) else {}
     normalized = {
         "evidence_type": clean_ai_text(value.get("evidence_type"), 100),
-        "summary": clean_ai_text(value.get("summary") or value.get("kesimpulan_evidence"), 360),
+        "summary": clean_ai_paragraph(value.get("summary") or value.get("kesimpulan_evidence"), SUMMARY_MAX_LENGTH),
         "grade_reason": clean_ai_text(value.get("grade_reason") or value.get("alasan_grade"), 300),
         "missing_evidence": normalize_string_list(value.get("missing_evidence") or value.get("kekurangan_evidence"), 6, 120),
         "upgrade_requirements": normalize_string_list(value.get("upgrade_requirements") or value.get("syarat_naik_grade"), 6, 120),
@@ -1091,6 +1094,26 @@ def strip_narrative_markup(value: object) -> str:
     return normalize_text(text)
 
 
+def trim_to_sentence(text: str, max_length: int) -> str:
+    if len(text) <= max_length:
+        return text
+    chunk = text[:max_length].rstrip()
+    sentence_ends = [match.end() for match in re.finditer(r"[.!?](?:\s|$)", chunk)]
+    if sentence_ends:
+        last_end = sentence_ends[-1]
+        if last_end >= int(max_length * 0.55):
+            return chunk[:last_end].strip()
+    return chunk.rsplit(" ", 1)[0].rstrip(" ,;:-") + "."
+
+
+def clean_ai_paragraph(value: object, max_length: int) -> str:
+    text = strip_narrative_markup(value)
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return ""
+    return trim_to_sentence(text, max_length)
+
+
 def extract_narrative_section(value: object, heading_names: tuple[str, ...], max_length: int) -> str:
     text = str(value or "")
     if not text.strip():
@@ -1106,12 +1129,12 @@ def extract_narrative_section(value: object, heading_names: tuple[str, ...], max
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         section = strip_narrative_markup(text[start:end])
         if is_meaningful_summary(section):
-            return clean_ai_text(section, max_length)
+            return clean_ai_paragraph(section, max_length)
     cleaned = strip_narrative_markup(text)
     for heading in NARRATIVE_HEADINGS:
         cleaned = re.sub(rf"\b{re.escape(heading)}\b\s*:?", "", cleaned, flags=re.IGNORECASE)
     if is_meaningful_summary(cleaned):
-        return clean_ai_text(cleaned, max_length)
+        return clean_ai_paragraph(cleaned, max_length)
     return ""
 
 
@@ -1225,6 +1248,7 @@ def interpret_ai_narrative(settings: Settings, prompt_payload: dict) -> dict:
                     "A=hasil evaluasi sudah dijadikan bahan perbaikan organisasi. "
                     "Kata kunci domain hanya membantu membaca konteks, bukan menaikkan grade. "
                     "Tuliskan bagian: Kesimpulan Evidence, Grade Aman, Penempatan Utama, Penempatan Pendukung, Yang Kurang. "
+                    "Bagian Kesimpulan Evidence wajib berupa satu paragraf utuh 3-5 kalimat, tanpa bullet, dan tidak berhenti di tengah kalimat. "
                     "Jangan membuat KK atau grade di luar kandidat yang tersedia."
                 ),
             },
@@ -1235,12 +1259,12 @@ def interpret_ai_narrative(settings: Settings, prompt_payload: dict) -> dict:
     if result["status"] != "ok":
         return result
     try:
-        content = clean_ai_text(ai_message_content(result), 2800)
+        content = clean_ai_text(ai_message_content(result), 4200)
     except (KeyError, IndexError, TypeError) as exc:
         return {"status": "error", "message": f"Interpretasi AI kosong: {exc}"}
     if not content:
         return {"status": "error", "message": "Interpretasi AI kosong."}
-    summary = extract_narrative_section(content, ("kesimpulan evidence",), 720)
+    summary = extract_narrative_section(content, ("kesimpulan evidence",), SUMMARY_MAX_LENGTH)
     return {
         "status": "ok",
         "message": "Analisis AI selesai.",

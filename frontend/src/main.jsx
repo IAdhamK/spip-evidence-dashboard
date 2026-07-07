@@ -996,10 +996,16 @@ function SmartUploadResult({ result, ordinal }) {
 
   return (
     <section className="smart-result-panel">
-      <div className="section-heading compact-heading">
-        <div>
-          <h3>{ordinal ? `Hasil Rekomendasi #${ordinal}` : "Hasil Rekomendasi"}</h3>
-          <p>{result.file?.name} · {formatBytes(result.file?.size_bytes)}</p>
+      <div className="section-heading compact-heading file-result-heading">
+        <div className="file-result-title">
+          <span className="file-result-badge">
+            <FileText size={16} aria-hidden="true" />
+            {ordinal ? `File ${ordinal}` : "File Evidence"}
+          </span>
+          <div>
+            <h3>{ordinal ? `Hasil Rekomendasi #${ordinal}` : "Hasil Rekomendasi"}</h3>
+            <p>{result.file?.name} · {formatBytes(result.file?.size_bytes)}</p>
+          </div>
         </div>
         <div className="ai-status-box">
           <strong>Status AI</strong>
