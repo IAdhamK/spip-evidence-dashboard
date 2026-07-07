@@ -4,6 +4,20 @@ services:
       context: ./backend
     env_file:
       - .env
+    environment:
+      SMART_UPLOAD_ENABLED: "true"
+      SMART_UPLOAD_ALLOW_REAL_UPLOAD: "false"
+      SMART_UPLOAD_REQUIRE_CONFIRMATION: "true"
+      SMART_UPLOAD_MAX_BYTES: "0"
+      SMART_UPLOAD_REQUIRE_AI: "true"
+      AI_REASONING_ENABLED: "true"
+      AI_PROVIDER: deepseek
+      DEEPSEEK_BASE_URL: https://ai.sumopod.com/v1
+      DEEPSEEK_CHAT_PATH: /chat/completions
+      DEEPSEEK_MODEL: deepseek-v4-flash
+      DEEPSEEK_THINKING_MODE: disabled
+      AI_SEND_FULL_DOCUMENT: "false"
+      AI_MAX_CANDIDATES: "20"
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
