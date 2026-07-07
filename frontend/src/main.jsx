@@ -625,14 +625,14 @@ function SmartUploadPage({ onBack }) {
         <div>
           <p className="eyebrow">DEV Preparation</p>
           <h2>Upload Evidence Pintar</h2>
-          <p>Analisis file wajib memakai API DeepSeek V4. Pilih mode berdasarkan kebutuhan akurasi, waktu tunggu, dan estimasi biaya.</p>
+          <p>Analisis file memakai rekomendasi lokal dan diperkuat DeepSeek V4 bila API tersedia. Pilih mode berdasarkan kebutuhan akurasi, waktu tunggu, dan estimasi biaya.</p>
         </div>
         <div className="smart-upload-mode">
           <StatusPill
             status={config?.enabled ? "Terisi Sebagian" : "Kosong"}
             explanation={config?.enabled ? "Fitur aktif di DEV, tetapi upload otomatis tetap menunggu konfirmasi." : "Fitur belum diaktifkan di environment ini."}
           />
-          <small>{config?.ai_provider || "deepseek"} · {config?.ai_model || "deepseek-v4-flash"}{config?.require_ai ? " · AI wajib" : ""}</small>
+          <small>{config?.ai_provider || "deepseek"} · {config?.ai_model || "deepseek-v4-flash"}{config?.require_ai ? " · AI wajib" : " · hybrid"}</small>
           <button className="row-action-button" type="button" onClick={testAiConnection} disabled={aiTesting || !config?.ai_reasoning_enabled}>
             {aiTesting ? <Loader2 className="spin" size={15} /> : <Sparkles size={15} />}
             Tes AI
@@ -666,7 +666,8 @@ function SmartUploadPage({ onBack }) {
 
       {error ? <Notice tone="danger" text={error} /> : null}
       {aiDiagnostic ? <Notice tone={noticeToneForAi(aiDiagnostic.status)} text={`Tes AI: ${aiDiagnostic.message || aiDiagnostic.status}`} /> : null}
-      {config && !config.ai_configured ? <Notice tone="danger" text="AI key belum terbaca. Mode ini mewajibkan API DeepSeek V4, sehingga analisis tidak dapat dijalankan." /> : null}
+      {config && !config.ai_configured && config.require_ai ? <Notice tone="danger" text="AI key belum terbaca. Mode ini mewajibkan API DeepSeek V4, sehingga analisis tidak dapat dijalankan." /> : null}
+      {config && !config.ai_configured && !config.require_ai ? <Notice tone="warning" text="AI key belum terbaca. Mode hybrid tetap menampilkan rekomendasi lokal; DeepSeek V4 akan memperkuat analisis setelah key tersedia." /> : null}
       {config?.require_ai ? <Notice tone="info" text="Mode AI wajib aktif: rekomendasi lokal tidak ditampilkan sebagai hasil final bila DeepSeek V4 gagal merespons." /> : null}
       {result ? <SmartUploadResults result={result} /> : null}
     </section>

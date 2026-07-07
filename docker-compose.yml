@@ -9,7 +9,7 @@ services:
       SMART_UPLOAD_ALLOW_REAL_UPLOAD: "false"
       SMART_UPLOAD_REQUIRE_CONFIRMATION: "true"
       SMART_UPLOAD_MAX_BYTES: "0"
-      SMART_UPLOAD_REQUIRE_AI: "true"
+      SMART_UPLOAD_REQUIRE_AI: "false"
       AI_REASONING_ENABLED: "true"
       AI_PROVIDER: deepseek
       DEEPSEEK_BASE_URL: https://ai.sumopod.com/v1
