@@ -53,11 +53,36 @@ async function request(path, options) {
 
   const response = await fetch(`${API_BASE_URL}${path}`, options);
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  const data = parseApiResponse(text, response);
   if (!response.ok) {
     throw new Error(data?.detail || data?.message || `Request gagal: ${response.status}`);
   }
   return data;
+}
+
+function parseApiResponse(text, response) {
+  if (!text) return null;
+
+  const trimmed = text.trim();
+  const contentType = response.headers.get("content-type") || "";
+  const looksJson = contentType.includes("application/json") || trimmed.startsWith("{") || trimmed.startsWith("[");
+
+  if (looksJson) {
+    try {
+      return JSON.parse(trimmed);
+    } catch (error) {
+      throw new Error(`Respons API tidak valid JSON: ${error.message}`);
+    }
+  }
+
+  const preview = trimmed
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .slice(0, 180);
+  const status = response.status ? `HTTP ${response.status}. ` : "";
+  throw new Error(`${status}Endpoint API mengembalikan HTML, bukan JSON. Pastikan proxy /api menuju backend aktif. ${preview}`);
 }
 
 async function staticRequest(path, options) {
