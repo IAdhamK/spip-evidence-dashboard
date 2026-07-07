@@ -790,7 +790,7 @@ function SmartUploadResults({ result }) {
             <span>{result.batch_ai?.status || "skipped"}</span>
           </div>
         </div>
-        {result.batch_ai?.message ? <Notice tone={noticeToneForAi(result.batch_ai.status)} text={result.batch_ai.message} /> : null}
+        {result.batch_ai?.message && result.batch_ai.status !== "ok" ? <Notice tone={noticeToneForAi(result.batch_ai.status)} text={result.batch_ai.message} /> : null}
         {result.batch_analysis ? <BatchEvidencePanel analysis={result.batch_analysis} files={result.results.map((item) => item.file)} /> : null}
         <div className="batch-result-list">
           {result.results.map((item, index) => (
@@ -1010,7 +1010,7 @@ function SmartUploadResult({ result, ordinal }) {
       {result.extraction?.quality_warning ? <Notice tone="warning" text={result.extraction.quality_warning} /> : null}
       {result.analysis ? <AnalysisSummary analysis={result.analysis} /> : null}
       {result.reasoning_gate ? <ReasoningGatePanel gate={result.reasoning_gate} /> : null}
-      {result.ai?.message ? <Notice tone={noticeToneForAi(result.ai.status)} text={result.ai.message} /> : null}
+      {result.ai?.message && result.ai.status !== "ok" ? <Notice tone={noticeToneForAi(result.ai.status)} text={result.ai.message} /> : null}
       {result.evidence_analysis ? (
         <EvidenceAnalysisPanel
           analysis={result.evidence_analysis}
@@ -1020,23 +1020,6 @@ function SmartUploadResult({ result, ordinal }) {
           onAction={performAction}
         />
       ) : null}
-      <div className="review-action-bar">
-        <div>
-          <strong>Aksi Kurasi Manual</strong>
-          <span>Gunakan jika hasil rekomendasi AI tidak sesuai dan perlu dikurasi ulang.</span>
-        </div>
-        <button
-          className="row-action-button danger-subtle"
-          type="button"
-          onClick={() => performAction("reject")}
-          disabled={!actionsEnabled || actionState !== null}
-          title="Catat bahwa rekomendasi ini ditolak dan perlu kurasi manual"
-        >
-          {actionState === "reject:review" ? <Loader2 className="spin" size={15} /> : <AlertCircle size={15} />}
-          Tolak Rekomendasi
-        </button>
-      </div>
-      {!uploadAllowed ? <Notice tone="info" text="Upload sungguhan masih dikunci di DEV. Ubah SMART_UPLOAD_ALLOW_REAL_UPLOAD=true hanya saat siap mengirim file ke Lumbung File." /> : null}
       {uploadError ? <Notice tone="danger" text={uploadError} /> : null}
       {uploadResult ? <Notice tone="info" text={`Aksi berhasil: ${uploadResult.message}`} /> : null}
       <div className="candidate-list">
@@ -1078,7 +1061,7 @@ function SmartUploadResult({ result, ordinal }) {
                     type="button"
                     onClick={() => performAction("upload_primary", index)}
                     disabled={!uploadAllowed || actionState !== null || !candidate.primary_allowed}
-                    title={candidate.primary_allowed ? (uploadAllowed ? "Upload file sebagai penempatan utama" : "Upload sungguhan masih dikunci di DEV") : "Kandidat belum melewati Reasoning Gate >80%"}
+                    title={candidate.primary_allowed ? (uploadAllowed ? "Upload file sebagai penempatan utama" : "Upload belum tersedia di konfigurasi server") : "Kandidat belum melewati Reasoning Gate >80%"}
                   >
                     {actionState === `upload_primary:${index}` ? <Loader2 className="spin" size={15} /> : <CheckCircle2 size={15} />}
                     Upload Utama

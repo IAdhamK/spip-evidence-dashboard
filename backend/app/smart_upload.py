@@ -408,7 +408,7 @@ class SmartUploadService:
         analysis = apply_batch_package_gate(analysis, results)
         return {
             "status": "ok",
-            "message": "AI memberi interpretasi naratif paket evidence; penempatan final dihitung oleh Reasoning Gate deterministik.",
+            "message": "Analisis AI paket selesai.",
             "analysis": analysis,
         }
 
@@ -765,6 +765,8 @@ def build_reasoning_summary(classification: dict, candidates: list[dict]) -> dic
 def apply_evidence_analysis_gate(analysis: dict | None, candidates: list[dict], classification: dict) -> dict | None:
     if not analysis:
         return analysis
+    if not is_meaningful_summary(analysis.get("summary")):
+        analysis["summary"] = build_evidence_summary_from_context(classification, candidates)
     analysis["reasoning_gate"] = {
         "evidence_type": classification.get("evidence_type_label"),
         "safe_grade_ceiling": classification.get("safe_grade_ceiling"),
@@ -1060,6 +1062,16 @@ def clean_ai_text(value: object, max_length: int) -> str:
     return text[:max_length]
 
 
+def is_meaningful_summary(value: object) -> bool:
+    text = normalize_text(str(value or ""))
+    if len(text) < 60:
+        return False
+    if not re.search(r"[A-Za-zÀ-ÿ]", text):
+        return False
+    word_count = len(re.findall(r"\w+", text))
+    return word_count >= 8
+
+
 NARRATIVE_HEADINGS = (
     "kesimpulan evidence",
     "kesimpulan paket evidence",
@@ -1093,12 +1105,41 @@ def extract_narrative_section(value: object, heading_names: tuple[str, ...], max
         start = match.end()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         section = strip_narrative_markup(text[start:end])
-        if section:
+        if is_meaningful_summary(section):
             return clean_ai_text(section, max_length)
     cleaned = strip_narrative_markup(text)
     for heading in NARRATIVE_HEADINGS:
         cleaned = re.sub(rf"\b{re.escape(heading)}\b\s*:?", "", cleaned, flags=re.IGNORECASE)
-    return clean_ai_text(cleaned, max_length)
+    if is_meaningful_summary(cleaned):
+        return clean_ai_text(cleaned, max_length)
+    return ""
+
+
+def build_evidence_summary_from_context(classification: dict, candidates: list[dict]) -> str:
+    evidence_label = classification.get("evidence_type_label") or "Evidence"
+    kk_label = classification.get("best_kk_label") or "konteks KK belum jelas"
+    safe_grade = classification.get("safe_grade_ceiling")
+    chain = classification.get("chain") or {}
+    present_labels = [
+        EVIDENCE_STAGE_LABELS.get(stage, stage)
+        for stage, present in chain.items()
+        if present
+    ]
+    top = candidates[0] if candidates else {}
+    target = ""
+    if top:
+        target = f" Kandidat terkuat mengarah ke {top.get('kk_id', 'KK')} / {top.get('kode', '-')} / {top.get('detail_kode', '-')} Grade {top.get('grade', '-')}."
+    if present_labels:
+        chain_text = ", ".join(present_labels)
+        grade_text = f" Grade aman sementara {safe_grade}." if safe_grade else " Grade aman belum dapat ditetapkan karena rantai bukti belum lengkap."
+        return (
+            f"Evidence terbaca sebagai {evidence_label.lower()} pada {kk_label}. "
+            f"Rantai bukti yang terdeteksi: {chain_text}.{grade_text}{target}"
+        )
+    return (
+        f"Evidence sudah terbaca, tetapi sistem belum menemukan rantai bukti maturity yang cukup jelas. "
+        f"Perlu kurasi substansi dokumen sebelum dipakai sebagai kandidat utama.{target}"
+    )
 
 
 def normalize_string_list(value: object, limit: int, max_length: int) -> list[str]:
@@ -1199,14 +1240,15 @@ def interpret_ai_narrative(settings: Settings, prompt_payload: dict) -> dict:
         return {"status": "error", "message": f"Interpretasi AI kosong: {exc}"}
     if not content:
         return {"status": "error", "message": "Interpretasi AI kosong."}
+    summary = extract_narrative_section(content, ("kesimpulan evidence",), 720)
     return {
         "status": "ok",
-        "message": "AI memberi interpretasi naratif; kandidat final dihitung oleh Reasoning Gate deterministik.",
+        "message": "Analisis AI selesai.",
         "candidates": [],
         "interpretation_text": content,
         "evidence_analysis": {
             "evidence_type": "Evidence SPIP",
-            "summary": extract_narrative_section(content, ("kesimpulan evidence",), 720),
+            "summary": summary,
             "grade_reason": "",
             "missing_evidence": [],
             "upgrade_requirements": [],

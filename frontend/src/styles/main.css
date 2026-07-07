@@ -1119,39 +1119,6 @@ tbody tr:hover {
 }
 
 
-.review-action-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin: 0 14px;
-  padding: 10px 12px;
-  background: #fffaf9;
-  border: 1px solid #ffd8d2;
-  border-radius: 8px;
-}
-
-.review-action-bar div {
-  display: grid;
-  gap: 2px;
-}
-
-.review-action-bar strong {
-  font-size: 13px;
-}
-
-.review-action-bar span {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.row-action-button.danger-subtle {
-  color: var(--danger);
-  background: #fff5f3;
-  border-color: #ffc7c0;
-}
-
 .batch-analysis-panel {
   display: grid;
   gap: 12px;
@@ -1355,7 +1322,6 @@ tbody tr:hover {
   .batch-analysis-main,
   .reasoning-gate-grid,
   .reasoning-gate-main,
-  .review-action-bar,
   .placement-heading,
   .placement-card,
   .placement-actions,
