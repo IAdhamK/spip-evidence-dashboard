@@ -78,6 +78,34 @@ CREATE TABLE IF NOT EXISTS evidence_slots (
     error_message TEXT,
     PRIMARY KEY (kk_id, kode, detail_kode, grade, category_name)
 );
+
+CREATE TABLE IF NOT EXISTS smart_upload_reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    file_name TEXT NOT NULL,
+    content_type TEXT,
+    size_bytes INTEGER NOT NULL DEFAULT 0,
+    preview_text TEXT NOT NULL DEFAULT '',
+    candidates_json TEXT NOT NULL DEFAULT '[]',
+    file_bytes BLOB,
+    ai_status TEXT NOT NULL DEFAULT 'skipped',
+    ai_message TEXT,
+    upload_status TEXT NOT NULL DEFAULT 'pending',
+    upload_message TEXT,
+    confirmed_candidate_json TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    confirmed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS smart_upload_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    review_id INTEGER NOT NULL,
+    action_type TEXT NOT NULL,
+    candidate_index INTEGER,
+    candidate_json TEXT,
+    action_message TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES smart_upload_reviews (id)
+);
 """
 
 
@@ -106,6 +134,19 @@ class Database:
             }
             if "grades_json" not in columns:
                 conn.execute("ALTER TABLE parameters ADD COLUMN grades_json TEXT NOT NULL DEFAULT '[]'")
+            smart_upload_columns = {
+                row["name"]
+                for row in conn.execute("PRAGMA table_info(smart_upload_reviews)").fetchall()
+            }
+            smart_upload_defaults = {
+                "file_bytes": "BLOB",
+                "upload_status": "TEXT NOT NULL DEFAULT 'pending'",
+                "upload_message": "TEXT",
+                "confirmed_candidate_json": "TEXT",
+            }
+            for column_name, column_type in smart_upload_defaults.items():
+                if column_name not in smart_upload_columns:
+                    conn.execute(f"ALTER TABLE smart_upload_reviews ADD COLUMN {column_name} {column_type}")
 
     def ensure_mapping(self) -> None:
         with self.connect() as conn:
@@ -463,4 +504,95 @@ class Database:
                 WHERE kk_id = ? AND kode = ?
                 """,
                 (message, scanned_at, message, kk_id, kode),
+            )
+
+
+    def record_smart_upload_review(
+        self,
+        file_name: str,
+        content_type: str | None,
+        size_bytes: int,
+        preview_text: str,
+        candidates: list[dict],
+        ai_status: str,
+        ai_message: str | None,
+        payload: bytes | None = None,
+    ) -> int:
+        with self.connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO smart_upload_reviews (
+                    file_name, content_type, size_bytes, preview_text,
+                    candidates_json, ai_status, ai_message, file_bytes
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (file_name, content_type, size_bytes, preview_text, json.dumps(candidates, ensure_ascii=False), ai_status, ai_message, payload),
+            )
+            return int(cursor.lastrowid)
+
+
+    def smart_upload_review(self, review_id: int) -> dict | None:
+        with self.connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM smart_upload_reviews WHERE id = ?",
+                (review_id,),
+            ).fetchone()
+            return dict(row) if row else None
+
+
+    def record_smart_upload_action(
+        self,
+        review_id: int,
+        action_type: str,
+        candidate_index: int | None,
+        candidate: dict | None,
+        action_message: str,
+    ) -> int:
+        with self.connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO smart_upload_actions (
+                    review_id, action_type, candidate_index, candidate_json, action_message
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    review_id,
+                    action_type,
+                    candidate_index,
+                    json.dumps(candidate, ensure_ascii=False) if candidate else None,
+                    action_message,
+                ),
+            )
+            return int(cursor.lastrowid)
+
+    def smart_upload_actions(self, review_id: int) -> list[dict]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM smart_upload_actions
+                WHERE review_id = ?
+                ORDER BY created_at DESC, id DESC
+                """,
+                (review_id,),
+            ).fetchall()
+            return [dict(row) for row in rows]
+
+    def mark_smart_upload_confirmed(
+        self,
+        review_id: int,
+        candidate: dict,
+        upload_status: str,
+        upload_message: str,
+    ) -> None:
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE smart_upload_reviews
+                SET upload_status = ?, upload_message = ?,
+                    confirmed_candidate_json = ?, confirmed_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (upload_status, upload_message, json.dumps(candidate, ensure_ascii=False), review_id),
             )
