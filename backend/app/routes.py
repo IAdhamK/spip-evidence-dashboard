@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
@@ -15,6 +15,12 @@ from app.webdav_client import WebDavError, public_folder_link
 class SmartUploadConfirmRequest(BaseModel):
     review_id: int = Field(gt=0)
     candidate_index: int = Field(ge=0)
+
+
+class SmartUploadActionRequest(BaseModel):
+    review_id: int = Field(gt=0)
+    candidate_index: int | None = Field(default=None, ge=0)
+    action_type: str = Field(default="upload_primary")
 
 
 sync_manager = SyncManager()
@@ -32,6 +38,13 @@ def create_router(db: Database) -> APIRouter:
             "public_url": folder.get("public_url")
             or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, folder["folder_path"]),
         }
+
+    def hide_smart_upload_preview(result: dict) -> dict:
+        if not isinstance(result, dict):
+            return result
+        cleaned = dict(result)
+        cleaned.pop("preview_text", None)
+        return cleaned
 
     @router.get("/health")
     def health() -> dict:
@@ -183,20 +196,31 @@ def create_router(db: Database) -> APIRouter:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     @router.post("/smart-upload/recommendations")
-    async def smart_upload_recommendations(file: UploadFile = File(...)) -> dict:
+    async def smart_upload_recommendations(
+        file: UploadFile = File(...),
+        analysis_mode: str = Form("fast"),
+        candidate_limit: int | None = Form(None),
+    ) -> dict:
         settings = get_settings()
         if not settings.smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
         payload = await read_smart_upload_payload(file, settings.smart_upload_max_bytes)
         service = SmartUploadService(db, settings)
-        return service.recommend(
+        result = service.recommend(
             file_name=file.filename or "evidence",
             content_type=file.content_type,
             payload=payload,
+            analysis_mode=analysis_mode,
+            candidate_limit=candidate_limit,
         )
+        return hide_smart_upload_preview(result)
 
     @router.post("/smart-upload/recommendations/batch")
-    async def smart_upload_recommendations_batch(files: list[UploadFile] = File(...)) -> dict:
+    async def smart_upload_recommendations_batch(
+        files: list[UploadFile] = File(...),
+        analysis_mode: str = Form("fast"),
+        candidate_limit: int | None = Form(None),
+    ) -> dict:
         settings = get_settings()
         if not settings.smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
@@ -212,11 +236,32 @@ def create_router(db: Database) -> APIRouter:
                 content_type=upload.content_type,
                 payload=payload,
                 skip_ai_message=skip_ai_message,
+                analysis_mode=analysis_mode,
+                candidate_limit=candidate_limit,
             )
             results.append(result)
             if result.get("ai", {}).get("status") == "unavailable" and not skip_ai_message and not settings.smart_upload_require_ai:
                 skip_ai_message = "AI gateway sementara tidak tersedia; file berikutnya memakai rekomendasi lokal tanpa memanggil AI ulang."
-        return {"count": len(results), "results": results}
+        batch_ai = service.interpret_batch(results, analysis_mode, candidate_limit)
+        return {
+            "count": len(results),
+            "results": [hide_smart_upload_preview(item) for item in results],
+            "batch_ai": batch_ai,
+            "batch_analysis": batch_ai.get("analysis"),
+        }
+
+    @router.post("/smart-upload/action")
+    def smart_upload_action(payload: SmartUploadActionRequest) -> dict:
+        settings = get_settings()
+        if not settings.smart_upload_enabled:
+            raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        service = SmartUploadService(db, settings)
+        try:
+            return service.perform_action(payload.review_id, payload.candidate_index, payload.action_type)
+        except SmartUploadError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except WebDavError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     @router.post("/smart-upload/confirm-upload")
     def smart_upload_confirm_upload(payload: SmartUploadConfirmRequest) -> dict:

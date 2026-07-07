@@ -95,6 +95,17 @@ CREATE TABLE IF NOT EXISTS smart_upload_reviews (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     confirmed_at TEXT
 );
+
+CREATE TABLE IF NOT EXISTS smart_upload_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    review_id INTEGER NOT NULL,
+    action_type TEXT NOT NULL,
+    candidate_index INTEGER,
+    candidate_json TEXT,
+    action_message TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES smart_upload_reviews (id)
+);
 """
 
 
@@ -528,6 +539,45 @@ class Database:
                 (review_id,),
             ).fetchone()
             return dict(row) if row else None
+
+
+    def record_smart_upload_action(
+        self,
+        review_id: int,
+        action_type: str,
+        candidate_index: int | None,
+        candidate: dict | None,
+        action_message: str,
+    ) -> int:
+        with self.connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO smart_upload_actions (
+                    review_id, action_type, candidate_index, candidate_json, action_message
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    review_id,
+                    action_type,
+                    candidate_index,
+                    json.dumps(candidate, ensure_ascii=False) if candidate else None,
+                    action_message,
+                ),
+            )
+            return int(cursor.lastrowid)
+
+    def smart_upload_actions(self, review_id: int) -> list[dict]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM smart_upload_actions
+                WHERE review_id = ?
+                ORDER BY created_at DESC, id DESC
+                """,
+                (review_id,),
+            ).fetchall()
+            return [dict(row) for row in rows]
 
     def mark_smart_upload_confirmed(
         self,

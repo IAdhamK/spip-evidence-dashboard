@@ -24,6 +24,26 @@ import { apiGet, apiPost, apiUpload, apiUploadMany, isStaticSnapshot } from "./l
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
+const ANALYSIS_MODE_OPTIONS = [
+  {
+    value: "fast",
+    label: "Mode Cepat",
+    title: "Screening awal",
+    description: "Nama file dan cuplikan awal. Paling murah dan cepat.",
+  },
+  {
+    value: "deep",
+    label: "Mode Mendalam",
+    title: "Review terarah",
+    description: "Cuplikan awal, tengah, akhir, dan halaman kunci. Akurasi lebih baik.",
+  },
+  {
+    value: "full",
+    label: "Mode Penuh",
+    title: "Review terpanjang",
+    description: "Ekstraksi paling panjang dalam satu request AI. Lebih lama dan lebih mahal.",
+  },
+];
 const STATUS_ICONS = {
   Kosong: AlertCircle,
   "Terisi Sebagian": ArrowUpDown,
@@ -526,6 +546,8 @@ function SmartUploadPage({ onBack }) {
   const [loading, setLoading] = useState(false);
   const [aiTesting, setAiTesting] = useState(false);
   const [aiDiagnostic, setAiDiagnostic] = useState(null);
+  const [analysisMode, setAnalysisMode] = useState("fast");
+  const [candidateLimit, setCandidateLimit] = useState(20);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -559,8 +581,8 @@ function SmartUploadPage({ onBack }) {
     setResult(null);
     try {
       const data = files.length === 1
-        ? await apiUpload("/api/smart-upload/recommendations", files[0])
-        : await apiUploadMany("/api/smart-upload/recommendations/batch", files);
+        ? await apiUpload("/api/smart-upload/recommendations", files[0], { analysis_mode: analysisMode, candidate_limit: candidateLimit })
+        : await apiUploadMany("/api/smart-upload/recommendations/batch", files, { analysis_mode: analysisMode, candidate_limit: candidateLimit });
       setResult(data);
     } catch (err) {
       setError(err.message);
@@ -580,7 +602,7 @@ function SmartUploadPage({ onBack }) {
         <div>
           <p className="eyebrow">DEV Preparation</p>
           <h2>Upload Evidence Pintar</h2>
-          <p>Analisis file wajib memakai API DeepSeek V4 untuk menentukan kandidat KK, detail parameter, dan Grade tujuan.</p>
+          <p>Analisis file wajib memakai API DeepSeek V4. Pilih mode berdasarkan kebutuhan akurasi, waktu tunggu, dan estimasi biaya.</p>
         </div>
         <div className="smart-upload-mode">
           <StatusPill
@@ -594,6 +616,9 @@ function SmartUploadPage({ onBack }) {
           </button>
         </div>
       </div>
+
+      <AnalysisModePicker value={analysisMode} onChange={setAnalysisMode} />
+      <CandidateLimitControl value={candidateLimit} onChange={setCandidateLimit} />
 
       <form className="upload-analyzer" onSubmit={analyzeFile}>
         <label className="file-drop-zone">
@@ -625,6 +650,110 @@ function SmartUploadPage({ onBack }) {
   );
 }
 
+
+function AnalysisModePicker({ value, onChange }) {
+  return (
+    <section className="analysis-mode-panel" aria-label="Mode analisis AI">
+      <div className="analysis-mode-heading">
+        <div>
+          <h3>Mode Analisis</h3>
+          <p>Pilih seberapa banyak konteks dokumen yang dikirim ke DeepSeek V4.</p>
+        </div>
+        <span>{ANALYSIS_MODE_OPTIONS.find((item) => item.value === value)?.label}</span>
+      </div>
+      <div className="analysis-mode-grid">
+        {ANALYSIS_MODE_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={option.value === value ? "analysis-mode-card active" : "analysis-mode-card"}
+            onClick={() => onChange(option.value)}
+          >
+            <strong>{option.label}</strong>
+            <span>{option.title}</span>
+            <small>{option.description}</small>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+function CandidateLimitControl({ value, onChange }) {
+  const presets = [5, 10, 20, 50];
+  return (
+    <section className="candidate-limit-panel" aria-label="Batas kandidat kertas kerja">
+      <div>
+        <h3>Batas Kandidat Kertas Kerja</h3>
+        <p>Semua KK tetap eligible. Angka ini hanya membatasi berapa kandidat teratas yang dikirim ke DeepSeek untuk satu putaran uji.</p>
+      </div>
+      <div className="candidate-limit-controls">
+        <label>
+          <span>Limit kandidat</span>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={value}
+            onChange={(event) => onChange(clampCandidateLimit(event.target.value))}
+          />
+        </label>
+        <div className="candidate-limit-presets" aria-label="Preset limit kandidat">
+          {presets.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              className={Number(value) === preset ? "active" : ""}
+              onClick={() => onChange(preset)}
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AnalysisSummary({ analysis }) {
+  const pageText = analysis.scanned_pages
+    ? `${analysis.scanned_pages}${analysis.total_pages ? ` dari ${analysis.total_pages}` : ""} halaman`
+    : null;
+  const sheetText = analysis.scanned_sheets
+    ? `${analysis.scanned_sheets}${analysis.total_sheets ? ` dari ${analysis.total_sheets}` : ""} sheet`
+    : null;
+  return (
+    <section className="analysis-summary" aria-label="Ringkasan konteks AI">
+      <div>
+        <span>Mode</span>
+        <strong>{analysis.label || analysis.mode}</strong>
+        <small>{analysis.description}</small>
+      </div>
+      <div>
+        <span>Dipindai</span>
+        <strong>{pageText || sheetText || `${formatNumber(analysis.extracted_char_count || 0)} karakter`}</strong>
+        <small>{analysis.page_strategy ? `Strategi: ${analysis.page_strategy}` : analysis.method}</small>
+      </div>
+      <div>
+        <span>Dikirim ke AI</span>
+        <strong>{formatNumber(analysis.sent_char_count || 0)} karakter</strong>
+        <small>{analysis.scanned_text_pages ? `${analysis.scanned_text_pages} halaman berteks` : `Input ~${formatNumber(analysis.estimated_input_tokens || 0)} token`}</small>
+      </div>
+      <div>
+        <span>Kandidat KK</span>
+        <strong>{formatNumber(analysis.candidate_count || 0)} / {formatNumber(analysis.candidate_limit || 0)}</strong>
+        <small>Pool {formatNumber(analysis.candidate_pool_count || 0)} kandidat</small>
+      </div>
+      <div>
+        <span>Estimasi Biaya</span>
+        <strong>{formatUsdRange(analysis.estimated_cost_usd)}</strong>
+        <small>Output ~{formatNumber(analysis.estimated_output_tokens || 0)} token</small>
+      </div>
+    </section>
+  );
+}
+
 function SmartUploadResults({ result }) {
   if (Array.isArray(result?.results)) {
     return (
@@ -632,9 +761,15 @@ function SmartUploadResults({ result }) {
         <div className="section-heading compact-heading">
           <div>
             <h3>Hasil Analisis Batch</h3>
-            <p>{result.count} file selesai dianalisis.</p>
+            <p>{result.count} file selesai dianalisis sebagai file individual dan sebagai satu paket evidence.</p>
+          </div>
+          <div className="ai-status-box">
+            <strong>Batch AI</strong>
+            <span>{result.batch_ai?.status || "skipped"}</span>
           </div>
         </div>
+        {result.batch_ai?.message ? <Notice tone={noticeToneForAi(result.batch_ai.status)} text={result.batch_ai.message} /> : null}
+        {result.batch_analysis ? <BatchEvidencePanel analysis={result.batch_analysis} files={result.results.map((item) => item.file)} /> : null}
         <div className="batch-result-list">
           {result.results.map((item, index) => (
             <SmartUploadResult key={item.review_id || index} result={item} ordinal={index + 1} />
@@ -646,27 +781,194 @@ function SmartUploadResults({ result }) {
   return <SmartUploadResult result={result} />;
 }
 
+function BatchEvidencePanel({ analysis, files }) {
+  const placements = analysis?.placements ?? {};
+  return (
+    <section className="batch-analysis-panel" aria-label="Analisis paket evidence">
+      <div className="batch-analysis-main">
+        <div>
+          <span>Kesimpulan Paket Evidence</span>
+          <strong>{analysis.package_type || "Paket Evidence SPIP"}</strong>
+          <p>{analysis.summary || "AI belum memberi ringkasan paket evidence."}</p>
+        </div>
+        <div>
+          <span>Strategi Penempatan</span>
+          <p>{analysis.upload_strategy || analysis.main_conclusion || "Gunakan penempatan utama untuk upload, lalu catat rujukan pendukung bila evidence yang sama relevan lintas KK."}</p>
+        </div>
+      </div>
+      {analysis.package_gate ? <PackageGatePanel gate={analysis.package_gate} /> : null}
+      <BatchPlacementList title="Penempatan Utama Paket" placements={placements.primary ?? []} files={files} tone="primary" />
+      <BatchPlacementList title="Penempatan Pendukung Paket" placements={placements.supporting ?? []} files={files} tone="supporting" />
+      <BatchPlacementList title="Penempatan Lemah / Opsional Paket" placements={placements.weak ?? []} files={files} tone="weak" />
+    </section>
+  );
+}
+
+function BatchPlacementList({ title, placements, files, tone }) {
+  if (!placements || placements.length === 0) return null;
+  return (
+    <div className={`placement-section placement-${tone}`}>
+      <div className="placement-heading">
+        <div>
+          <h4>{title}</h4>
+          <p>Hasil interpretasi beberapa file sebagai satu paket, bukan hanya matching per file.</p>
+        </div>
+        <span>{placements.length} lokasi</span>
+      </div>
+      <div className="placement-list">
+        {placements.map((placement, index) => (
+          <article className="placement-card" key={`${title}-${placement.kk_id}-${placement.detail_kode}-${placement.grade}-${index}`}>
+            <div>
+              <strong>{placement.kk_id || "KK"} / {placement.kode || "-"} / {placement.detail_kode || "-"} · Grade {placement.grade || "-"}</strong>
+              <p>{placement.subunsur_name}</p>
+              {placement.uraian ? <small>{placement.uraian}</small> : null}
+            </div>
+            <div className="placement-meta">
+              {placement.reasoning_score !== null && placement.reasoning_score !== undefined ? <span>{Math.round(placement.reasoning_score)}%</span> : placement.confidence !== null && placement.confidence !== undefined ? <span>{Math.round(placement.confidence * 100)}%</span> : null}
+              <em>{placement.candidate_status || "Paket"}</em>
+            </div>
+            {placement.reason ? <p className="placement-reason">{placement.reason}</p> : null}
+            <div className="placement-actions">
+              <span>File terkait: {relatedFileNames(placement.file_indexes, files)}</span>
+              {placement.public_url ? (
+                <a className="row-link-button" href={placement.public_url} target="_blank" rel="noreferrer">
+                  <ExternalLink size={15} />
+                  Buka Folder
+                </a>
+              ) : null}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function relatedFileNames(indexes, files) {
+  if (!Array.isArray(indexes) || indexes.length === 0) return "semua / belum dipetakan";
+  return indexes
+    .map((index) => files?.[index]?.name)
+    .filter(Boolean)
+    .slice(0, 4)
+    .join(", ") || "belum dipetakan";
+}
+
+function PackageGatePanel({ gate }) {
+  const chainLabels = {
+    kebijakan: "Kebijakan",
+    sosialisasi: "Sosialisasi",
+    implementasi: "Implementasi",
+    evaluasi: "Evaluasi",
+    perbaikan: "Perbaikan",
+  };
+  return (
+    <section className="reasoning-gate-panel package-gate-panel" aria-label="Gate paket evidence">
+      <div className="reasoning-gate-main">
+        <div>
+          <span>Skor Paket</span>
+          <strong>{Math.round(gate.score ?? 0)}%</strong>
+          <small>{gate.status}</small>
+        </div>
+        <div>
+          <span>Grade Aman Paket</span>
+          <strong>{gate.safe_grade || "Belum aman"}</strong>
+          <small>{gate.message}</small>
+        </div>
+      </div>
+      <div className="chain-chip-row">
+        {Object.entries(chainLabels).map(([key, label]) => (
+          <span key={key} className={gate.chain?.[key] ? "chain-chip active" : "chain-chip"}>{label}</span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ReasoningGatePanel({ gate }) {
+  const classification = gate?.classification ?? {};
+  return (
+    <section className="reasoning-gate-panel" aria-label="Reasoning Gate V2.5">
+      <div className="reasoning-gate-heading">
+        <div>
+          <h4>{gate.version || "Reasoning Gate"}</h4>
+          <p>{gate.message}</p>
+        </div>
+        <span>{gate.top_score ? `${Math.round(gate.top_score)}%` : "-"}</span>
+      </div>
+      <div className="reasoning-gate-grid">
+        <div>
+          <span>Konteks KK</span>
+          <strong>{classification.best_kk || "Belum jelas"}</strong>
+          <small>{classification.best_kk_label}</small>
+        </div>
+        <div>
+          <span>Jenis Evidence</span>
+          <strong>{classification.evidence_type_label || "Belum terklasifikasi"}</strong>
+          <small>Grade aman: {classification.safe_grade_ceiling || "-"}</small>
+        </div>
+        <div>
+          <span>Ambang Utama</span>
+          <strong>&gt;{gate.primary_threshold}%</strong>
+          <small>{gate.top_status || "Belum ada kandidat"}</small>
+        </div>
+      </div>
+      {gate.grade_rules ? (
+        <div className="grade-rule-strip" aria-label="Aturan maturity grade">
+          {Object.entries(gate.grade_rules).map(([grade, label]) => (
+            <span key={grade}><b>{grade}</b> {label}</span>
+          ))}
+        </div>
+      ) : null}
+      {classification.warnings?.length ? (
+        <div className="gate-warning-list">
+          {classification.warnings.map((warning) => <span key={warning}>{warning}</span>)}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function ScoreBreakdown({ scorecard }) {
+  if (!scorecard) return null;
+  const items = [
+    ["Konteks KK", scorecard.kk_context],
+    ["Subunsur", scorecard.subunsur_match],
+    ["Grade", scorecard.grade_match],
+    ["Formalitas", scorecard.evidence_strength],
+    ["Periode", scorecard.period_match],
+  ];
+  return (
+    <div className="score-breakdown">
+      {items.map(([label, value]) => (
+        <span key={label}>{label}: <b>{value}</b></span>
+      ))}
+    </div>
+  );
+}
+
 function SmartUploadResult({ result, ordinal }) {
   const candidates = result.candidates ?? [];
-  const [uploadingIndex, setUploadingIndex] = useState(null);
+  const [actionState, setActionState] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
   const [uploadError, setUploadError] = useState("");
   const uploadAllowed = Boolean(result.upload?.allow_real_upload);
+  const actionsEnabled = Boolean(result.upload?.actions_enabled);
 
-  async function confirmUpload(index) {
-    setUploadingIndex(index);
+  async function performAction(actionType, index = null) {
+    setActionState(`${actionType}:${index ?? "review"}`);
     setUploadError("");
     setUploadResult(null);
     try {
-      const data = await apiPost("/api/smart-upload/confirm-upload", {
+      const data = await apiPost("/api/smart-upload/action", {
         review_id: result.review_id,
         candidate_index: index,
+        action_type: actionType,
       });
       setUploadResult(data);
     } catch (err) {
       setUploadError(err.message);
     } finally {
-      setUploadingIndex(null);
+      setActionState(null);
     }
   }
 
@@ -678,21 +980,43 @@ function SmartUploadResult({ result, ordinal }) {
           <p>{result.file?.name} · {formatBytes(result.file?.size_bytes)}</p>
         </div>
         <div className="ai-status-box">
-          <strong>AI</strong>
+          <strong>Status AI</strong>
           <span>{result.ai?.status || "skipped"}</span>
         </div>
       </div>
       {result.extraction ? <Notice tone={result.extraction.status === "ok" ? "info" : "neutral"} text={`Ekstraksi ${result.extraction.method}: ${result.extraction.message || result.extraction.status}`} /> : null}
+      {result.extraction?.quality_warning ? <Notice tone="warning" text={result.extraction.quality_warning} /> : null}
+      {result.analysis ? <AnalysisSummary analysis={result.analysis} /> : null}
+      {result.reasoning_gate ? <ReasoningGatePanel gate={result.reasoning_gate} /> : null}
       {result.ai?.message ? <Notice tone={noticeToneForAi(result.ai.status)} text={result.ai.message} /> : null}
+      {result.evidence_analysis ? (
+        <EvidenceAnalysisPanel
+          analysis={result.evidence_analysis}
+          uploadAllowed={uploadAllowed}
+          actionsEnabled={actionsEnabled}
+          actionState={actionState}
+          onAction={performAction}
+        />
+      ) : null}
+      <div className="review-action-bar">
+        <div>
+          <strong>Aksi Kurasi Manual</strong>
+          <span>Gunakan jika hasil rekomendasi AI tidak sesuai dan perlu dikurasi ulang.</span>
+        </div>
+        <button
+          className="row-action-button danger-subtle"
+          type="button"
+          onClick={() => performAction("reject")}
+          disabled={!actionsEnabled || actionState !== null}
+          title="Catat bahwa rekomendasi ini ditolak dan perlu kurasi manual"
+        >
+          {actionState === "reject:review" ? <Loader2 className="spin" size={15} /> : <AlertCircle size={15} />}
+          Tolak Rekomendasi
+        </button>
+      </div>
       {!uploadAllowed ? <Notice tone="info" text="Upload sungguhan masih dikunci di DEV. Ubah SMART_UPLOAD_ALLOW_REAL_UPLOAD=true hanya saat siap mengirim file ke Lumbung File." /> : null}
       {uploadError ? <Notice tone="danger" text={uploadError} /> : null}
-      {uploadResult ? <Notice tone="info" text={`Upload berhasil: ${uploadResult.message}`} /> : null}
-      {result.preview_text ? (
-        <div className="preview-box">
-          <span>Preview Teks</span>
-          <p>{result.preview_text}</p>
-        </div>
-      ) : null}
+      {uploadResult ? <Notice tone="info" text={`Aksi berhasil: ${uploadResult.message}`} /> : null}
       <div className="candidate-list">
         {candidates.map((candidate, index) => (
           <article className="candidate-card" key={`${candidate.kk_id}-${candidate.detail_kode}-${candidate.grade}-${index}`}>
@@ -703,12 +1027,21 @@ function SmartUploadResult({ result, ordinal }) {
                   <strong>{candidate.kk_id} / {candidate.kode} / {candidate.detail_kode} · Grade {candidate.grade}</strong>
                   <p>{candidate.subunsur_name}</p>
                 </div>
-                <span className="confidence-pill">{Math.round((candidate.confidence ?? 0) * 100)}%</span>
+                <div className="candidate-score-stack">
+                  <span className={candidate.primary_allowed ? "confidence-pill" : "confidence-pill muted"}>{Math.round(candidate.reasoning_score ?? ((candidate.confidence ?? 0) * 100))}%</span>
+                  <small>{candidate.candidate_status || "Belum Dinilai"}</small>
+                </div>
               </div>
               <p className="candidate-parameter">{candidate.uraian}</p>
               <div className="candidate-reason">
                 {(candidate.reasons ?? []).map((reason) => <span key={reason}>{reason}</span>)}
               </div>
+              <ScoreBreakdown scorecard={candidate.reasoning_scorecard} />
+              {candidate.gate_warnings?.length ? (
+                <div className="gate-warning-list compact">
+                  {candidate.gate_warnings.map((warning) => <span key={warning}>{warning}</span>)}
+                </div>
+              ) : null}
               <div className="candidate-actions">
                 <span>{candidate.folder_path}</span>
                 <div className="candidate-button-group">
@@ -721,12 +1054,12 @@ function SmartUploadResult({ result, ordinal }) {
                   <button
                     className="row-action-button"
                     type="button"
-                    onClick={() => confirmUpload(index)}
-                    disabled={!uploadAllowed || uploadingIndex !== null}
-                    title={uploadAllowed ? "Konfirmasi upload file ke folder kandidat ini" : "Upload sungguhan masih dikunci di DEV"}
+                    onClick={() => performAction("upload_primary", index)}
+                    disabled={!uploadAllowed || actionState !== null || !candidate.primary_allowed}
+                    title={candidate.primary_allowed ? (uploadAllowed ? "Upload file sebagai penempatan utama" : "Upload sungguhan masih dikunci di DEV") : "Kandidat belum melewati Reasoning Gate >80%"}
                   >
-                    {uploadingIndex === index ? <Loader2 className="spin" size={15} /> : <CheckCircle2 size={15} />}
-                    Konfirmasi Upload
+                    {actionState === `upload_primary:${index}` ? <Loader2 className="spin" size={15} /> : <CheckCircle2 size={15} />}
+                    Upload Utama
                   </button>
                 </div>
               </div>
@@ -736,6 +1069,114 @@ function SmartUploadResult({ result, ordinal }) {
       </div>
       {candidates.length === 0 ? <EmptyState text={result.ai?.status === "ok" ? "Belum ada kandidat yang cukup kuat dari DeepSeek V4." : "DeepSeek V4 belum berhasil merespons, sehingga aplikasi tidak menampilkan rekomendasi lokal."} /> : null}
     </section>
+  );
+}
+
+
+function EvidenceAnalysisPanel({ analysis, uploadAllowed, actionsEnabled, actionState, onAction }) {
+  const placements = analysis?.placements ?? {};
+  return (
+    <section className="evidence-analysis-panel" aria-label="Analisis evidence multi KK">
+      <div className="evidence-conclusion-card">
+        <span>Kesimpulan Evidence</span>
+        <p>{analysis.summary || "DeepSeek belum memberikan kesimpulan evidence yang cukup lengkap."}</p>
+      </div>
+
+      <PlacementList
+        title="Penempatan Utama"
+        description="Lokasi paling kuat untuk file ini jika harus diprioritaskan."
+        placements={placements.primary ?? []}
+        tone="primary"
+        uploadLabel="Upload Utama"
+        actionType="upload_primary"
+        actionAllowed={uploadAllowed}
+        actionState={actionState}
+        onAction={onAction}
+      />
+      <PlacementList
+        title="Penempatan Pendukung"
+        description="Lokasi yang bisa didukung oleh file yang sama, tetapi bukan fungsi evidence utama."
+        placements={placements.supporting ?? []}
+        tone="supporting"
+        uploadLabel="Rujuk Pendukung"
+        actionType="reference_supporting"
+        actionAllowed={actionsEnabled}
+        actionState={actionState}
+        onAction={onAction}
+      />
+      <PlacementList
+        title="Penempatan Lemah / Opsional"
+        description="Masih mungkin relevan, tetapi perlu evidence lain agar aman."
+        placements={placements.weak ?? []}
+        tone="weak"
+        uploadLabel="Rujuk Opsional"
+        actionType="reference_optional"
+        actionAllowed={actionsEnabled}
+        actionState={actionState}
+        onAction={onAction}
+      />
+
+    </section>
+  );
+}
+
+function PlacementList({ title, description, placements, tone, uploadLabel, actionType, actionAllowed, actionState, onAction }) {
+  if (!placements || placements.length === 0) return null;
+  return (
+    <div className={`placement-section placement-${tone}`}>
+      <div className="placement-heading">
+        <div>
+          <h4>{title}</h4>
+          <p>{description}</p>
+        </div>
+        <span>{placements.length} lokasi</span>
+      </div>
+      <div className="placement-list">
+        {placements.map((placement, index) => {
+          const candidateIndex = Number.isInteger(placement.index) ? placement.index : null;
+          const stateKey = `${actionType}:${candidateIndex}`;
+          const gateAllowed = actionType !== "upload_primary" || placement.primary_allowed !== false;
+          const buttonAllowed = actionAllowed && gateAllowed;
+          return (
+            <article className="placement-card" key={`${title}-${placement.kk_id}-${placement.detail_kode}-${placement.grade}-${index}`}>
+              <div>
+                <strong>{placement.kk_id || "KK"} / {placement.kode || "-"} / {placement.detail_kode || "-"} · Grade {placement.grade || "-"}</strong>
+                <p>{placement.subunsur_name}</p>
+                {placement.uraian ? <small>{placement.uraian}</small> : null}
+              </div>
+              <div className="placement-meta">
+                {placement.reasoning_score !== null && placement.reasoning_score !== undefined ? <span>{Math.round(placement.reasoning_score)}%</span> : placement.confidence !== null && placement.confidence !== undefined ? <span>{Math.round(placement.confidence * 100)}%</span> : null}
+                {placement.candidate_status ? <em>{placement.candidate_status}</em> : placement.role ? <em>{placement.role}</em> : null}
+              </div>
+              {placement.reason ? <p className="placement-reason">{placement.reason}</p> : null}
+              <div className="placement-actions">
+                <span>{placement.folder_path}</span>
+                <div className="candidate-button-group">
+                  {placement.public_url ? (
+                    <a className="row-link-button" href={placement.public_url} target="_blank" rel="noreferrer">
+                      <ExternalLink size={15} />
+                      Buka Folder
+                    </a>
+                  ) : null}
+                  {candidateIndex !== null ? (
+                    <button
+                      className="row-action-button"
+                      type="button"
+                      onClick={() => onAction(actionType, candidateIndex)}
+                      disabled={!buttonAllowed || actionState !== null}
+                      title={buttonAllowed ? `${uploadLabel} untuk folder ini` : actionType === "upload_primary" ? "Belum melewati Reasoning Gate >80% atau upload dikunci" : "Aksi belum tersedia"}
+                    >
+                      {actionState === stateKey ? <Loader2 className="spin" size={15} /> : <CheckCircle2 size={15} />}
+                      {uploadLabel}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -979,6 +1420,26 @@ function EmptyState({ text }) {
 
 function slug(value) {
   return value.toLowerCase().replaceAll(" ", "-");
+}
+
+
+
+function clampCandidateLimit(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed)) return 1;
+  return Math.max(1, Math.min(100, parsed));
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("id-ID").format(Math.round(Number(value) || 0));
+}
+
+function formatUsdRange(value) {
+  if (!value?.low && !value?.high) return "Belum tersedia";
+  const low = Number(value.low || 0);
+  const high = Number(value.high || low);
+  if (low === high) return `$${low.toFixed(7)}`;
+  return `$${low.toFixed(7)}-${high.toFixed(7)}`;
 }
 
 function formatBytes(value) {

@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     deepseek_model: str = "deepseek-v4-flash"
     deepseek_thinking_mode: str = "disabled"
     ai_send_full_document: bool = False
-    ai_max_candidates: int = 5
-    ai_timeout_seconds: int = 20
+    ai_max_candidates: int = 3
+    ai_timeout_seconds: int = 90
 
     model_config = SettingsConfigDict(env_file=(".env", ".env.dev"), env_file_encoding="utf-8", extra="ignore")
 

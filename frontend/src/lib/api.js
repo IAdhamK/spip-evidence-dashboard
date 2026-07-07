@@ -14,8 +14,9 @@ export async function apiPost(path, body) {
   });
 }
 
-export async function apiUpload(path, file) {
+export async function apiUpload(path, file, fields = {}) {
   const body = new FormData();
+  appendFields(body, fields);
   body.append("file", file);
   return request(path, {
     method: "POST",
@@ -23,12 +24,21 @@ export async function apiUpload(path, file) {
   });
 }
 
-export async function apiUploadMany(path, files) {
+export async function apiUploadMany(path, files, fields = {}) {
   const body = new FormData();
+  appendFields(body, fields);
   files.forEach((file) => body.append("files", file));
   return request(path, {
     method: "POST",
     body,
+  });
+}
+
+function appendFields(body, fields) {
+  Object.entries(fields).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      body.append(key, value);
+    }
   });
 }
 
