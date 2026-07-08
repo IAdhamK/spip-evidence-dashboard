@@ -52,6 +52,40 @@ const STATUS_ICONS = {
   Final: ShieldCheck,
 };
 
+function parseRouteHash() {
+  if (typeof window === "undefined") return { page: "dashboard" };
+  const hash = window.location.hash || "";
+  if (hash === "#/smart-upload") return { page: "smart-upload" };
+  if (hash.startsWith("#/detail/")) {
+    const [, , kkId, kode] = hash.split("/");
+    if (kkId && kode) {
+      return {
+        page: "detail",
+        kkId: decodeURIComponent(kkId),
+        kode: decodeURIComponent(kode),
+      };
+    }
+  }
+  return { page: "dashboard" };
+}
+
+function updateRouteHash(route) {
+  if (typeof window === "undefined") return;
+  let nextHash = "";
+  if (route?.page === "smart-upload") {
+    nextHash = "#/smart-upload";
+  } else if (route?.page === "detail" && route.kkId && route.kode) {
+    nextHash = `#/detail/${encodeURIComponent(route.kkId)}/${encodeURIComponent(route.kode)}`;
+  }
+  if (!nextHash) {
+    window.history.pushState(null, "", `${window.location.pathname}${window.location.search}`);
+    return;
+  }
+  if (window.location.hash !== nextHash) {
+    window.history.pushState(null, "", `${window.location.pathname}${window.location.search}${nextHash}`);
+  }
+}
+
 function App() {
   const staticSnapshot = isStaticSnapshot();
   const [dashboard, setDashboard] = useState(null);
@@ -105,12 +139,16 @@ function App() {
     }
   }
 
-  async function openDetail(folder) {
+  async function openDetail(folder, { updateRoute = true } = {}) {
     setDetailLoading(true);
     setSelected(null);
+    setSmartUploadOpen(false);
     try {
       const detail = await apiGet(`/api/subunsur/${encodeURIComponent(folder.kk_id)}/${encodeURIComponent(folder.kode)}`);
       setSelected(detail);
+      if (updateRoute) {
+        updateRouteHash({ page: "detail", kkId: folder.kk_id, kode: folder.kode });
+      }
       startFolderBackgroundSync(folder.kk_id, folder.kode);
     } catch (err) {
       setError(err.message);
@@ -123,6 +161,24 @@ function App() {
     const detail = await apiGet(`/api/subunsur/${encodeURIComponent(kkId)}/${encodeURIComponent(kode)}`);
     setSelected(detail);
     return detail;
+  }
+
+  async function restoreRouteFromHash() {
+    const route = parseRouteHash();
+    if (route.page === "smart-upload") {
+      setSelected(null);
+      setDetailLoading(false);
+      setSmartUploadOpen(true);
+      return;
+    }
+    if (route.page === "detail") {
+      setSmartUploadOpen(false);
+      await openDetail({ kk_id: route.kkId, kode: route.kode }, { updateRoute: false });
+      return;
+    }
+    setSelected(null);
+    setDetailLoading(false);
+    setSmartUploadOpen(false);
   }
 
   async function loadSyncStatus() {
@@ -189,6 +245,16 @@ function App() {
     loadData();
     loadSyncStatus();
     loadSmartUploadConfig();
+    restoreRouteFromHash();
+    const handleRouteChange = () => {
+      restoreRouteFromHash();
+    };
+    window.addEventListener("hashchange", handleRouteChange);
+    window.addEventListener("popstate", handleRouteChange);
+    return () => {
+      window.removeEventListener("hashchange", handleRouteChange);
+      window.removeEventListener("popstate", handleRouteChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -268,6 +334,7 @@ function App() {
               onClick={() => {
                 setSelected(null);
                 setSmartUploadOpen(true);
+                updateRouteHash({ page: "smart-upload" });
               }}
               title="Buka halaman rekomendasi folder evidence berbasis knowledge base"
             >
@@ -300,7 +367,10 @@ function App() {
         <DetailPage
           detail={selected}
           meta={meta}
-          onBack={() => setSelected(null)}
+          onBack={() => {
+            setSelected(null);
+            updateRouteHash({ page: "dashboard" });
+          }}
           onSync={syncSelectedDetail}
           onWatchFolder={watchFolder}
           syncing={detailSyncing}
@@ -312,7 +382,12 @@ function App() {
           <span>Memuat dashboard evidence...</span>
         </section>
       ) : smartUploadOpen ? (
-        <SmartUploadPage onBack={() => setSmartUploadOpen(false)} />
+        <SmartUploadPage
+          onBack={() => {
+            setSmartUploadOpen(false);
+            updateRouteHash({ page: "dashboard" });
+          }}
+        />
       ) : (
         <>
           <Summary dashboard={dashboard} meta={meta} />
