@@ -5552,7 +5552,80 @@
     },
     "3.10": {
       "matrix_subunsur_name": "Akuntabilitas terhadap Sumber Daya dan Pencatatannya",
-      "parameters": []
+      "parameters": [
+        {
+          "source_row": 185,
+          "no": "1",
+          "detail_kode": "3.10.1",
+          "uraian": "Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya keuangan yang diberikan/dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi",
+          "kode_parameter": {
+            "spip": "SPIP",
+            "mri": "-",
+            "iepk": "-"
+          },
+          "grades": [
+            {
+              "grade": "A",
+              "kode_parameter": {
+                "spip": "SPIP",
+                "mri": "-",
+                "iepk": "-"
+              },
+              "kriteria": "Pertanggungjawaban terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+              "penjelasan": "- Proses pertanggungjawaban telah mampu menyesuaikan dengan perubahan lingkungan strategis\n- Proses pertanggungjawaban secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang\n- Pertanggungjawaban terhadap sumber daya dan pencatatannya telah dibagi habis kepada pihak/pegawai sesuai dengan kewenangannya",
+              "cara_pengujian": "W/D/O"
+            },
+            {
+              "grade": "B",
+              "kode_parameter": {
+                "spip": "SPIP",
+                "mri": "-",
+                "iepk": "-"
+              },
+              "kriteria": "Kebijakan dan implementasi terkait akuntabilitas sumber daya dan pencatatannya telah dievaluasi sehingga dapat diketahui efektivitasnya",
+              "penjelasan": "Kebijakan dan implementasi telah dievaluasi dengan ketentuan:\n- Berkala .\n- Terdokumentasi\n- Dilakukan untuk menangani residual risk\n- Hasil evaluasi telah ditindak lanjuti \n- Perbaikan telah menghasilkan kinerja yang lebih baik",
+              "cara_pengujian": "W/D/O"
+            },
+            {
+              "grade": "C",
+              "kode_parameter": {
+                "spip": "SPIP",
+                "mri": "-",
+                "iepk": "-"
+              },
+              "kriteria": "Sumber daya dan pencatatannya telah dipertanggungjawabkan oleh pihak/pegawai yang ditetapkan sesuai kebijakan/prosedur yang ditetapkan",
+              "penjelasan": "- Pertanggungjawaban dilaksanakan sesuai ketentuan (peraturan/keputusan, SOP, petunjuk teknis/petunjuk pelaksanaan, dan/atau kebijakan lain)\n- Dilakukan perbandingan berkala antara sumber daya dengan pencatatannya\n- Pertanggungjawaban dilaksanakan baik pada kegiatan yang terkait dengan keuangan (akuntansi keuangan dan BMN/BMD) maupun kegiatan teknis operasional organisasi\n- Pertanggungjawaban terhadap sumber daya dan pencatatannya direviu secara periodik\n- Fungsi pertanggungjawaban dilakukan sebagai upaya untuk menangani risiko yang disebabkan kelemahan alur/prosedur",
+              "cara_pengujian": "W/D/O"
+            },
+            {
+              "grade": "D",
+              "kode_parameter": {
+                "spip": "SPIP",
+                "mri": "-",
+                "iepk": "-"
+              },
+              "kriteria": "Kebijakan terkait pertanggungjawaban sumber daya dan pencatatannya telah dikomunikasikan dan dipahami oleh pihak yang berkepentingan",
+              "penjelasan": "- Kebijakan telah dipahami oleh penanggungjawab pengelolaan keuangan dan BMN/BMD\n- Kebijakan telah dikomunikasikan kepada pimpinan (struktural) dan pegawai",
+              "cara_pengujian": "W/D/O"
+            },
+            {
+              "grade": "E",
+              "kode_parameter": {
+                "spip": "SPIP",
+                "mri": "-",
+                "iepk": "-"
+              },
+              "kriteria": "Terdapat kebijakan yang mengatur prosedur pertanggungjawaban sumber daya dan pencatatannya",
+              "penjelasan": "Kebijakan telah mengatur:\n- Mekanisme pertanggungjawaban penyimpanan, penggunaan, dan pencatatan sumber daya\n- Penetapan pihak/pegawai yang harus bertanggungjawab\n- Penetapan bentuk pertanggungjawaban yang harus dilaksanakan/dibuat",
+              "cara_pengujian": "W/D/O"
+            }
+          ],
+          "cara_pengujian": "W/D/O",
+          "grade_sample": "A",
+          "kriteria_sample": "Pertanggungjawaban terhadap sumber daya dan pencatatannya telah diperbaiki secara berkelanjutan dan secara optimal mampu mendukung pencapaian tujuan organisasi",
+          "penjelasan_sample": "- Proses pertanggungjawaban telah mampu menyesuaikan dengan perubahan lingkungan strategis\n- Proses pertanggungjawaban secara efektif mampu memitigasi risiko penggunaan secara tidak sah dan penyalahgunaan wewenang\n- Pertanggungjawaban terhadap sumber daya dan pencatatannya telah dibagi habis kepada pihak/pegawai sesuai dengan kewenangannya"
+        }
+      ]
     },
     "3.11": {
       "matrix_subunsur_name": "Dokumentasi yang Baik atas SPI serta Transaksi dan Kejadian Penting",

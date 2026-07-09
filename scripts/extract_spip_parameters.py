@@ -100,13 +100,19 @@ def extract_sheet(ws) -> dict[str, dict[str, Any]]:
                     "parameters": [],
                 },
             )
-            continue
+
+            has_parameter_on_same_row = clean(values[7]).upper() in GRADE_VALUES and compact_text(values[3])
+            if not has_parameter_on_same_row:
+                continue
 
         if not current_kode or grade not in GRADE_VALUES:
             continue
 
         no = parameter_no(values[2])
         uraian = compact_text(values[3])
+        if uraian and not no and current_parameter is None:
+            no = str(len(groups[current_kode]["parameters"]) + 1)
+
         if no and uraian:
             current_parameter = {
                 "source_row": row_idx,
