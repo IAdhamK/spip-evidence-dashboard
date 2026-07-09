@@ -335,6 +335,46 @@ class Database:
             ).fetchone()
             return dict(row) if row else None
 
+    def parameter_folder_entry(self, kk_id: str, kode: str) -> dict | None:
+        with self.connect() as conn:
+            folder = conn.execute(
+                "SELECT folder_path FROM folders WHERE kk_id = ? AND kode = ?",
+                (kk_id, kode),
+            ).fetchone()
+            if not folder:
+                return None
+
+            parameter_count = conn.execute(
+                "SELECT COUNT(*) AS total FROM parameters WHERE kk_id = ? AND kode = ?",
+                (kk_id, kode),
+            ).fetchone()["total"]
+            parameter = conn.execute(
+                """
+                SELECT parameter_no, uraian
+                FROM parameters
+                WHERE kk_id = ? AND kode = ?
+                ORDER BY source_row, id
+                LIMIT 1
+                """,
+                (kk_id, kode),
+            ).fetchone()
+            if not parameter:
+                return None
+
+            parameter_no = str(parameter["parameter_no"] or "").strip()
+            detail_kode = f"{kode}.{parameter_no}" if parameter_no else kode
+            folder_path = "/".join(
+                [
+                    folder["folder_path"].strip("/"),
+                    parameter_folder(detail_kode, parameter["uraian"] or ""),
+                ]
+            )
+            return {
+                "detail_kode": detail_kode,
+                "folder_path": folder_path,
+                "parameter_count": parameter_count,
+            }
+
     def files(self, kk_id: str, kode: str) -> list[dict]:
         with self.connect() as conn:
             rows = conn.execute(

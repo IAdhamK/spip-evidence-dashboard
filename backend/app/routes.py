@@ -32,13 +32,28 @@ def create_router(db: Database) -> APIRouter:
 
     def with_public_url(folder: dict) -> dict:
         settings = get_settings()
+        enriched = dict(folder)
+        parameter_entry = db.parameter_folder_entry(folder["kk_id"], folder["kode"])
+        if parameter_entry:
+            enriched["parameter_entry_folder_path"] = parameter_entry["folder_path"]
+            enriched["parameter_entry_detail_kode"] = parameter_entry["detail_kode"]
+            enriched["parameter_count"] = parameter_entry["parameter_count"]
+
         if not settings.has_share_token:
-            return folder
-        return {
-            **folder,
-            "public_url": folder.get("public_url")
-            or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, folder["folder_path"]),
-        }
+            return enriched
+
+        enriched["public_url"] = folder.get("public_url") or public_folder_link(
+            settings.lumbung_host,
+            settings.lumbung_share_token,
+            folder["folder_path"],
+        )
+        if parameter_entry:
+            enriched["parameter_entry_public_url"] = public_folder_link(
+                settings.lumbung_host,
+                settings.lumbung_share_token,
+                parameter_entry["folder_path"],
+            )
+        return enriched
 
     def hide_smart_upload_preview(result: dict) -> dict:
         if not isinstance(result, dict):

@@ -501,7 +501,12 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
             </tr>
           </thead>
           <tbody>
-            {folders.map((folder) => (
+            {folders.map((folder) => {
+              const lumbungUrl = folder.parameter_entry_public_url || folder.public_url;
+              const lumbungTitle = folder.parameter_entry_public_url
+                ? `Buka struktur parameter ${folder.parameter_entry_detail_kode || ""} di Lumbung File`
+                : "Buka folder Lumbung File untuk upload evidence";
+              return (
               <tr
                 key={`${folder.kk_id}-${folder.kode}`}
               >
@@ -533,14 +538,14 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
                       <FileText size={15} />
                       Detail
                     </button>
-                    {folder.public_url ? (
+                    {lumbungUrl ? (
                       <a
                         className="row-link-button lumbung-row-action"
-                        href={folder.public_url}
+                        href={lumbungUrl}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() => onWatchFolder(folder)}
-                        title="Buka folder Lumbung File untuk upload evidence"
+                        title={lumbungTitle}
                       >
                         <ExternalLink size={15} />
                         Lumbung
@@ -553,7 +558,8 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -564,6 +570,10 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
 
 function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, staticSnapshot }) {
   const files = detail.files ?? [];
+  const detailLumbungUrl = detail.parameter_entry_public_url || detail.public_url;
+  const detailLumbungTitle = detail.parameter_entry_public_url
+    ? `Buka struktur parameter ${detail.parameter_entry_detail_kode || ""} di Lumbung File`
+    : "Buka folder Lumbung File";
   return (
     <section className="detail-page">
       <button className="back-button" type="button" onClick={onBack}>
@@ -607,16 +617,17 @@ function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, stat
       <InfoBlock label="Panduan Evidence Umum" text={detail.evidence_hint} />
 
       <div className="detail-actions">
-        {detail.public_url ? (
+        {detailLumbungUrl ? (
           <a
             className="primary-button link-button"
-            href={detail.public_url}
+            href={detailLumbungUrl}
             target="_blank"
             rel="noreferrer"
             onClick={() => onWatchFolder(detail)}
+            title={detailLumbungTitle}
           >
             <ExternalLink size={18} />
-            Buka Folder
+            Buka Struktur Parameter
           </a>
         ) : (
           <span className="disabled-link">Link tersedia setelah sinkronisasi</span>
@@ -626,7 +637,7 @@ function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, stat
       <section className="file-list">
         <h3>Daftar File ({detail.file_count})</h3>
         {files.length === 0 ? (
-          <EmptyState text="Belum ada evidence yang terbaca. Klik Buka Folder untuk mengunggah melalui Lumbung File." />
+          <EmptyState text="Belum ada evidence yang terbaca. Gunakan tombol Buka pada folder Grade untuk upload paling tepat." />
         ) : (
           files.map((file) => <FileItem file={file} key={file.id} />)
         )}
