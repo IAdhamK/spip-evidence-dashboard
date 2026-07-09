@@ -4,6 +4,7 @@ import re
 
 
 GRADE_ORDER = ("A", "B", "C", "D", "E")
+PARAMETER_FOLDER_MAX_LENGTH = 240
 
 
 def safe_segment(value: str, max_length: int = 118) -> str:
@@ -16,7 +17,9 @@ def safe_segment(value: str, max_length: int = 118) -> str:
 
 
 def parameter_folder(detail_kode: str, uraian: str) -> str:
-    return safe_segment(f"{detail_kode} {uraian}")
+    label = f"{detail_kode} {uraian}"
+    label = re.sub(r"\bdiberikan\s*/\s*dikuasakan\b", "diberikan atau dikuasakan", label)
+    return safe_segment(label, max_length=PARAMETER_FOLDER_MAX_LENGTH)
 
 
 def grade_folder(grade: str) -> str:
