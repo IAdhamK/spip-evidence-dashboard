@@ -1,27 +1,78 @@
 services:
   backend:
+    init: true
     build:
       context: ./backend
     env_file:
       - .env
     environment:
       SMART_UPLOAD_ENABLED: "true"
-      SMART_UPLOAD_ALLOW_REAL_UPLOAD: "true"
+      SMART_UPLOAD_ALLOW_REAL_UPLOAD: "false"
       SMART_UPLOAD_REQUIRE_CONFIRMATION: "true"
       SMART_UPLOAD_MAX_BYTES: "0"
       SMART_UPLOAD_REQUIRE_AI: "true"
       AI_REASONING_ENABLED: "true"
-      AI_PROVIDER: deepseek
+      AI_PROVIDER: sumopod
       DEEPSEEK_BASE_URL: https://ai.sumopod.com/v1
       DEEPSEEK_CHAT_PATH: /chat/completions
-      DEEPSEEK_MODEL: deepseek-v4-flash
+      DEEPSEEK_RESPONSES_PATH: /responses
+      DEEPSEEK_MODEL: deepseek-v4-pro
+      ANALYSIS_API_SURFACE: responses
       DEEPSEEK_THINKING_MODE: disabled
       AI_SEND_FULL_DOCUMENT: "false"
       AI_MAX_CANDIDATES: "20"
+      ANALYSIS_PIPELINE_V2_ENABLED: "true"
+      ANALYSIS_QUEUE_BACKEND: ${ANALYSIS_QUEUE_BACKEND:-sqlite}
+      ANALYSIS_QUEUE_REDIS_URL: ${ANALYSIS_QUEUE_REDIS_URL:-}
+      ANALYSIS_QUEUE_REDIS_NAMESPACE: ${ANALYSIS_QUEUE_REDIS_NAMESPACE:-spip:analysis:v2}
+      ANALYSIS_QUEUE_REDIS_CONNECT_TIMEOUT_SECONDS: ${ANALYSIS_QUEUE_REDIS_CONNECT_TIMEOUT_SECONDS:-2}
+      ANALYSIS_QUEUE_REDIS_REQUIRE_TLS: ${ANALYSIS_QUEUE_REDIS_REQUIRE_TLS:-true}
+      ANALYSIS_EXPECTED_REPLICAS: ${ANALYSIS_EXPECTED_REPLICAS:-1}
+      ANALYSIS_WORKER_LEADER_LEASE_SECONDS: ${ANALYSIS_WORKER_LEADER_LEASE_SECONDS:-30}
+      ANALYSIS_WORKER_LEADER_HEARTBEAT_SECONDS: ${ANALYSIS_WORKER_LEADER_HEARTBEAT_SECONDS:-10}
+      ANALYSIS_PAYLOAD_STORAGE_BACKEND: ${ANALYSIS_PAYLOAD_STORAGE_BACKEND:-filesystem}
+      ANALYSIS_PAYLOAD_STORAGE_PATH: ${ANALYSIS_PAYLOAD_STORAGE_PATH:-/app/data/analysis-payloads}
+      ANALYSIS_PAYLOAD_STORAGE_FSYNC: ${ANALYSIS_PAYLOAD_STORAGE_FSYNC:-true}
+      ANALYSIS_PAYLOAD_STORAGE_ENCRYPTION_VALIDATED: ${ANALYSIS_PAYLOAD_STORAGE_ENCRYPTION_VALIDATED:-false}
+      ANALYSIS_STORAGE_ENCRYPTION_EVIDENCE_PATH: ${ANALYSIS_STORAGE_ENCRYPTION_EVIDENCE_PATH:-}
+      ANALYSIS_STORAGE_ENCRYPTION_KEY_PATH: ${ANALYSIS_STORAGE_ENCRYPTION_KEY_PATH:-}
+      ANALYSIS_PROMETHEUS_METRICS_ENABLED: "true"
+      ANALYSIS_COST_ALERT_USD_PER_HOUR: ${ANALYSIS_COST_ALERT_USD_PER_HOUR:-10.0}
+      ANALYSIS_MAPPING_REASONING_ENABLED: ${ANALYSIS_MAPPING_REASONING_ENABLED:-false}
+      ANALYSIS_ROUTING_STRUCTURED_MIN_COMPLEXITY: ${ANALYSIS_ROUTING_STRUCTURED_MIN_COMPLEXITY:-0.25}
+      ANALYSIS_ROUTING_MAPPING_MARGIN: ${ANALYSIS_ROUTING_MAPPING_MARGIN:-0.08}
+      ANALYSIS_ROUTING_VERIFIER_MIN_RISK: ${ANALYSIS_ROUTING_VERIFIER_MIN_RISK:-0.45}
+      ANALYSIS_LOCAL_OCR_ENABLED: "true"
+      ANALYSIS_LOCAL_OCR_PROVIDER: auto
+      ANALYSIS_LOCAL_OCR_LANGUAGES: ind+eng
+      ANALYSIS_LOCAL_OCR_MIN_CONFIDENCE: "0.45"
+      ANALYSIS_LOCAL_OCR_TESSERACT_PSM_MODES: 6,3,11
+      ANALYSIS_LOCAL_OCR_PREPROCESSING_ENABLED: "true"
+      ANALYSIS_LOCAL_OCR_MAX_IMAGE_PIXELS: "16000000"
+      ANALYSIS_LOCAL_OCR_MAX_TILES: "16"
+      ANALYSIS_LOCAL_OCR_UNIT_BUDGET_SECONDS: "180"
+      ANALYSIS_LOCAL_OCR_DOCUMENT_BUDGET_SECONDS: "900"
+      ANALYSIS_LOCAL_OCR_MAX_ATTEMPTS_PER_UNIT: "24"
+      ANALYSIS_LOCAL_OCR_RENDER_BATCH_UNITS: "4"
+      ANALYSIS_PDF_RETRY_RENDER_DPI: "288"
+      ANALYSIS_PDF_RETRY_MAX_UNITS: "8"
+      ANALYSIS_OFFICE_RENDERING_ENABLED: "true"
+      ANALYSIS_OFFICE_RENDER_MAX_PAGES: "24"
+      VISION_ANALYSIS_ENABLED: "false"
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend/data:/app/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/ready', timeout=2).read()"
+      interval: 15s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
 
   frontend:
     build:
@@ -32,4 +83,37 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
+      backend:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:v3.12.0
+    profiles: ["observability"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    volumes:
+      - ./ops/prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    depends_on:
       - backend
+      - alertmanager
+
+  alertmanager:
+    image: prom/alertmanager:v0.32.1
+    profiles: ["observability"]
+    command:
+      - --config.file=${ALERTMANAGER_CONFIG_FILE:-/etc/alertmanager/alertmanager.yml}
+      - --storage.path=/alertmanager
+    volumes:
+      - ./ops/alertmanager:/etc/alertmanager:ro
+      - ${ALERTMANAGER_WEBHOOK_URL_FILE:-/dev/null}:/run/secrets/alertmanager_webhook_url:ro
+      - alertmanager-data:/alertmanager
+    ports:
+      - "${ALERTMANAGER_PORT:-9093}:9093"
+
+volumes:
+  prometheus-data:
+  alertmanager-data:

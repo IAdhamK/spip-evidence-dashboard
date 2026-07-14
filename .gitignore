@@ -6,9 +6,15 @@ __pycache__/
 *.pyc
 backend/data/*.db
 backend/data/*.db-*
+backend/data/analysis-payloads/
 data/*.db
 data/*.db-*
+data/analysis-payloads/
 data-dev/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+eval-report.json
+outputs/corpus-audit/
+**/storage-encryption-attestation.key
+**/storage-encryption-attestation.json

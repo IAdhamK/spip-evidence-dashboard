@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import json
+import os
 from pathlib import Path
 import sqlite3
+import stat
 from typing import Iterator
 
 from app.evidence_structure import parameter_folder, slot_folder_path
+from app.migrations import run_migrations
 from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
 
 
@@ -84,6 +87,7 @@ CREATE TABLE IF NOT EXISTS smart_upload_reviews (
     file_name TEXT NOT NULL,
     content_type TEXT,
     size_bytes INTEGER NOT NULL DEFAULT 0,
+    file_sha256 TEXT,
     preview_text TEXT NOT NULL DEFAULT '',
     candidates_json TEXT NOT NULL DEFAULT '[]',
     file_bytes BLOB,
@@ -106,28 +110,111 @@ CREATE TABLE IF NOT EXISTS smart_upload_actions (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (review_id) REFERENCES smart_upload_reviews (id)
 );
+
+CREATE TABLE IF NOT EXISTS evidence_link_cache (
+    url TEXT PRIMARY KEY,
+    source_label TEXT NOT NULL DEFAULT '',
+    source_context TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'pending',
+    content_type TEXT,
+    title TEXT NOT NULL DEFAULT '',
+    text TEXT NOT NULL DEFAULT '',
+    summary TEXT NOT NULL DEFAULT '',
+    stage_hits_json TEXT NOT NULL DEFAULT '{}',
+    error_message TEXT,
+    attempt_count INTEGER NOT NULL DEFAULT 0,
+    last_fetched_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_evidence_link_cache_status
+ON evidence_link_cache(status, updated_at);
 """
+
+
+def normalize_duplicate_file_name(value: str | None) -> str:
+    name = Path(str(value or "").strip()).name.lower()
+    return " ".join(name.split())
 
 
 class Database:
     def __init__(self, path: str):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._prepare_private_database_file()
         self.init()
+
+    def canonical_persistence_capabilities(self) -> dict[str, object]:
+        """Capabilities consumed by queue adapters; never inferred from config."""
+
+        return {
+            "backend_name": "sqlite",
+            "shared_across_replicas": False,
+            "atomic_distributed_claims": False,
+            "shared_payload_storage": False,
+        }
+
+    def _prepare_private_database_file(self) -> None:
+        if self.path.is_symlink():
+            raise RuntimeError("Database SQLite tidak boleh berupa symlink.")
+        if not self.path.exists():
+            try:
+                descriptor = os.open(
+                    self.path,
+                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                    0o600,
+                )
+            except FileExistsError:
+                pass
+            else:
+                os.close(descriptor)
+        if self.path.is_symlink():
+            raise RuntimeError("Database SQLite tidak boleh berupa symlink.")
+        metadata = self.path.stat()
+        if not stat.S_ISREG(metadata.st_mode):
+            raise RuntimeError("Path database SQLite bukan regular file.")
+        if hasattr(os, "getuid") and metadata.st_uid != os.getuid():
+            raise RuntimeError("Database SQLite harus dimiliki runtime user.")
+        self.path.chmod(0o600)
+
+    def _harden_sqlite_sidecars(self) -> None:
+        for suffix in ("-wal", "-shm"):
+            sidecar = Path(str(self.path) + suffix)
+            try:
+                metadata = sidecar.lstat()
+            except FileNotFoundError:
+                continue
+            if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+                raise RuntimeError("SQLite sidecar harus regular file dan bukan symlink.")
+            if hasattr(os, "getuid") and metadata.st_uid != os.getuid():
+                raise RuntimeError("SQLite sidecar harus dimiliki runtime user.")
+            try:
+                sidecar.chmod(0o600)
+            except FileNotFoundError:
+                # SQLite may remove the last WAL/SHM sidecar between lstat and
+                # chmod when another connection closes.
+                continue
 
     @contextmanager
     def connect(self) -> Iterator[sqlite3.Connection]:
+        self._harden_sqlite_sidecars()
         conn = sqlite3.connect(self.path)
         conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("PRAGMA busy_timeout = 5000")
         try:
             yield conn
             conn.commit()
         finally:
             conn.close()
+            self._harden_sqlite_sidecars()
 
     def init(self) -> None:
         with self.connect() as conn:
+            conn.execute("PRAGMA journal_mode = WAL")
             conn.executescript(SCHEMA)
+            run_migrations(conn)
             columns = {
                 row["name"]
                 for row in conn.execute("PRAGMA table_info(parameters)").fetchall()
@@ -139,6 +226,7 @@ class Database:
                 for row in conn.execute("PRAGMA table_info(smart_upload_reviews)").fetchall()
             }
             smart_upload_defaults = {
+                "file_sha256": "TEXT",
                 "file_bytes": "BLOB",
                 "upload_status": "TEXT NOT NULL DEFAULT 'pending'",
                 "upload_message": "TEXT",
@@ -383,6 +471,58 @@ class Database:
             ).fetchall()
             return [dict(row) for row in rows]
 
+    def indexed_file_duplicate_matches(
+        self,
+        file_name: str,
+        size_bytes: int | None,
+        limit: int = 12,
+    ) -> list[dict]:
+        normalized_name = normalize_duplicate_file_name(file_name)
+        if not normalized_name:
+            return []
+
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT
+                    f.kk_id, f.kode, f.name, f.href, f.size_bytes, f.mime_type, f.modified_at,
+                    folders.kk_title, folders.subunsur_name, folders.folder_path
+                FROM files f
+                JOIN folders ON folders.kk_id = f.kk_id AND folders.kode = f.kode
+                WHERE f.is_folder = 0
+                ORDER BY f.modified_at DESC, f.id DESC
+                """,
+            ).fetchall()
+
+        matches = []
+        for row in rows:
+            item = dict(row)
+            candidate_name = normalize_duplicate_file_name(item.get("name") or "")
+            if candidate_name != normalized_name:
+                continue
+            same_size = size_bytes is not None and item.get("size_bytes") == size_bytes
+            remote_name = str(item.get("name") or "").strip("/")
+            remote_path = "/".join([str(item.get("folder_path") or "").strip("/"), remote_name]).strip("/")
+            matches.append(
+                {
+                    "source": "lumbung_index",
+                    "match_type": "same_name_size" if same_size else "same_name",
+                    "kk_id": item.get("kk_id"),
+                    "kode": item.get("kode"),
+                    "kk_title": item.get("kk_title"),
+                    "subunsur_name": item.get("subunsur_name"),
+                    "name": item.get("name"),
+                    "remote_path": remote_path,
+                    "href": item.get("href"),
+                    "size_bytes": item.get("size_bytes"),
+                    "mime_type": item.get("mime_type"),
+                    "modified_at": item.get("modified_at"),
+                }
+            )
+            if len(matches) >= limit:
+                break
+        return matches
+
     def parameters(self, kk_id: str, kode: str) -> list[dict]:
         with self.connect() as conn:
             rows = conn.execute(
@@ -552,6 +692,7 @@ class Database:
         file_name: str,
         content_type: str | None,
         size_bytes: int,
+        file_sha256: str | None,
         preview_text: str,
         candidates: list[dict],
         ai_status: str,
@@ -562,14 +703,68 @@ class Database:
             cursor = conn.execute(
                 """
                 INSERT INTO smart_upload_reviews (
-                    file_name, content_type, size_bytes, preview_text,
+                    file_name, content_type, size_bytes, file_sha256, preview_text,
                     candidates_json, ai_status, ai_message, file_bytes
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (file_name, content_type, size_bytes, preview_text, json.dumps(candidates, ensure_ascii=False), ai_status, ai_message, payload),
+                (
+                    file_name,
+                    content_type,
+                    size_bytes,
+                    file_sha256,
+                    preview_text,
+                    json.dumps(candidates, ensure_ascii=False),
+                    ai_status,
+                    ai_message,
+                    payload,
+                ),
             )
             return int(cursor.lastrowid)
+
+    def smart_upload_hash_matches(
+        self,
+        file_sha256: str | None,
+        current_review_id: int | None = None,
+        limit: int = 8,
+    ) -> list[dict]:
+        if not file_sha256:
+            return []
+        params: list[object] = [file_sha256]
+        review_filter = ""
+        if current_review_id is not None:
+            review_filter = "AND id <> ?"
+            params.append(current_review_id)
+        params.append(limit)
+        with self.connect() as conn:
+            rows = conn.execute(
+                f"""
+                SELECT
+                    id, file_name, content_type, size_bytes, upload_status, upload_message,
+                    confirmed_candidate_json, created_at, confirmed_at
+                FROM smart_upload_reviews
+                WHERE file_sha256 = ?
+                  {review_filter}
+                  AND upload_status IN ('uploaded', 'uploaded_primary')
+                ORDER BY confirmed_at DESC, created_at DESC, id DESC
+                LIMIT ?
+                """,
+                tuple(params),
+            ).fetchall()
+        matches = []
+        for row in rows:
+            item = dict(row)
+            candidate = None
+            if item.get("confirmed_candidate_json"):
+                try:
+                    candidate = json.loads(item["confirmed_candidate_json"])
+                except json.JSONDecodeError:
+                    candidate = None
+            item["source"] = "smart_upload_history"
+            item["match_type"] = "same_hash"
+            item["confirmed_candidate"] = candidate
+            matches.append(item)
+        return matches
 
 
     def smart_upload_review(self, review_id: int) -> dict | None:
@@ -635,4 +830,130 @@ class Database:
                 WHERE id = ?
                 """,
                 (upload_status, upload_message, json.dumps(candidate, ensure_ascii=False), review_id),
+            )
+
+    def upsert_evidence_link_cache(self, url: str, label: str = "", context: str = "") -> None:
+        normalized_url = str(url or "").strip()
+        if not normalized_url:
+            return
+        with self.connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO evidence_link_cache (url, source_label, source_context)
+                VALUES (?, ?, ?)
+                ON CONFLICT(url) DO UPDATE SET
+                    source_label = CASE
+                        WHEN excluded.source_label <> '' THEN excluded.source_label
+                        ELSE evidence_link_cache.source_label
+                    END,
+                    source_context = CASE
+                        WHEN excluded.source_context <> '' THEN excluded.source_context
+                        ELSE evidence_link_cache.source_context
+                    END,
+                    status = CASE
+                        WHEN evidence_link_cache.status IN ('ok', 'unsupported', 'fetching') THEN evidence_link_cache.status
+                        ELSE 'pending'
+                    END,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (normalized_url, label or "", context or ""),
+            )
+
+    def evidence_link_cache_many(self, urls: list[str]) -> dict[str, dict]:
+        unique_urls = [url for url in dict.fromkeys(str(item or "").strip() for item in urls) if url]
+        if not unique_urls:
+            return {}
+        placeholders = ",".join("?" for _ in unique_urls)
+        with self.connect() as conn:
+            rows = conn.execute(
+                f"SELECT * FROM evidence_link_cache WHERE url IN ({placeholders})",
+                tuple(unique_urls),
+            ).fetchall()
+        result: dict[str, dict] = {}
+        for row in rows:
+            item = dict(row)
+            try:
+                item["stage_hits"] = json.loads(item.get("stage_hits_json") or "{}")
+            except json.JSONDecodeError:
+                item["stage_hits"] = {}
+            result[item["url"]] = item
+        return result
+
+    def evidence_link_cache_counts(self) -> dict:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT status, COUNT(*) AS count
+                FROM evidence_link_cache
+                GROUP BY status
+                """
+            ).fetchall()
+        counts = {str(row["status"]): int(row["count"]) for row in rows}
+        counts["total"] = sum(counts.values())
+        return counts
+
+    def claim_evidence_link_jobs(self, limit: int = 5, max_attempts: int = 3) -> list[dict]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT *
+                FROM evidence_link_cache
+                WHERE status IN ('pending', 'error')
+                  AND attempt_count < ?
+                ORDER BY updated_at ASC, created_at ASC
+                LIMIT ?
+                """,
+                (max_attempts, limit),
+            ).fetchall()
+            jobs = [dict(row) for row in rows]
+            for job in jobs:
+                conn.execute(
+                    """
+                    UPDATE evidence_link_cache
+                    SET status = 'fetching',
+                        attempt_count = attempt_count + 1,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE url = ?
+                    """,
+                    (job["url"],),
+                )
+        return jobs
+
+    def mark_evidence_link_cache(
+        self,
+        url: str,
+        status: str,
+        content_type: str | None = None,
+        title: str = "",
+        text: str = "",
+        summary: str = "",
+        stage_hits: dict | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE evidence_link_cache
+                SET status = ?,
+                    content_type = ?,
+                    title = ?,
+                    text = ?,
+                    summary = ?,
+                    stage_hits_json = ?,
+                    error_message = ?,
+                    last_fetched_at = CASE WHEN ? = 'ok' THEN CURRENT_TIMESTAMP ELSE last_fetched_at END,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE url = ?
+                """,
+                (
+                    status,
+                    content_type,
+                    title or "",
+                    text or "",
+                    summary or "",
+                    json.dumps(stage_hits or {}, ensure_ascii=False),
+                    error_message,
+                    status,
+                    str(url or "").strip(),
+                ),
             )

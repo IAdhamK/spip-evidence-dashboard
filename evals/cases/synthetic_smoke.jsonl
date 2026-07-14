@@ -1,0 +1,3 @@
+{"id":"indicator-review","claim":"Kebijakan dan prosedur penetapan indikator serta ukuran kinerja organisasi telah direviu dan divalidasi secara periodik untuk memastikan ketepatan dan keandalan IKU.","fact_type":"evaluation","expected_any_of":["KK3.1:3.5.1","KK3.2:3.5.1","KK3.3:3.5.1","KK3.4:3.5.1"]}
+{"id":"regulatory-compliance","claim":"Pimpinan menciptakan lingkungan kerja yang kondusif untuk mendukung ketaatan terhadap peraturan perundang-undangan yang berlaku.","fact_type":"policy","expected_any_of":["KK3.4:1.3.1"]}
+{"id":"asset-management","claim":"Pengelolaan aset organisasi dievaluasi secara berkala dan ditindaklanjuti agar aset tersedia optimal serta tidak terdapat aset rusak.","fact_type":"improvement","expected_any_of":["KK3.3:3.4.1"]}

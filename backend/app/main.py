@@ -6,8 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.analysis.routes import create_analysis_router
+from app.analysis.jobs import AnalysisJobManager
+from app.analysis.package_routes import create_package_router
 from app.config import get_settings
 from app.database import Database
+from app.lifecycle import analysis_lifespan
 from app.routes import create_router
 
 
@@ -16,7 +20,12 @@ db = Database(settings.database_path)
 db.ensure_mapping()
 db.ensure_parameters()
 
-app = FastAPI(title="SPIP Evidence Dashboard", version="0.1.0")
+analysis_job_manager = AnalysisJobManager(db, settings)
+app = FastAPI(
+    title="SPIP Evidence Dashboard",
+    version="0.1.0",
+    lifespan=analysis_lifespan(analysis_job_manager, settings.analysis_pipeline_v2_enabled),
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,7 +35,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(create_router(db))
+app.include_router(create_router(db, analysis_job_manager))
+app.include_router(create_analysis_router(db, analysis_job_manager))
+app.include_router(create_package_router(db))
 
 static_dir_value = os.environ.get("STATIC_DIR")
 static_dir = Path(static_dir_value).resolve() if static_dir_value else None
