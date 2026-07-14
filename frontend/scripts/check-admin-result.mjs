@@ -14,6 +14,17 @@ assert.equal(administrativeRunStatus({ status: "review_required", coverage_statu
 assert.equal(gradeDirection({ candidate_grade: "C", primary_allowed: true }).label, "Grade C");
 assert.equal(gradeDirection({ candidate_grade: "C", primary_allowed: false }).label, "Mendekati Grade C");
 assert.deepEqual(
+  gradeDirection(
+    { candidate_grade: "E", primary_allowed: false },
+    { document_role: "supporting" },
+  ),
+  {
+    grade: null,
+    label: "Belum dapat ditentukan dari dokumen pendukung",
+    basis: "non_primary_document",
+  },
+);
+assert.deepEqual(
   gradeDirection({
     rule_trace: {
       rules: [

@@ -19,7 +19,8 @@ from app.analysis.contracts import DocumentIdentity, EngineResult, EngineStatus
 
 STOPWORDS = {
     "ada", "atau", "atas", "bagi", "bahwa", "dalam", "dan", "dapat", "dengan",
-    "di", "ini", "itu", "ke", "kepada", "oleh", "pada", "para", "telah", "untuk", "yang",
+    "dari", "di", "hal", "ini", "itu", "ke", "kepada", "nomor", "oleh", "pada", "para",
+    "telah", "untuk", "yang",
 }
 MIN_RETRIEVAL_SCORE = 0.12
 EVIDENCE_STAGE_TYPES = ("policy", "socialization", "implementation", "evaluation", "improvement")
@@ -41,9 +42,14 @@ class ParameterRetrievalEngine:
         limit: int = 10,
         feedback_terms: list[dict] | None = None,
         query_expansions: list[str] | None = None,
+        catalog_shortlist: list[dict] | None = None,
     ) -> tuple[list[dict], EngineResult]:
         started = perf_counter()
-        query_text = " ".join(str(fact.get("claim") or "") for fact in facts)
+        file_name_text = re.sub(r"[_\-.]+", " ", str(identity.file_name or ""))
+        query_text = " ".join([
+            file_name_text,
+            *(str(fact.get("claim") or "") for fact in facts),
+        ])
         base_query_tokens = tokenize(query_text)
         parameter_sequences = {
             int(item["id"]): parameter_corpus_token_sequence(item) for item in parameters
@@ -70,6 +76,16 @@ class ParameterRetrievalEngine:
         }
         query_frequencies = Counter(query_sequence)
         kk_context_scores = detect_kk_context(query_text)
+        catalog_by_parameter = {
+            (
+                str(item.get("kk_id") or ""),
+                str(item.get("kode") or ""),
+                str(item.get("detail_kode") or ""),
+            ): item
+            for item in (catalog_shortlist or [])
+            if item.get("kk_id") and item.get("kode") and item.get("detail_kode")
+        }
+        local_document_role = infer_document_role(identity, facts)
         feedback_by_parameter: dict[tuple[str, str, str], list[dict]] = {}
         feedback_registry_sha256 = sorted({
             str(item.get("registry_sha256") or "")
@@ -117,6 +133,7 @@ class ParameterRetrievalEngine:
             semantic_tokens = expand_domain_tokens(tokens)
             semantic_overlap = sorted(semantic_query_tokens & semantic_tokens)
             parameter_feedback = feedback_by_parameter.get(parameter_key, [])
+            catalog_match = catalog_by_parameter.get(parameter_key)
             feedback_matches = [
                 {
                     **item,
@@ -125,7 +142,7 @@ class ParameterRetrievalEngine:
                 for item in parameter_feedback
                 if item["term_sha256"] in query_tokens_by_sha256
             ]
-            if not overlap and not feedback_matches and not (
+            if not catalog_match and not overlap and not feedback_matches and not (
                 self.advanced_rag_enabled and semantic_overlap
             ):
                 continue
@@ -164,9 +181,19 @@ class ParameterRetrievalEngine:
                 else 0.0
             )
             phrase_bonus = _phrase_bonus(facts, parameter)
-            uraian_tokens = tokenize(str(parameter.get("uraian") or ""))
-            field_overlap = query_tokens & uraian_tokens
-            field_bonus = min(0.3, len(field_overlap) * 0.045)
+            uraian_overlap = query_tokens & tokenize(str(parameter.get("uraian") or ""))
+            evidence_hint_overlap = query_tokens & tokenize(str(parameter.get("evidence_hint") or ""))
+            hierarchy_overlap = query_tokens & tokenize(" ".join([
+                str(parameter.get("unsur") or ""),
+                str(parameter.get("matrix_subunsur_name") or ""),
+                str(parameter.get("subunsur_name") or ""),
+            ]))
+            field_bonus = (
+                min(0.18, len(uraian_overlap) * 0.035)
+                + min(0.24, len(evidence_hint_overlap) * 0.06)
+                + min(0.16, len(hierarchy_overlap) * 0.04)
+            )
+            domain_intent_adjustment = _domain_intent_adjustment(query_text, parameter)
             kk_bonus = kk_context_scores.get(str(parameter.get("kk_id") or ""), 0.0)
             feedback_bonus = min(
                 0.18,
@@ -185,19 +212,37 @@ class ParameterRetrievalEngine:
                     "kode": parameter["kode"],
                     "detail_kode": parameter["detail_kode"],
                     "subunsur_name": parameter.get("subunsur_name"),
+                    "matrix_subunsur_name": parameter.get("matrix_subunsur_name"),
+                    "unsur": parameter.get("unsur"),
+                    "kk_title": parameter.get("kk_title"),
+                    "evidence_hint": parameter.get("evidence_hint"),
                     "uraian": parameter.get("uraian"),
                     "cara_pengujian": parameter.get("cara_pengujian"),
                     "grades": parameter.get("grades") or [],
                     "cosine_score": cosine_score,
                     "bm25_score": normalized_bm25,
                     "semantic_score": semantic_score,
-                    "bonus_score": phrase_bonus + field_bonus + kk_bonus + feedback_bonus,
+                    "bonus_score": (
+                        phrase_bonus
+                        + field_bonus
+                        + kk_bonus
+                        + feedback_bonus
+                        + domain_intent_adjustment
+                    ),
                     "matched_terms": overlap[:20],
                     "matched_semantic_terms": semantic_overlap[:20],
                     "matched_feedback_terms": sorted(
                         item["matched_query_term"] for item in feedback_matches
                     )[:20],
                     "feedback_bonus": round(feedback_bonus, 4),
+                    "domain_intent_adjustment": round(domain_intent_adjustment, 4),
+                    "catalog_relevance": round(
+                        float((catalog_match or {}).get("catalog_relevance") or 0), 4
+                    ),
+                    "document_role": conservative_document_role(
+                        local_document_role,
+                        str((catalog_match or {}).get("document_role") or ""),
+                    ),
                     "corpus_tokens": sorted(
                         (semantic_tokens if self.advanced_rag_enabled else tokens)
                         | learned_tokens
@@ -215,7 +260,7 @@ class ParameterRetrievalEngine:
         for item in raw_candidates:
             rrf_score = rrf_scores.get(item["parameter_id"], 0.0)
             if self.advanced_rag_enabled:
-                score = min(
+                local_score = min(
                     1.0,
                     (item["bm25_score"] * 0.30)
                     + (item["cosine_score"] * 0.25)
@@ -230,7 +275,7 @@ class ParameterRetrievalEngine:
                     "rrf": round(rrf_score, 4),
                 }
             else:
-                score = min(
+                local_score = min(
                     1.0,
                     (item["cosine_score"] * 0.45)
                     + (item["bm25_score"] * 0.55)
@@ -240,6 +285,14 @@ class ParameterRetrievalEngine:
                     "bm25": round(item["bm25_score"], 4),
                     "cosine_idf": round(item["cosine_score"], 4),
                 }
+            if catalog_by_parameter:
+                score = min(
+                    1.0,
+                    (local_score * 0.65) + (item["catalog_relevance"] * 0.35),
+                )
+                retrieval_components["catalog_search"] = item["catalog_relevance"]
+            else:
+                score = local_score
             ranked.append({
                 **{
                     key: value for key, value in item.items()
@@ -250,7 +303,7 @@ class ParameterRetrievalEngine:
             })
         ranked.sort(key=lambda item: (-item["retrieval_score"], item["kk_id"], item["detail_kode"]))
         ranked = [item for item in ranked if item["retrieval_score"] >= MIN_RETRIEVAL_SCORE]
-        ranked = ranked[: max(1, limit)]
+        ranked = _select_diverse_candidates(ranked, limit=max(1, limit))
         warnings = [] if ranked else ["Retrieval Engine tidak menemukan parameter yang cukup relevan; sistem abstain."]
         result = EngineResult(
             engine_name=self.name,
@@ -273,11 +326,15 @@ class ParameterRetrievalEngine:
                 ),
                 "accepted_model_expansion_token_count": len(accepted_expansion_tokens),
                 "rejected_model_expansion_token_count": rejected_expansion_token_count,
+                "model_catalog_shortlist_count": len(catalog_by_parameter),
+                "model_catalog_assisted_candidate_count": sum(
+                    bool(item.get("catalog_relevance")) for item in ranked
+                ),
             },
             output={
                 "candidate_count": len(ranked),
                 "query_token_count": len(query_tokens),
-                "parameter_scope": "parameter_only_without_grade",
+                "parameter_scope": "all_kk_subunsur_and_parameters_without_grade",
                 "kk_context_scores": kk_context_scores,
                 "minimum_retrieval_score": MIN_RETRIEVAL_SCORE,
                 "retrieval_method": (
@@ -288,6 +345,11 @@ class ParameterRetrievalEngine:
                 "advanced_rag_version": ADVANCED_RAG_VERSION if self.advanced_rag_enabled else None,
                 "model_query_expansion_used": bool(accepted_expansion_tokens),
                 "model_expansion_authority": "retrieval_only" if query_expansions else None,
+                "model_catalog_search_used": bool(catalog_by_parameter),
+                "model_catalog_authority": (
+                    "candidate_recall_and_ranking_only" if catalog_by_parameter else None
+                ),
+                "document_role": local_document_role,
                 "feedback_authority": "active_two_person_expert_gold_only",
                 "feedback_registry_sha256": feedback_registry_sha256[0]
                 if len(feedback_registry_sha256) == 1 else None,
@@ -352,6 +414,10 @@ class SPIPMappingEngine:
                 reasons.append(
                     "Advanced RAG menemukan kesepadanan istilah administrasi/SPIP; hasil tetap harus didukung fakta bersumber."
                 )
+            if parameter.get("catalog_relevance"):
+                reasons.append(
+                    "DeepSeek V4 Pro menelusuri katalog KK, subunsur, dan parameter resmi; hasil tetap advisory tanpa otoritas Grade."
+                )
             if diversified_stages:
                 reasons.append(
                     "Bukti pendukung dilengkapi lintas tahap agar kebijakan, pelaksanaan, evaluasi, dan tindak lanjut tidak terputus."
@@ -363,6 +429,9 @@ class SPIPMappingEngine:
                     "kode": parameter["kode"],
                     "detail_kode": parameter["detail_kode"],
                     "subunsur_name": parameter.get("subunsur_name"),
+                    "matrix_subunsur_name": parameter.get("matrix_subunsur_name"),
+                    "unsur": parameter.get("unsur"),
+                    "kk_title": parameter.get("kk_title"),
                     "uraian": parameter.get("uraian"),
                     "grades": parameter.get("grades") or [],
                     "retrieval_score": round(retrieval_score, 4),
@@ -370,10 +439,13 @@ class SPIPMappingEngine:
                     "rag_rank": local_rank,
                     "rag_relevance": round(retrieval_score, 4),
                     "rag_method": (
-                        "advanced_rag_local_v1"
+                        "deepseek_v4_pro_global_catalog_and_constrained_rerank_v2"
+                        if parameter.get("catalog_relevance")
+                        else "advanced_rag_local_v2"
                         if parameter.get("retrieval_components", {}).get("semantic_vector") is not None
                         else "parameter_retrieval_v2"
                     ),
+                    "document_role": parameter.get("document_role") or "context",
                     "status": "candidate" if support_ids else "needs_review",
                     "supporting_fact_ids": support_ids,
                     "supporting_facts": selected_supporting,
@@ -498,8 +570,8 @@ def _phrase_bonus(facts: list[dict], parameter: dict) -> float:
 
 KK_CONTEXT_KEYWORDS = {
     "KK3.1": (
-        "kesekretariatan", "sekretariat", "ditjen pdp", "organisasi", "kinerja", "iku",
-        "manajemen risiko", "tata laksana", "sumber daya manusia",
+        "kesekretariatan", "sekretariat", "kinerja organisasi", "iku",
+        "tujuan organisasi", "sasaran organisasi", "tata laksana", "sumber daya manusia",
     ),
     "KK3.2": (
         "keuangan", "anggaran", "dipa", "pagu", "realisasi anggaran", "spm", "sp2d",
@@ -530,3 +602,127 @@ def detect_kk_context(value: str) -> dict[str, float]:
         for kk_id, score in raw_scores.items()
         if score > 0
     }
+
+
+def infer_document_role(identity: DocumentIdentity, facts: list[dict]) -> str:
+    """Classify a document conservatively without allowing the model to promote evidence."""
+    primary_stages = {"implementation", "evaluation", "improvement"}
+    if any(
+        fact.get("evidence_role") == "primary"
+        and fact.get("fact_type") in primary_stages
+        for fact in facts
+    ):
+        return "primary"
+    normalized_name = " ".join(str(identity.file_name or "").lower().split())
+    supporting_name_markers = (
+        "nota dinas", "surat pengantar", "penyampaian", "undangan", "notulen",
+        "disposisi", "memorandum",
+    )
+    if any(marker in normalized_name for marker in supporting_name_markers):
+        return "supporting"
+    fact_types = {str(fact.get("fact_type") or "unknown") for fact in facts}
+    evidence_roles = {str(fact.get("evidence_role") or "context") for fact in facts}
+    if fact_types & {"policy", "socialization"} or "supporting" in evidence_roles:
+        return "supporting"
+    if facts:
+        return "context"
+    return "not_evidence"
+
+
+def conservative_document_role(local_role: str, model_role: str) -> str:
+    order = {"not_evidence": 0, "context": 1, "supporting": 2, "primary": 3}
+    if model_role not in order:
+        return local_role
+    return min((local_role, model_role), key=lambda role: order.get(role, 0))
+
+
+def _domain_intent_adjustment(query_text: str, parameter: dict) -> float:
+    """Preserve distinctions that generic token overlap otherwise flattens."""
+    query = " ".join(str(query_text or "").lower().split())
+    target = " ".join(
+        str(parameter.get(key) or "").lower()
+        for key in (
+            "matrix_subunsur_name", "subunsur_name", "evidence_hint", "uraian",
+            "cara_pengujian",
+        )
+    )
+    uraian = " ".join(str(parameter.get("uraian") or "").lower().split())
+    evidence_hint = " ".join(str(parameter.get("evidence_hint") or "").lower().split())
+    adjustment = 0.0
+    risk_register_query = any(phrase in query for phrase in (
+        "peta risiko", "matriks risiko", "register risiko", "profil risiko",
+    ))
+    risk_register_uraian = any(phrase in uraian for phrase in (
+        "peta risiko", "register risiko", "profil risiko",
+    ))
+    risk_register_hint = any(phrase in evidence_hint for phrase in (
+        "peta risiko", "register risiko", "profil risiko",
+    ))
+    if risk_register_query and risk_register_uraian:
+        adjustment += 0.50
+    elif risk_register_query and risk_register_hint:
+        adjustment += 0.16
+
+    risk_monitoring_query = any(phrase in query for phrase in (
+        "laporan mr", "laporan manajemen risiko", "pemantauan risiko",
+        "monitoring risiko",
+    ))
+    risk_monitoring_uraian = any(phrase in uraian for phrase in (
+        "pemantauan terhadap risiko", "pemantauan risiko", "monitoring risiko",
+        "monitoring terhadap risiko",
+    ))
+    risk_review_uraian = any(phrase in uraian for phrase in (
+        "manajemen risiko telah direviu", "reviu manajemen risiko",
+    ))
+    risk_monitoring_hint = any(phrase in evidence_hint for phrase in (
+        "laporan monitoring", "pemantauan risiko", "monitoring risiko",
+    ))
+    if risk_monitoring_query and risk_monitoring_uraian:
+        adjustment += 0.50
+    elif risk_monitoring_query and risk_review_uraian:
+        adjustment += 0.30
+    elif risk_monitoring_query and risk_monitoring_hint:
+        adjustment += 0.15
+
+    partnership_target = any(phrase in target for phrase in (
+        "kemitraan", "kerja sama", "kerjasama", "mou", "pks",
+    ))
+    partnership_query = any(phrase in query for phrase in (
+        "kemitraan", "kerja sama", "kerjasama", "mou", "pks",
+    ))
+    if partnership_target and not partnership_query:
+        adjustment -= 0.30
+    return max(-0.35, min(0.55, adjustment))
+
+
+def _select_diverse_candidates(ranked: list[dict], *, limit: int) -> list[dict]:
+    """Prevent one repeated subunsur/KK variant from hiding other plausible concepts."""
+    if len(ranked) <= limit:
+        return ranked
+    per_detail_limit = max(1, min(4, math.ceil(limit * 0.20)))
+    per_subunsur_limit = max(2, min(8, math.ceil(limit * 0.40)))
+    detail_counts: Counter[str] = Counter()
+    subunsur_counts: Counter[str] = Counter()
+    selected: list[dict] = []
+    selected_ids: set[int] = set()
+    for item in ranked:
+        detail = str(item.get("detail_kode") or "")
+        subunsur = str(item.get("kode") or "")
+        if (
+            detail_counts[detail] >= per_detail_limit
+            or subunsur_counts[subunsur] >= per_subunsur_limit
+        ):
+            continue
+        selected.append(item)
+        selected_ids.add(int(item["parameter_id"]))
+        detail_counts[detail] += 1
+        subunsur_counts[subunsur] += 1
+        if len(selected) >= limit:
+            return selected
+    for item in ranked:
+        if int(item["parameter_id"]) in selected_ids:
+            continue
+        selected.append(item)
+        if len(selected) >= limit:
+            break
+    return selected

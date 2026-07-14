@@ -8,7 +8,7 @@ Ruang lingkup: ingestion, parsing, mapping SPIP, grading, verification, human re
 
 Pembaruan 14 Juli 2026:
 
-Peningkatan F3 terbaru menerapkan `advanced-rag-v1`: BM25, cosine-IDF, semantic vector istilah administrasi/SPIP, reciprocal-rank fusion, query expansion DeepSeek V4 Pro yang disaring terhadap katalog, dan constrained reranking. Migration V31 menyimpan `rag_rank`, `rag_relevance`, serta `rag_method`. Grade text tidak masuk corpus retrieval; DeepSeek tidak dapat membuat parameter, mengubah `mapping_score`, menentukan Grade, atau membuka upload. Catatan V1–V30 dan deskripsi retrieval pada tabel di bawah adalah baseline sebelum peningkatan V31 ini.
+Peningkatan F3 terbaru menerapkan `advanced-rag-v1`: filename-aware BM25, cosine-IDF, semantic vector istilah administrasi/SPIP, reciprocal-rank fusion, candidate diversity, pencarian katalog penuh KK–subunsur–parameter oleh DeepSeek V4 Pro, query expansion sebagai fallback, dan constrained reranking maksimal sepuluh kandidat. Migration V31 menyimpan `rag_rank`, `rag_relevance`, serta `rag_method`. Grade text tidak masuk corpus retrieval; DeepSeek tidak dapat membuat parameter, mengubah `mapping_score`, menentukan Grade, atau membuka upload. Catatan V1–V30 dan deskripsi retrieval pada tabel di bawah adalah baseline sebelum peningkatan V31 ini.
 
 | Fase | Status | Yang sudah tersedia | Sisa utama |
 |---|---|---|---|

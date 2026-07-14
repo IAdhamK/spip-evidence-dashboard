@@ -40,7 +40,16 @@ function missingCoreRequirements(trace = {}) {
   ));
 }
 
-export function gradeDirection(assessment = {}) {
+export function gradeDirection(assessment = {}, mapping = {}) {
+  if (mapping.document_role && mapping.document_role !== "primary") {
+    return {
+      grade: null,
+      label: mapping.document_role === "supporting"
+        ? "Belum dapat ditentukan dari dokumen pendukung"
+        : "Belum dapat ditentukan dari dokumen ini",
+      basis: "non_primary_document",
+    };
+  }
   if (assessment.candidate_grade) {
     const isOfficiallyAllowed = assessment.primary_allowed === true;
     return {
@@ -144,6 +153,6 @@ export function primaryAdministrativeResult({ mappings = [], assessments = [], v
     mapping: primary,
     assessment,
     verifications,
-    direction: gradeDirection(assessment),
+    direction: gradeDirection(assessment, primary),
   };
 }

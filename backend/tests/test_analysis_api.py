@@ -223,6 +223,15 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
             "cara_pengujian",
             administrative_detail.json()["mappings"][0],
         )
+        administrative_mapping = administrative_detail.json()["mappings"][0]
+        self.assertTrue(administrative_mapping["kk_title"])
+        self.assertTrue(administrative_mapping["unsur"])
+        self.assertTrue(administrative_mapping["subunsur_name"])
+        self.assertTrue(administrative_mapping["available_grades"])
+        self.assertIn(
+            administrative_mapping["document_role"],
+            {"primary", "supporting", "context"},
+        )
 
         rules = self.client.get("/api/analysis-runs/rule-catalog?limit=2")
         self.assertEqual(rules.status_code, 200)
@@ -272,6 +281,10 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
         self.assertEqual(expansion.status_code, 200, expansion.text)
         self.assertEqual(expansion.json()["candidate_expansion"]["requested_limit"], 20)
         self.assertTrue(expansion.json()["run"]["primary_blocked"])
+        expanded_ranks = [
+            item["rag_rank"] for item in expansion.json()["mappings"]
+        ]
+        self.assertEqual(expanded_ranks, list(range(1, len(expanded_ranks) + 1)))
 
         retry = self.client.post(f"/api/analysis-runs/{run_id}/retry")
         self.assertEqual(retry.status_code, 202, retry.text)

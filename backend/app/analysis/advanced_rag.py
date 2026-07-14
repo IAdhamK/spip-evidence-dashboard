@@ -7,7 +7,7 @@ import re
 from time import perf_counter
 
 from app.analysis.contracts import DocumentIdentity, EngineResult, EngineStatus
-from app.analysis.provider import RAGQueryExpansionProvider
+from app.analysis.provider import RAGCatalogSearchProvider, RAGQueryExpansionProvider
 
 
 ADVANCED_RAG_VERSION = "advanced-rag-v1"
@@ -22,7 +22,9 @@ DOMAIN_TERM_GROUPS: tuple[tuple[str, ...], ...] = (
     ("pelaksanaan", "implementasi", "penerapan", "dilaksanakan"),
     ("evaluasi", "monitoring", "pemantauan", "reviu", "penilaian"),
     ("perbaikan", "penyempurnaan", "tindaklanjut", "tindak", "lanjut"),
-    ("risiko", "risk", "register", "peta", "mitigasi"),
+    ("risiko", "risk"),
+    ("register", "peta", "profil", "matriks"),
+    ("mitigasi", "pengendalian", "respons", "respon"),
     ("kinerja", "indikator", "iku", "sasaran", "capaian"),
     ("keuangan", "anggaran", "dipa", "pagu", "realisasi", "belanja"),
     ("aset", "bmn", "inventaris", "barang", "kib"),
@@ -172,3 +174,111 @@ class AdvancedRAGQueryExpansionEngine:
             error_message="Advanced RAG query provider failed." if provider_failed else None,
         ).finish()
         return queries, result
+
+
+class AdvancedRAGCatalogSearchEngine:
+    name = "advanced_rag_catalog_search"
+    version = ADVANCED_RAG_VERSION
+
+    def __init__(self, provider: RAGCatalogSearchProvider):
+        self.provider = provider
+
+    def run(
+        self,
+        identity: DocumentIdentity,
+        facts: list[dict],
+        parameters: list[dict],
+    ) -> tuple[list[dict], EngineResult]:
+        started = perf_counter()
+        allowed = {
+            (
+                str(parameter.get("kk_id") or ""),
+                str(parameter.get("kode") or ""),
+                str(parameter.get("detail_kode") or ""),
+            )
+            for parameter in parameters
+        }
+        shortlisted: list[dict] = []
+        seen: set[tuple[str, str, str]] = set()
+        provider_failed = False
+        invalid_item_count = 0
+        provider_warning_count = 0
+        usage_metrics: dict[str, int | float] = {}
+        warnings: list[str] = []
+        try:
+            response = self.provider.search_catalog(
+                identity.to_dict(), facts, parameters
+            )
+            usage_metrics = response.usage_metrics
+            provider_warning_count = len(response.warnings)
+            for item in response.items[:8]:
+                key = (item.kk_id, item.kode, item.detail_kode)
+                if key not in allowed or key in seen:
+                    invalid_item_count += 1
+                    continue
+                seen.add(key)
+                shortlisted.append({
+                    "kk_id": item.kk_id,
+                    "kode": item.kode,
+                    "detail_kode": item.detail_kode,
+                    "catalog_relevance": round(float(item.relevance_score), 4),
+                    "document_role": (
+                        item.document_role
+                        if item.document_role in {"primary", "supporting", "context", "not_evidence"}
+                        else "context"
+                    ),
+                })
+            shortlisted.sort(key=lambda item: (
+                -float(item["catalog_relevance"]),
+                item["kk_id"],
+                item["detail_kode"],
+            ))
+            if provider_warning_count:
+                warnings.append(
+                    f"Provider mengembalikan {provider_warning_count} warning; isinya tidak dipersistenkan."
+                )
+            if invalid_item_count:
+                warnings.append(
+                    f"{invalid_item_count} kandidat model diabaikan karena tidak ada dalam katalog resmi."
+                )
+        except Exception:
+            provider_failed = True
+            warnings.append(
+                "DeepSeek catalog search gagal; retrieval lokal tetap digunakan."
+            )
+        result = EngineResult(
+            engine_name=self.name,
+            engine_version=self.version,
+            status=EngineStatus.FAILED if provider_failed else EngineStatus.COMPLETED,
+            input_checksum=identity.sha256,
+            input_refs=[
+                *[f"fact:{fact.get('fact_key')}" for fact in facts],
+                f"catalog:{len(parameters)}",
+            ],
+            output_refs=[
+                f"catalog-candidate:{item['kk_id']}:{item['kode']}:{item['detail_kode']}"
+                for item in shortlisted
+            ],
+            coverage={
+                "required": len(parameters),
+                "processed": len(parameters) if not provider_failed else 0,
+                "failed": int(provider_failed),
+            },
+            warnings=warnings,
+            metrics={
+                "duration_ms": max(0, round((perf_counter() - started) * 1000)),
+                "catalog_parameter_count": len(parameters),
+                "shortlist_count": len(shortlisted),
+                "invalid_item_count": invalid_item_count,
+                "provider_warning_count": provider_warning_count,
+                **usage_metrics,
+            },
+            output={
+                "shortlist_count": len(shortlisted),
+                "search_scope": "all_kk_subunsur_and_parameters_without_grade",
+                "authority": "candidate_recall_and_ranking_only_no_grade_or_upload_authority",
+                "candidate_content_persisted": False,
+            },
+            error_message="Advanced RAG catalog provider failed." if provider_failed else None,
+        ).finish()
+        return shortlisted, result

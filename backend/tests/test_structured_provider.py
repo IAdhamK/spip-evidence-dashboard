@@ -7,11 +7,15 @@ from app.analysis.facts import StructuredFactExtractionEngine, derive_evidence_r
 from app.analysis.provider import StructuredFact, StructuredFactResponse
 from app.analysis.provider import (
     CompatibleResponsesStructuredProvider,
+    CompatibleResponsesProvider,
     CompatibleChatStructuredProvider,
     CompatibleResponsesMappingProvider,
+    CompatibleResponsesRAGCatalogProvider,
+    CompatibleChatRAGCatalogProvider,
     CompatibleResponsesRAGQueryProvider,
     CompatibleResponsesVerificationProvider,
     configured_mapping_provider,
+    configured_rag_catalog_provider,
     configured_rag_query_provider,
     configured_vision_provider,
 )
@@ -62,6 +66,24 @@ class StructuredProviderTests(unittest.TestCase):
         provider._request({"temperature": 0})
         self.assertEqual(provider.captured["thinking"], {"type": "disabled"})
         self.assertFalse(provider.captured["stream"])
+
+    def test_responses_adapter_does_not_send_chat_only_thinking_contract(self) -> None:
+        class CapturingProvider(CompatibleResponsesProvider):
+            def _request_path(self, body, path):
+                self.captured = body
+                return {"output": []}
+
+        provider = CapturingProvider(Settings(
+            _env_file=None,
+            deepseek_thinking_mode="disabled",
+        ))
+        provider._responses_request(
+            system_prompt="test",
+            user_payload={"value": 1},
+            schema={"type": "object"},
+            max_output_tokens=128,
+        )
+        self.assertNotIn("thinking", provider.captured)
 
     def test_vision_provider_requires_explicit_capability_validation(self) -> None:
         blocked = Settings(
@@ -118,6 +140,10 @@ class StructuredProviderTests(unittest.TestCase):
             sumopod_api_key="test-key",
         )
         self.assertIsNotNone(configured_rag_query_provider(settings))
+        self.assertIsInstance(
+            configured_rag_catalog_provider(settings),
+            CompatibleChatRAGCatalogProvider,
+        )
         self.assertIsNotNone(configured_mapping_provider(settings))
 
         class FakeRAGProvider(CompatibleResponsesRAGQueryProvider):
@@ -137,6 +163,39 @@ class StructuredProviderTests(unittest.TestCase):
             {"fact_type": "evaluation", "claim": "Kebijakan dipantau berkala."}
         ])
         self.assertEqual(response.queries, ["pemantauan implementasi kebijakan"])
+
+        class FakeCatalogProvider(CompatibleResponsesRAGCatalogProvider):
+            def _responses_request(self, **kwargs):
+                self.payload = kwargs["user_payload"]
+                return {
+                    "output": [{
+                        "type": "message",
+                        "role": "assistant",
+                        "content": [{
+                            "type": "output_text",
+                            "text": '{"items":[{"kk_id":"KK3.1","kode":"2.1","detail_kode":"2.1.2","relevance_score":94,"document_role":"dokumen pendukung"}],"warnings":[]}',
+                        }],
+                    }]
+                }
+
+        catalog = FakeCatalogProvider(settings)
+        catalog_response = catalog.search_catalog(
+            {"file_name": "ND Peta Risiko.pdf", "file_kind": "pdf"},
+            [{"fact_type": "socialization", "claim": "Penyampaian peta risiko."}],
+            [{
+                "kk_id": "KK3.1",
+                "kk_title": "Efektivitas dan Efisiensi",
+                "kode": "2.1",
+                "detail_kode": "2.1.2",
+                "unsur": "Penilaian Risiko",
+                "subunsur_name": "Identifikasi Risiko",
+                "uraian": "Risiko dituangkan dalam register risiko",
+            }],
+        )
+        self.assertEqual(catalog_response.items[0].detail_kode, "2.1.2")
+        self.assertEqual(catalog_response.items[0].document_role, "supporting")
+        self.assertEqual(catalog_response.items[0].relevance_score, 0.94)
+        self.assertEqual(len(catalog.payload["parameter_catalog"]), 1)
 
     def test_rejects_model_fact_without_exact_source_quote(self) -> None:
         identity = DocumentIdentity("a.pdf", "application/pdf", 1, "sha", "pdf")

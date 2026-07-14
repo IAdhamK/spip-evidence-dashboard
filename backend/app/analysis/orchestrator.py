@@ -8,6 +8,7 @@ from collections.abc import Callable
 from app.analysis import PARSER_VERSION, PIPELINE_VERSION, PROMPT_VERSION, RULE_VERSION
 from app.analysis.advanced_rag import (
     ADVANCED_RAG_VERSION,
+    AdvancedRAGCatalogSearchEngine,
     AdvancedRAGQueryExpansionEngine,
     expand_domain_tokens,
     retrieval_needs_model_expansion,
@@ -22,6 +23,7 @@ from app.analysis.domain.grading import (
 from app.analysis.domain.retrieval import (
     ParameterRetrievalEngine,
     SPIPMappingEngine,
+    infer_document_role,
     parameter_corpus_tokens,
 )
 from app.analysis.facts import (
@@ -36,6 +38,7 @@ from app.analysis.mapping_reasoning import ConstrainedMappingReasoningEngine
 from app.analysis.repository import AnalysisRepository
 from app.analysis.provider import (
     configured_mapping_provider,
+    configured_rag_catalog_provider,
     configured_rag_query_provider,
     configured_structured_provider,
     configured_verification_provider,
@@ -135,7 +138,12 @@ class AnalysisOrchestrator:
         self.compute_routing_engine = ComputeRoutingEngine()
         self.structured_provider = configured_structured_provider(settings)
         self.mapping_provider = configured_mapping_provider(settings)
+        self.rag_catalog_provider = configured_rag_catalog_provider(settings)
         self.rag_query_provider = configured_rag_query_provider(settings)
+        self.rag_catalog_search_engine = (
+            AdvancedRAGCatalogSearchEngine(self.rag_catalog_provider)
+            if self.rag_catalog_provider else None
+        )
         self.rag_query_expansion_engine = (
             AdvancedRAGQueryExpansionEngine(self.rag_query_provider)
             if self.rag_query_provider else None
@@ -770,10 +778,33 @@ class AnalysisOrchestrator:
             parameters,
             feedback_terms=feedback_terms,
         )
+        catalog_shortlist = []
+        if (
+            self.settings.analysis_advanced_rag_enabled
+            and external_ai_allowed
+            and self.rag_catalog_search_engine
+        ):
+            retrieval_result.engine_name = "parameter_retrieval_local_baseline"
+            self.repository.save_engine_result(run_id, retrieval_result)
+            catalog_shortlist, catalog_search_result = self.rag_catalog_search_engine.run(
+                identity,
+                saved_facts,
+                parameters,
+            )
+            self.repository.save_engine_result(run_id, catalog_search_result)
+            if catalog_shortlist:
+                retrieved, retrieval_result = self.retrieval_engine.run(
+                    identity,
+                    saved_facts,
+                    parameters,
+                    feedback_terms=feedback_terms,
+                    catalog_shortlist=catalog_shortlist,
+                )
         if (
             self.settings.analysis_advanced_rag_enabled
             and external_ai_allowed
             and self.rag_query_expansion_engine
+            and not catalog_shortlist
             and retrieval_needs_model_expansion(
                 retrieved,
                 minimum_confidence=max(
@@ -784,8 +815,9 @@ class AnalysisOrchestrator:
                 ),
             )
         ):
-            retrieval_result.engine_name = "parameter_retrieval_local_baseline"
-            self.repository.save_engine_result(run_id, retrieval_result)
+            if retrieval_result.engine_name != "parameter_retrieval_local_baseline":
+                retrieval_result.engine_name = "parameter_retrieval_local_baseline"
+                self.repository.save_engine_result(run_id, retrieval_result)
             query_expansions, query_expansion_result = self.rag_query_expansion_engine.run(
                 identity,
                 saved_facts,
@@ -1254,10 +1286,37 @@ class AnalysisOrchestrator:
             limit=safe_limit,
             feedback_terms=self.repository.active_retrieval_feedback_terms(),
         )
+        catalog_shortlist = []
+        if (
+            self.settings.analysis_advanced_rag_enabled
+            and bool(run.get("external_ai_allowed", True))
+            and self.rag_catalog_search_engine
+        ):
+            retrieval_result.engine_name = "parameter_retrieval_expansion_local_baseline"
+            retrieval_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}:local"
+            self.repository.save_engine_result(run_id, retrieval_result)
+            catalog_shortlist, catalog_result = self.rag_catalog_search_engine.run(
+                identity,
+                facts,
+                self.repository.parameter_index(),
+            )
+            catalog_result.engine_name = "advanced_rag_catalog_search_candidate_expansion"
+            catalog_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}"
+            self.repository.save_engine_result(run_id, catalog_result)
+            if catalog_shortlist:
+                retrieved, retrieval_result = self.retrieval_engine.run(
+                    identity,
+                    facts,
+                    self.repository.parameter_index(),
+                    limit=safe_limit,
+                    feedback_terms=self.repository.active_retrieval_feedback_terms(),
+                    catalog_shortlist=catalog_shortlist,
+                )
         if (
             self.settings.analysis_advanced_rag_enabled
             and bool(run.get("external_ai_allowed", True))
             and self.rag_query_expansion_engine
+            and not catalog_shortlist
             and retrieval_needs_model_expansion(
                 retrieved,
                 minimum_confidence=max(
@@ -1268,9 +1327,10 @@ class AnalysisOrchestrator:
                 ),
             )
         ):
-            retrieval_result.engine_name = "parameter_retrieval_expansion_local_baseline"
-            retrieval_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}:local"
-            self.repository.save_engine_result(run_id, retrieval_result)
+            if retrieval_result.engine_name != "parameter_retrieval_expansion_local_baseline":
+                retrieval_result.engine_name = "parameter_retrieval_expansion_local_baseline"
+                retrieval_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}:local"
+                self.repository.save_engine_result(run_id, retrieval_result)
             query_expansions, query_result = self.rag_query_expansion_engine.run(identity, facts)
             query_result.engine_name = "advanced_rag_query_expansion_candidate_expansion"
             query_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}"
@@ -1324,13 +1384,26 @@ class AnalysisOrchestrator:
             advisory_result.engine_name = "constrained_mapping_reasoning_expansion"
             advisory_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}"
             self.repository.save_engine_result(run_id, advisory_result)
-        saved = self.repository.save_mapping_candidates(run_id, candidates)
+        refreshed_keys = {
+            (item["kk_id"], item["kode"], item["detail_kode"])
+            for item in candidates
+        }
+        retained_existing = [
+            item for item in existing
+            if (item["kk_id"], item["kode"], item["detail_kode"]) not in refreshed_keys
+        ]
+        merged_candidates = [*candidates, *retained_existing]
+        merged_candidates = [
+            {**item, "rag_rank": rank}
+            for rank, item in enumerate(merged_candidates, start=1)
+        ]
+        saved = self.repository.save_mapping_candidates(run_id, merged_candidates)
         self.repository.save_engine_result(run_id, retrieval_result)
         self.repository.save_engine_result(run_id, mapping_result)
         self.repository.save_engine_result(run_id, expansion_routing_result)
         new_keys = {
             (item["kk_id"], item["kode"], item["detail_kode"])
-            for item in saved
+            for item in candidates
         } - existing_keys
         self.repository.add_event(
             run_id,
@@ -1571,6 +1644,11 @@ class AnalysisOrchestrator:
         run = self.repository.get_run(run_id)
         if not run:
             raise KeyError(run_id)
+        facts = self.repository.list_facts(run_id)
+        document_role = infer_document_role(
+            self._identity_for_run(run_id, run),
+            facts,
+        )
         parameters = {
             (item["kk_id"], item["kode"], item["detail_kode"]): item
             for item in self.repository.parameter_index()
@@ -1584,8 +1662,17 @@ class AnalysisOrchestrator:
             mappings.append({
                 **mapping,
                 "parameter_uraian": parameter.get("uraian"),
+                "kk_title": parameter.get("kk_title"),
+                "unsur": parameter.get("unsur"),
+                "matrix_subunsur_name": parameter.get("matrix_subunsur_name"),
                 "subunsur_name": parameter.get("subunsur_name"),
                 "cara_pengujian": parameter.get("cara_pengujian"),
+                "available_grades": [
+                    item.get("grade")
+                    for item in (parameter.get("grades") or [])
+                    if item.get("grade")
+                ],
+                "document_role": document_role,
             })
         return {
             "run": run,
@@ -1602,7 +1689,7 @@ class AnalysisOrchestrator:
                 ),
                 None,
             ),
-            "facts": self.repository.list_facts(run_id),
+            "facts": facts,
             "mappings": mappings,
             "grade_assessments": self.repository.list_grade_assessments(run_id),
             "verification_results": self.repository.list_verification_results(run_id),

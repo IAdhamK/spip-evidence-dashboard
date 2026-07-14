@@ -7,7 +7,7 @@ from app.analysis.provider import MappingReasoningProvider
 from app.analysis.routing import ROUTING_POLICY_VERSION, mapping_key
 
 
-MAX_RERANK_CANDIDATES = 3
+MAX_RERANK_CANDIDATES = 10
 
 
 class ConstrainedMappingReasoningEngine:
@@ -54,10 +54,19 @@ class ConstrainedMappingReasoningEngine:
                 })
             payload.append({
                 "mapping_key": key,
+                "document": {
+                    "file_name": identity.file_name,
+                    "file_kind": identity.file_kind,
+                    "document_role": item.get("document_role"),
+                },
                 "official_parameter": {
                     "kk_id": item.get("kk_id"),
+                    "kk_title": item.get("kk_title"),
                     "kode": item.get("kode"),
                     "detail_kode": item.get("detail_kode"),
+                    "unsur": item.get("unsur"),
+                    "matrix_subunsur_name": item.get("matrix_subunsur_name"),
+                    "subunsur_name": item.get("subunsur_name"),
                     "uraian": str(item.get("uraian") or "")[:600],
                 },
                 "mapping_score": float(item.get("mapping_score") or 0),

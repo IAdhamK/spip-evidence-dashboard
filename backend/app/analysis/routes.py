@@ -17,7 +17,8 @@ from app.analysis.batch_intake import (
     inspect_batch_archive,
     read_and_validate_member,
 )
-from app.analysis.contracts import EngineResult, EngineStatus
+from app.analysis.contracts import DocumentIdentity, EngineResult, EngineStatus
+from app.analysis.domain.retrieval import infer_document_role
 from app.analysis.jobs import AnalysisJobManager
 from app.analysis.legacy_bridge import (
     LegacyBridgeError,
@@ -2546,6 +2547,27 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
             (item["kk_id"], item["kode"], item["detail_kode"]): item
             for item in repository.parameter_index()
         }
+        facts = repository.list_facts(run_id)
+        engine_results = repository.list_engine_results(run_id)
+        file_kind = next(
+            (
+                str(item.get("output", {}).get("file_kind") or "")
+                for item in engine_results
+                if item.get("engine_name") == "file_router"
+                and item.get("output", {}).get("file_kind")
+            ),
+            "text",
+        )
+        document_role = infer_document_role(
+            DocumentIdentity(
+                file_name=run["file_name"],
+                content_type=run.get("content_type"),
+                size_bytes=int(run.get("size_bytes") or 0),
+                sha256=run["sha256"],
+                file_kind=file_kind,
+            ),
+            facts,
+        )
         mappings = []
         for mapping in repository.list_mapping_candidates(run_id):
             parameter = parameters.get(
@@ -2556,18 +2578,27 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
                 {
                     **mapping,
                     "parameter_uraian": parameter.get("uraian"),
+                    "kk_title": parameter.get("kk_title"),
+                    "unsur": parameter.get("unsur"),
+                    "matrix_subunsur_name": parameter.get("matrix_subunsur_name"),
                     "subunsur_name": parameter.get("subunsur_name"),
                     "cara_pengujian": parameter.get("cara_pengujian"),
+                    "available_grades": [
+                        item.get("grade")
+                        for item in (parameter.get("grades") or [])
+                        if item.get("grade")
+                    ],
+                    "document_role": document_role,
                 }
             )
         return {
             "run": run,
             "events": repository.list_events(run_id),
-            "engines": repository.list_engine_results(run_id),
+            "engines": engine_results,
             "security_findings": repository.list_security_findings(run_id),
             "document_units": repository.list_document_units(run_id),
             "document_structures": repository.list_document_structures(run_id),
-            "facts": repository.list_facts(run_id),
+            "facts": facts,
             "mappings": mappings,
             "grade_assessments": repository.list_grade_assessments(run_id),
             "verification_results": repository.list_verification_results(run_id),

@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from app.analysis.contracts import DocumentIdentity, EngineStatus
+from app.analysis.advanced_rag import AdvancedRAGCatalogSearchEngine
 from app.analysis import RULE_VERSION
 from app.analysis.domain.grading import (
     DomainRuleGradeEngine,
@@ -13,8 +14,18 @@ from app.analysis.domain.grading import (
     resolve_evidence_context,
     rule_checksum,
 )
-from app.analysis.provider import ModelVerificationItem, ModelVerificationResponse
-from app.analysis.domain.retrieval import ParameterRetrievalEngine, SPIPMappingEngine
+from app.analysis.provider import (
+    ModelVerificationItem,
+    ModelVerificationResponse,
+    RAGCatalogSearchItem,
+    RAGCatalogSearchResponse,
+)
+from app.analysis.domain.retrieval import (
+    ParameterRetrievalEngine,
+    SPIPMappingEngine,
+    detect_kk_context,
+    infer_document_role,
+)
 
 
 class DecisionEngineTests(unittest.TestCase):
@@ -91,7 +102,10 @@ class DecisionEngineTests(unittest.TestCase):
             [self.parameter],
         )
         self.assertEqual(retrieval_result.status, EngineStatus.COMPLETED)
-        self.assertEqual(retrieval_result.output["parameter_scope"], "parameter_only_without_grade")
+        self.assertEqual(
+            retrieval_result.output["parameter_scope"],
+            "all_kk_subunsur_and_parameters_without_grade",
+        )
         mappings, mapping_result = SPIPMappingEngine().run(self.identity, self.facts, retrieved)
         self.assertEqual(mapping_result.status, EngineStatus.COMPLETED)
         self.assertEqual(mappings[0]["detail_kode"], "3.1.1")
@@ -152,7 +166,133 @@ class DecisionEngineTests(unittest.TestCase):
 
         mappings, _ = SPIPMappingEngine().run(self.identity, facts, retrieved)
         self.assertEqual(mappings[0]["rag_rank"], 1)
-        self.assertEqual(mappings[0]["rag_method"], "advanced_rag_local_v1")
+        self.assertEqual(mappings[0]["rag_method"], "advanced_rag_local_v2")
+
+    def test_peta_risiko_document_prefers_register_over_partnership_risk(self) -> None:
+        identity = DocumentIdentity(
+            "ND Penyampaian Peta Risiko dan Laporan MR II Ditjen PDP 2025-2029.pdf",
+            "application/pdf",
+            100,
+            "risk-map",
+            "pdf",
+        )
+        facts = [{
+            "id": 1,
+            "fact_key": "delivery",
+            "claim": "Penyampaian matriks peta risiko dan laporan pemantauan manajemen risiko semester II.",
+            "fact_type": "socialization",
+            "evidence_role": "supporting",
+        }]
+        parameters = [
+            {
+                **self.parameter,
+                "id": 21,
+                "kode": "2.1",
+                "detail_kode": "2.1.2",
+                "subunsur_name": "Identifikasi Risiko",
+                "evidence_hint": "Register risiko dan peta risiko",
+                "uraian": "Risiko telah teridentifikasi dan dituangkan dalam register risiko",
+            },
+            {
+                **self.parameter,
+                "id": 22,
+                "kode": "1.8",
+                "detail_kode": "1.8.2",
+                "subunsur_name": "Hubungan Kerja dan Kemitraan",
+                "evidence_hint": "Dokumen pengelolaan risiko kemitraan",
+                "uraian": "Risiko terkait kemitraan telah diidentifikasi dan dikelola",
+            },
+            {
+                **self.parameter,
+                "id": 23,
+                "kode": "5.1",
+                "detail_kode": "5.1.3",
+                "subunsur_name": "Pemantauan Berkelanjutan",
+                "evidence_hint": "Laporan monitoring risiko",
+                "uraian": "Pemantauan terhadap risiko telah dilakukan",
+            },
+        ]
+        retrieved, _ = ParameterRetrievalEngine(advanced_rag_enabled=True).run(
+            identity,
+            facts,
+            parameters,
+        )
+        ranked_codes = [item["detail_kode"] for item in retrieved]
+        self.assertIn("2.1.2", ranked_codes[:2])
+        self.assertIn("5.1.3", ranked_codes[:2])
+        self.assertLess(ranked_codes.index("2.1.2"), ranked_codes.index("1.8.2"))
+        self.assertEqual(infer_document_role(identity, facts), "supporting")
+        self.assertEqual(detect_kk_context("Peta dan manajemen risiko"), {})
+
+    def test_catalog_shortlist_can_recall_candidate_outside_lexical_top_results(self) -> None:
+        parameters = [
+            self.parameter,
+            {
+                **self.parameter,
+                "id": 99,
+                "kode": "5.1",
+                "detail_kode": "5.1.3",
+                "uraian": "Pemantauan berkala telah dilakukan",
+                "evidence_hint": "Laporan MR",
+            },
+        ]
+        facts = [{
+            "id": 1,
+            "fact_key": "memo",
+            "claim": "Dokumen disampaikan kepada pimpinan.",
+            "fact_type": "socialization",
+            "evidence_role": "supporting",
+        }]
+        retrieved, result = ParameterRetrievalEngine(advanced_rag_enabled=True).run(
+            self.identity,
+            facts,
+            parameters,
+            catalog_shortlist=[{
+                "kk_id": "KK3.1",
+                "kode": "5.1",
+                "detail_kode": "5.1.3",
+                "catalog_relevance": 0.95,
+                "document_role": "supporting",
+            }],
+        )
+        self.assertEqual(retrieved[0]["detail_kode"], "5.1.3")
+        self.assertTrue(result.output["model_catalog_search_used"])
+        self.assertEqual(retrieved[0]["document_role"], "supporting")
+
+    def test_catalog_search_keeps_valid_items_and_filters_hallucinated_codes(self) -> None:
+        class FakeCatalogProvider:
+            def search_catalog(self, document, facts, parameters):
+                return RAGCatalogSearchResponse(items=[
+                    RAGCatalogSearchItem(
+                        kk_id="KK3.1",
+                        kode="2.1",
+                        detail_kode="2.1.2",
+                        relevance_score=0.95,
+                        document_role="supporting/document",
+                    ),
+                    RAGCatalogSearchItem(
+                        kk_id="KK9.9",
+                        kode="99.9",
+                        detail_kode="99.9.9",
+                        relevance_score=1,
+                        document_role="primary",
+                    ),
+                ])
+
+        parameters = [{
+            **self.parameter,
+            "kode": "2.1",
+            "detail_kode": "2.1.2",
+        }]
+        items, result = AdvancedRAGCatalogSearchEngine(FakeCatalogProvider()).run(
+            self.identity,
+            self.facts,
+            parameters,
+        )
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["detail_kode"], "2.1.2")
+        self.assertEqual(items[0]["document_role"], "context")
+        self.assertEqual(result.metrics["invalid_item_count"], 1)
 
     def test_mapping_keeps_relevant_policy_when_evaluation_facts_fill_top_twelve(self) -> None:
         facts = [

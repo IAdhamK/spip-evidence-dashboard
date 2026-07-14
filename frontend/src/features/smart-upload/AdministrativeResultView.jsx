@@ -40,6 +40,14 @@ export default function AdministrativeResultView({
   const evidenceGrade = assessment.candidate_grade && assessment.primary_allowed === true
     ? `Grade ${assessment.candidate_grade}`
     : "Belum dapat ditetapkan";
+  const documentRoleLabels = {
+    primary: "Bukti utama",
+    supporting: "Dokumen pendukung",
+    context: "Dokumen konteks",
+    not_evidence: "Belum teridentifikasi sebagai evidence",
+  };
+  const documentRole = documentRoleLabels[mapping.document_role] || "Peran dokumen perlu diperiksa";
+  const subunsurLabel = mapping.subunsur_name || mapping.matrix_subunsur_name || "Belum ditemukan";
   const decisionLabels = {
     approve: "Hasil Benar",
     correct: "Perbaiki Hasil",
@@ -50,11 +58,25 @@ export default function AdministrativeResultView({
     <section className="admin-result-view" aria-label="Ringkasan hasil untuk petugas administrasi">
       <div className="admin-result-intro">
         <div>
-          <span className="admin-eyebrow">Hasil yang paling sesuai</span>
-          <h4>{mapping.kk_id} / {mapping.kode} / {mapping.detail_kode}</h4>
-          <p>{parameterLabel}</p>
+          <span className="admin-eyebrow">Hasil pencarian otomatis yang paling sesuai</span>
+          <h4>{mapping.kk_id} · Parameter {mapping.detail_kode}</h4>
+          <p>Sistem telah menelusuri katalog KK, subunsur, parameter, dan aturan Grade. Periksa ringkasan berikut sebelum menyimpan keputusan.</p>
         </div>
         <span className="admin-status-badge">{administrativeRunStatus(run)}</span>
+      </div>
+
+      <div className="admin-classification-path" aria-label="Hasil klasifikasi dokumen">
+        <div><span>KK yang ditemukan</span><strong>{mapping.kk_id}</strong><small>{mapping.kk_title || "Nama KK belum tersedia"}</small></div>
+        <div><span>Unsur</span><strong>{mapping.unsur || mapping.matrix_subunsur_name || "Belum ditemukan"}</strong></div>
+        <div><span>Subunsur</span><strong>{mapping.kode}</strong><small>{subunsurLabel}</small></div>
+        <div><span>Parameter</span><strong>{mapping.detail_kode}</strong><small>{parameterLabel}</small></div>
+      </div>
+
+      <div className={`admin-document-role admin-document-role-${mapping.document_role || "unknown"}`}>
+        <strong>Peran dokumen: {documentRole}</strong>
+        <span>{mapping.document_role === "primary"
+          ? "Isi dokumen dapat diperiksa sebagai bukti pelaksanaan, hasil, evaluasi, atau tindak lanjut."
+          : "Dokumen ini membantu menemukan parameter, tetapi Grade memerlukan bukti utama yang dirujuk atau dilampirkan."}</span>
       </div>
 
       <div className="admin-result-metrics">
@@ -77,7 +99,7 @@ export default function AdministrativeResultView({
 
       <div className="admin-explanation">
         <Info size={18} aria-hidden="true" />
-        <p><strong>Arah Grade</strong> membantu menentukan tujuan pemeriksaan. Grade resmi baru ditetapkan setelah informasi dan bukti pendukung lengkap.</p>
+        <p><strong>Arah Grade</strong> dicari setelah KK, subunsur, dan parameter ditemukan. Grade resmi baru ditetapkan bila bukti utama dan persyaratannya lengkap.</p>
       </div>
 
       {reviewGroups.missing.length ? (
@@ -129,7 +151,7 @@ export default function AdministrativeResultView({
             <div className="admin-correction-grid">
               <label>Parameter yang benar
                 <select value={correctionTarget} onChange={(event) => setCorrectionTarget(event.target.value)}>
-                  {mappings.map((item) => <option key={item.id} value={`${item.kk_id}|${item.kode}|${item.detail_kode}`}>{item.kk_id} / {item.kode} / {item.detail_kode} — {item.parameter_uraian || "parameter terkait"}</option>)}
+                  {mappings.map((item) => <option key={item.id} value={`${item.kk_id}|${item.kode}|${item.detail_kode}`}>{item.kk_id} — {item.kk_title || "KK"} › {item.kode} {item.subunsur_name || "Subunsur"} › {item.detail_kode} {item.parameter_uraian || "Parameter terkait"}</option>)}
                 </select>
               </label>
               <label>Grade hasil pemeriksaan
@@ -153,7 +175,7 @@ export default function AdministrativeResultView({
           <div>
             {mappings.filter((item) => item.id !== mapping.id).map((item) => (
               <article key={item.id}>
-                <div><strong>{item.kk_id} / {item.kode} / {item.detail_kode}</strong><p>{item.parameter_uraian || item.subunsur_name || "Uraian parameter belum tersedia"}</p></div>
+                <div><strong>{item.kk_id} · {item.kk_title || "KK"}</strong><p>Subunsur {item.kode}: {item.subunsur_name || item.matrix_subunsur_name || "belum tersedia"}</p><p>Parameter {item.detail_kode}: {item.parameter_uraian || "uraian belum tersedia"}</p></div>
                 <span>{confidenceLabel(item.mapping_score)} · {Math.round((item.mapping_score ?? 0) * 100)}%</span>
               </article>
             ))}
