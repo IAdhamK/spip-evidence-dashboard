@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlparse
@@ -187,6 +188,45 @@ class LumbungPublicLinkTests(unittest.TestCase):
 
             self.assertTrue(slot["folder_path"].split("/")[2].endswith("APIP at_"))
             self.assertEqual(query["dir"], [f'/{slot["folder_path"]}'])
+
+    def test_database_startup_normalization_rewrites_smart_upload_json(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "5.2 Evaluasi Terpisah/"
+            "5.2.1 Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan "
+            "dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian "
+            "intern, mengidentifikasi kelemahan pengendalian, menentukan/Grade A"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+        stale_candidate = {"folder_path": full_path, "public_url": stale_url}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db = Database(str(Path(tmpdir) / "evidence.db"))
+            review_id = db.record_smart_upload_review(
+                "sample.pdf",
+                "application/pdf",
+                123,
+                "",
+                [stale_candidate],
+                "skipped",
+                None,
+            )
+            db.mark_smart_upload_confirmed(review_id, stale_candidate, "reference_supporting", "")
+            db.record_smart_upload_action(review_id, "reference_supporting", 0, stale_candidate, "")
+
+            db.normalize_lumbung_links()
+            review = db.smart_upload_review(review_id)
+            candidate = json.loads(review["candidates_json"])[0]
+            confirmed = json.loads(review["confirmed_candidate_json"])
+            action = json.loads(db.smart_upload_actions(review_id)[0]["candidate_json"])
+
+            for item in (candidate, confirmed, action):
+                query = parse_qs(urlparse(item["public_url"]).query)
+                self.assertTrue(item["folder_path"].split("/")[2].endswith("APIP at_"))
+                self.assertEqual(query["dir"], [f'/{item["folder_path"]}'])
 
     def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
         stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"

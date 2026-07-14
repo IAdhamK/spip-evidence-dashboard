@@ -11,6 +11,45 @@ from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
 from app.webdav_client import canonical_public_folder_url
 
 
+def normalize_lumbung_value(value):
+    if isinstance(value, list):
+        return [normalize_lumbung_value(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+
+    normalized = {
+        key: normalize_lumbung_value(item)
+        for key, item in value.items()
+    }
+
+    folder_path = str(normalized.get("folder_path") or "").strip()
+    if folder_path:
+        normalized["folder_path"] = canonical_folder_path(folder_path)
+        folder_path = normalized["folder_path"]
+    if normalized.get("public_url"):
+        normalized["public_url"] = canonical_public_folder_url(normalized.get("public_url"), folder_path)
+
+    parameter_path = str(normalized.get("parameter_entry_folder_path") or "").strip()
+    if parameter_path:
+        normalized["parameter_entry_folder_path"] = canonical_folder_path(parameter_path)
+        parameter_path = normalized["parameter_entry_folder_path"]
+    if normalized.get("parameter_entry_public_url"):
+        normalized["parameter_entry_public_url"] = canonical_public_folder_url(
+            normalized.get("parameter_entry_public_url"),
+            parameter_path,
+        )
+
+    return normalized
+
+
+def normalize_lumbung_json(value: str | None, default):
+    try:
+        parsed = json.loads(value or "")
+    except (TypeError, json.JSONDecodeError):
+        parsed = default
+    return json.dumps(normalize_lumbung_value(parsed), ensure_ascii=False)
+
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS folders (
     kk_id TEXT NOT NULL,
@@ -335,6 +374,41 @@ class Database:
                         """,
                         (folder_path, public_url, row["rowid"]),
                     )
+            review_rows = conn.execute(
+                """
+                SELECT id, candidates_json, confirmed_candidate_json
+                FROM smart_upload_reviews
+                """
+            ).fetchall()
+            for row in review_rows:
+                candidates_json = normalize_lumbung_json(row["candidates_json"], [])
+                confirmed_candidate_json = (
+                    normalize_lumbung_json(row["confirmed_candidate_json"], {})
+                    if row["confirmed_candidate_json"]
+                    else None
+                )
+                conn.execute(
+                    """
+                    UPDATE smart_upload_reviews
+                    SET candidates_json = ?, confirmed_candidate_json = ?
+                    WHERE id = ?
+                    """,
+                    (candidates_json, confirmed_candidate_json, row["id"]),
+                )
+            action_rows = conn.execute(
+                "SELECT id, candidate_json FROM smart_upload_actions"
+            ).fetchall()
+            for row in action_rows:
+                if not row["candidate_json"]:
+                    continue
+                conn.execute(
+                    """
+                    UPDATE smart_upload_actions
+                    SET candidate_json = ?
+                    WHERE id = ?
+                    """,
+                    (normalize_lumbung_json(row["candidate_json"], {}), row["id"]),
+                )
 
     def folders(self, kk_id: str | None = None) -> list[dict]:
         query = "SELECT * FROM folders"
@@ -586,7 +660,16 @@ class Database:
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (file_name, content_type, size_bytes, preview_text, json.dumps(candidates, ensure_ascii=False), ai_status, ai_message, payload),
+                (
+                    file_name,
+                    content_type,
+                    size_bytes,
+                    preview_text,
+                    json.dumps(normalize_lumbung_value(candidates), ensure_ascii=False),
+                    ai_status,
+                    ai_message,
+                    payload,
+                ),
             )
             return int(cursor.lastrowid)
 
@@ -597,7 +680,13 @@ class Database:
                 "SELECT * FROM smart_upload_reviews WHERE id = ?",
                 (review_id,),
             ).fetchone()
-            return dict(row) if row else None
+            if not row:
+                return None
+            data = dict(row)
+            data["candidates_json"] = normalize_lumbung_json(data.get("candidates_json"), [])
+            if data.get("confirmed_candidate_json"):
+                data["confirmed_candidate_json"] = normalize_lumbung_json(data.get("confirmed_candidate_json"), {})
+            return data
 
 
     def record_smart_upload_action(
@@ -620,7 +709,7 @@ class Database:
                     review_id,
                     action_type,
                     candidate_index,
-                    json.dumps(candidate, ensure_ascii=False) if candidate else None,
+                    json.dumps(normalize_lumbung_value(candidate), ensure_ascii=False) if candidate else None,
                     action_message,
                 ),
             )
@@ -653,5 +742,10 @@ class Database:
                     confirmed_candidate_json = ?, confirmed_at = CURRENT_TIMESTAMP
                 WHERE id = ?
                 """,
-                (upload_status, upload_message, json.dumps(candidate, ensure_ascii=False), review_id),
+                (
+                    upload_status,
+                    upload_message,
+                    json.dumps(normalize_lumbung_value(candidate), ensure_ascii=False),
+                    review_id,
+                ),
             )
