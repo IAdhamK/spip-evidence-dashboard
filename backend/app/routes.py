@@ -27,6 +27,17 @@ class SmartUploadActionRequest(BaseModel):
 sync_manager = SyncManager()
 
 
+def current_public_folder_link(settings, item: dict) -> str | None:
+    """Resolve a fresh link instead of trusting a URL cached by an older release."""
+    if not settings.has_share_token:
+        return item.get("public_url")
+    return public_folder_link(
+        settings.lumbung_host,
+        settings.lumbung_share_token,
+        item["folder_path"],
+    )
+
+
 def create_router(db: Database) -> APIRouter:
     router = APIRouter(prefix="/api")
 
@@ -42,11 +53,10 @@ def create_router(db: Database) -> APIRouter:
         if not settings.has_share_token:
             return enriched
 
-        enriched["public_url"] = folder.get("public_url") or public_folder_link(
-            settings.lumbung_host,
-            settings.lumbung_share_token,
-            folder["folder_path"],
-        )
+        # Selalu bentuk ulang dari folder_path. Nilai public_url di database
+        # dapat berasal dari sinkronisasi versi lama dan masih menunjuk ke
+        # segmen panjang yang tidak ada secara fisik di LumbungFile.
+        enriched["public_url"] = current_public_folder_link(settings, folder)
         if parameter_entry:
             enriched["parameter_entry_public_url"] = public_folder_link(
                 settings.lumbung_host,
@@ -314,8 +324,7 @@ def with_slot_public_url(slot: dict) -> dict:
         return slot
     return {
         **slot,
-        "public_url": slot.get("public_url")
-        or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, slot["folder_path"]),
+        "public_url": current_public_folder_link(settings, slot),
     }
 
 

@@ -293,7 +293,7 @@ class SmartUploadService:
             raise SmartUploadError("Pilihan kandidat tidak valid.")
         candidate = candidates[candidate_index]
         folder_url = candidate.get("public_url")
-        if not folder_url and self.settings.has_share_token:
+        if self.settings.has_share_token:
             folder_url = public_folder_link(self.settings.lumbung_host, self.settings.lumbung_share_token, candidate["folder_path"])
 
         if action in {"reference_supporting", "reference_optional"}:
@@ -519,7 +519,15 @@ class SmartUploadService:
                             penjelasan=grade.get("penjelasan") or "",
                             cara_pengujian=grade.get("cara_pengujian") or parameter.get("cara_pengujian"),
                             folder_path=slot["folder_path"],
-                            public_url=slot.get("public_url"),
+                            public_url=(
+                                public_folder_link(
+                                    self.settings.lumbung_host,
+                                    self.settings.lumbung_share_token,
+                                    slot["folder_path"],
+                                )
+                                if self.settings.has_share_token
+                                else slot.get("public_url")
+                            ),
                             corpus=corpus,
                         )
                     )
