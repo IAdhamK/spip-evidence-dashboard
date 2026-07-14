@@ -143,7 +143,7 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
             authorization_contract["policy_version"],
             "analysis-rbac-v1",
         )
-        self.assertEqual(authorization_contract["classified_operation_count"], 61)
+        self.assertEqual(authorization_contract["classified_operation_count"], 62)
         self.assertTrue(authorization_contract["all_mutations_role_secured"])
 
         readiness = self.client.get("/api/analysis-runs/readiness-dashboard")
@@ -237,6 +237,24 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
         self.assertEqual(rules.status_code, 200)
         self.assertEqual(len(rules.json()["rules"]), 2)
         self.assertEqual(rules.json()["rule_count"], 920)
+
+        parameter_catalog = self.client.get(
+            "/api/analysis-runs/parameter-catalog?limit=1000"
+        )
+        self.assertEqual(parameter_catalog.status_code, 200)
+        self.assertEqual(parameter_catalog.json()["parameter_count"], 184)
+        self.assertEqual(len(parameter_catalog.json()["items"]), 184)
+        self.assertEqual(
+            {item["kk_id"] for item in parameter_catalog.json()["items"]},
+            {"KK3.1", "KK3.2", "KK3.3", "KK3.4"},
+        )
+        self.assertTrue(all(
+            item["kk_title"]
+            and item["subunsur_name"]
+            and item["uraian"]
+            and item["available_grades"]
+            for item in parameter_catalog.json()["items"]
+        ))
 
         readiness = self.client.get("/api/analysis-runs/promotion-readiness")
         self.assertEqual(readiness.status_code, 200)

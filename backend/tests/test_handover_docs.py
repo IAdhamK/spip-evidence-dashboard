@@ -32,7 +32,7 @@ class HandoverDocumentationTests(unittest.TestCase):
         self.assertGreaterEqual(report["openapi_operation_count"], 50)
         self.assertEqual(report["authorization_policy_version"], "analysis-rbac-v1")
         self.assertEqual(report["role_secured_operation_count"], 55)
-        self.assertEqual(report["proxy_boundary_operation_count"], 6)
+        self.assertEqual(report["proxy_boundary_operation_count"], 7)
         self.assertGreaterEqual(report["schema_table_count"], 40)
         self.assertEqual(report["errors"], [])
 

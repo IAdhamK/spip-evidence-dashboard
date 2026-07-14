@@ -54,7 +54,7 @@ class AuthorizationContractTests(unittest.TestCase):
         proxy_boundary = set(PROXY_BOUNDARY_OPERATIONS)
         self.assertFalse(secured & proxy_boundary)
         self.assertEqual(actual_operations, secured | proxy_boundary)
-        self.assertEqual(len(actual_operations), 61)
+        self.assertEqual(len(actual_operations), 62)
         self.assertTrue(all(method == "GET" for method, _path in proxy_boundary))
         self.assertTrue(
             all(
@@ -75,8 +75,8 @@ class AuthorizationContractTests(unittest.TestCase):
         summary = authorization_contract_summary()
         self.assertEqual(summary["policy_version"], AUTHORIZATION_POLICY_VERSION)
         self.assertEqual(summary["secured_operation_count"], 55)
-        self.assertEqual(summary["proxy_boundary_operation_count"], 6)
-        self.assertEqual(summary["classified_operation_count"], 61)
+        self.assertEqual(summary["proxy_boundary_operation_count"], 7)
+        self.assertEqual(summary["classified_operation_count"], 62)
         self.assertTrue(summary["all_mutations_role_secured"])
 
     def test_unregistered_guarded_route_fails_closed_even_in_development(self) -> None:

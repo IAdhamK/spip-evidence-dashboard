@@ -767,6 +767,48 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
             "rules": catalog[safe_offset:safe_offset + safe_limit],
         }
 
+    @router.get("/parameter-catalog")
+    def parameter_catalog(
+        kk_id: str | None = None,
+        kode: str | None = None,
+        offset: int = 0,
+        limit: int = 1000,
+    ) -> dict:
+        repository = AnalysisRepository(db)
+        parameters = repository.parameter_index()
+        if kk_id:
+            parameters = [item for item in parameters if item["kk_id"] == kk_id]
+        if kode:
+            parameters = [item for item in parameters if item["kode"] == kode]
+        total = len(parameters)
+        safe_offset = max(0, int(offset or 0))
+        safe_limit = max(1, min(1000, int(limit or 1000)))
+        items = []
+        for parameter in parameters[safe_offset:safe_offset + safe_limit]:
+            items.append({
+                "id": parameter["id"],
+                "kk_id": parameter["kk_id"],
+                "kk_title": parameter.get("kk_title"),
+                "unsur": parameter.get("unsur"),
+                "kode": parameter["kode"],
+                "matrix_subunsur_name": parameter.get("matrix_subunsur_name"),
+                "subunsur_name": parameter.get("subunsur_name"),
+                "detail_kode": parameter["detail_kode"],
+                "parameter_no": parameter.get("parameter_no"),
+                "uraian": parameter.get("uraian"),
+                "available_grades": [
+                    grade.get("grade")
+                    for grade in (parameter.get("grades") or [])
+                    if grade.get("grade") in {"A", "B", "C", "D", "E"}
+                ],
+            })
+        return {
+            "parameter_count": total,
+            "offset": safe_offset,
+            "limit": safe_limit,
+            "items": items,
+        }
+
     @router.post("/rule-approvals", status_code=status.HTTP_201_CREATED)
     def approve_rule(payload: RuleApprovalRequest, request: Request) -> dict:
         require_governance_access(request)

@@ -33,6 +33,9 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
   const [categoryName, setCategoryName] = useState("");
   const [correctionTarget, setCorrectionTarget] = useState("");
   const [correctionGrade, setCorrectionGrade] = useState("");
+  const [correctionCatalog, setCorrectionCatalog] = useState([]);
+  const [correctionCatalogLoading, setCorrectionCatalogLoading] = useState(false);
+  const [correctionCatalogError, setCorrectionCatalogError] = useState("");
   const [reviewAction, setReviewAction] = useState("");
   const [reviewMessage, setReviewMessage] = useState("");
   const [reconciliationOutcome, setReconciliationOutcome] = useState("needs_investigation");
@@ -64,6 +67,25 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
   async function refreshRun() {
     const fresh = await apiGet(`/api/analysis-runs/${run.id}`);
     setSnapshot(fresh);
+  }
+
+  async function loadCorrectionCatalog(force = false) {
+    if (!force && (correctionCatalog.length || correctionCatalogLoading)) return;
+    if (force) setCorrectionCatalog([]);
+    setCorrectionCatalogLoading(true);
+    setCorrectionCatalogError("");
+    try {
+      const catalog = await apiGet("/api/analysis-runs/parameter-catalog?limit=1000");
+      const items = Array.isArray(catalog.items) ? catalog.items : [];
+      if (!items.length || items.length < Number(catalog.parameter_count || 0)) {
+        throw new Error("Katalog parameter belum termuat lengkap.");
+      }
+      setCorrectionCatalog(items);
+    } catch (error) {
+      setCorrectionCatalogError(error.message || "Katalog parameter gagal dimuat.");
+    } finally {
+      setCorrectionCatalogLoading(false);
+    }
   }
 
   async function decide(mappingId, decision) {
@@ -105,6 +127,7 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
     setReviewIntent({ mappingId: mapping.id, decision });
     setCorrectionTarget(`${mapping.kk_id}|${mapping.kode}|${mapping.detail_kode}`);
     setCorrectionGrade(assessments.get(mapping.id)?.candidate_grade || "");
+    if (decision === "correct") loadCorrectionCatalog();
     if (!reviewReason.trim()) {
       setReviewReason({
         approve: "Hasil analisis sesuai dengan isi dokumen.",
@@ -233,6 +256,10 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
           setCorrectionTarget={setCorrectionTarget}
           correctionGrade={correctionGrade}
           setCorrectionGrade={setCorrectionGrade}
+          correctionCatalog={correctionCatalog}
+          correctionCatalogLoading={correctionCatalogLoading}
+          correctionCatalogError={correctionCatalogError}
+          reloadCorrectionCatalog={() => loadCorrectionCatalog(true)}
           reviewAction={reviewAction}
           reviewMessage={reviewMessage}
           beginReview={beginSimpleReview}

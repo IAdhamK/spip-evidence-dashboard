@@ -4,6 +4,8 @@ import {
   administrativeReviewGroups,
   administrativeRunStatus,
   confidenceLabel,
+  correctionCatalogSelection,
+  correctionTargetFor,
   gradeDirection,
   primaryAdministrativeResult,
 } from "../src/features/smart-upload/admin-result.js";
@@ -46,6 +48,27 @@ const primary = primaryAdministrativeResult({
 });
 assert.equal(primary.mapping.id, 2);
 assert.equal(primary.direction.grade, "E");
+
+const correctionCatalog = [
+  { kk_id: "KK3.1", kk_title: "Efektivitas", kode: "2.1", subunsur_name: "Identifikasi Risiko", detail_kode: "2.1.1", uraian: "Kebijakan risiko", available_grades: ["A", "B", "C", "D", "E"] },
+  { kk_id: "KK3.1", kk_title: "Efektivitas", kode: "2.1", subunsur_name: "Identifikasi Risiko", detail_kode: "2.1.2", uraian: "Register risiko", available_grades: ["A", "B", "C", "D", "E"] },
+  { kk_id: "KK3.1", kk_title: "Efektivitas", kode: "5.1", subunsur_name: "Pemantauan", detail_kode: "5.1.3", uraian: "Pemantauan risiko", available_grades: ["C", "B", "A"] },
+  { kk_id: "KK3.2", kk_title: "Pelaporan Keuangan", kode: "2.1", subunsur_name: "Identifikasi Risiko", detail_kode: "2.1.2", uraian: "Register risiko keuangan", available_grades: ["E", "D"] },
+  { kk_id: "KK3.3", kk_title: "Pengamanan Aset", kode: "2.1", subunsur_name: "Identifikasi Risiko", detail_kode: "2.1.2", uraian: "Register risiko aset", available_grades: ["E"] },
+  { kk_id: "KK3.4", kk_title: "Ketaatan", kode: "2.1", subunsur_name: "Identifikasi Risiko", detail_kode: "2.1.2", uraian: "Register risiko ketaatan", available_grades: ["A"] },
+];
+const correctionSelection = correctionCatalogSelection(
+  correctionCatalog,
+  "KK3.1|5.1|5.1.3",
+);
+assert.equal(correctionSelection.kkOptions.length, 4);
+assert.equal(correctionSelection.subunsurOptions.length, 2);
+assert.equal(correctionSelection.selectedParameter.detail_kode, "5.1.3");
+assert.deepEqual(correctionSelection.gradeOptions, ["C", "B", "A"]);
+assert.equal(
+  correctionTargetFor(correctionCatalog, { kkId: "KK3.2", kode: "2.1" }),
+  "KK3.2|2.1|2.1.2",
+);
 
 assert.deepEqual(
   administrativeMissingItems({

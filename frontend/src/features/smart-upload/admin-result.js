@@ -1,5 +1,63 @@
 const GRADE_ORDER = ["E", "D", "C", "B", "A"];
 
+function uniqueBy(items, keyFor) {
+  const seen = new Set();
+  return items.filter((item) => {
+    const key = keyFor(item);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function correctionKey(item = {}) {
+  return [item.kk_id, item.kode, item.detail_kode].filter(Boolean).join("|");
+}
+
+export function correctionCatalogSelection(catalog = [], target = "") {
+  const validCatalog = catalog.filter((item) => (
+    item?.kk_id && item?.kode && item?.detail_kode
+  ));
+  const [requestedKk, requestedKode, requestedDetail] = String(target || "").split("|");
+  const kkOptions = uniqueBy(validCatalog, (item) => item.kk_id);
+  const activeKk = kkOptions.some((item) => item.kk_id === requestedKk)
+    ? requestedKk
+    : kkOptions[0]?.kk_id || "";
+  const subunsurOptions = uniqueBy(
+    validCatalog.filter((item) => item.kk_id === activeKk),
+    (item) => item.kode,
+  );
+  const activeKode = subunsurOptions.some((item) => item.kode === requestedKode)
+    ? requestedKode
+    : subunsurOptions[0]?.kode || "";
+  const parameterOptions = validCatalog.filter((item) => (
+    item.kk_id === activeKk && item.kode === activeKode
+  ));
+  const selectedParameter = parameterOptions.find((item) => item.detail_kode === requestedDetail)
+    || parameterOptions[0]
+    || null;
+  const grades = new Set(selectedParameter?.available_grades || []);
+  return {
+    kkOptions,
+    subunsurOptions,
+    parameterOptions,
+    selectedParameter,
+    activeKk,
+    activeKode,
+    target: correctionKey(selectedParameter),
+    gradeOptions: GRADE_ORDER.filter((grade) => grades.has(grade)),
+  };
+}
+
+export function correctionTargetFor(catalog = [], selection = {}) {
+  const filtered = catalog.filter((item) => (
+    (!selection.kkId || item.kk_id === selection.kkId)
+    && (!selection.kode || item.kode === selection.kode)
+    && (!selection.detailKode || item.detail_kode === selection.detailKode)
+  ));
+  return correctionKey(filtered[0]);
+}
+
 const STAGE_LABELS = {
   policy: "Dokumen kebijakan atau pedoman",
   socialization: "Bukti sosialisasi",

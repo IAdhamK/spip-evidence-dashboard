@@ -100,6 +100,7 @@ SECURED_OPERATION_ROLES: dict[tuple[str, str], frozenset[str]] = {
 
 PROXY_BOUNDARY_OPERATIONS: dict[tuple[str, str], str] = {
     _operation("GET", "/api/analysis-runs/config"): "authenticated_proxy",
+    _operation("GET", "/api/analysis-runs/parameter-catalog"): "authenticated_proxy",
     _operation("GET", "/api/analysis-runs/rule-catalog"): "authenticated_proxy",
     _operation("GET", "/api/analysis-runs/promotion-readiness"): "authenticated_proxy",
     _operation("GET", "/api/analysis-runs/readiness-dashboard"): "authenticated_proxy",

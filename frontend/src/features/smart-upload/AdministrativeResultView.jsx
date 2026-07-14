@@ -4,6 +4,8 @@ import {
   administrativeReviewGroups,
   administrativeRunStatus,
   confidenceLabel,
+  correctionCatalogSelection,
+  correctionTargetFor,
 } from "./admin-result.js";
 
 export default function AdministrativeResultView({
@@ -19,6 +21,10 @@ export default function AdministrativeResultView({
   setCorrectionTarget,
   correctionGrade,
   setCorrectionGrade,
+  correctionCatalog,
+  correctionCatalogLoading,
+  correctionCatalogError,
+  reloadCorrectionCatalog,
   reviewAction,
   reviewMessage,
   beginReview,
@@ -48,6 +54,12 @@ export default function AdministrativeResultView({
   };
   const documentRole = documentRoleLabels[mapping.document_role] || "Peran dokumen perlu diperiksa";
   const subunsurLabel = mapping.subunsur_name || mapping.matrix_subunsur_name || "Belum ditemukan";
+  const correctionSelection = correctionCatalogSelection(
+    correctionCatalog,
+    correctionTarget,
+  );
+  const correctionCatalogUnavailable = reviewIntent?.decision === "correct"
+    && (correctionCatalogLoading || !correctionCatalog.length);
   const decisionLabels = {
     approve: "Hasil Benar",
     correct: "Perbaiki Hasil",
@@ -148,22 +160,62 @@ export default function AdministrativeResultView({
           </div>
           <label>Nama atau identitas pemeriksa<input autoFocus value={reviewerId} onChange={(event) => setReviewerId(event.target.value)} placeholder="Contoh: Siti Rahma / NIP" /></label>
           {reviewIntent.decision === "correct" ? (
-            <div className="admin-correction-grid">
-              <label>Parameter yang benar
-                <select value={correctionTarget} onChange={(event) => setCorrectionTarget(event.target.value)}>
-                  {mappings.map((item) => <option key={item.id} value={`${item.kk_id}|${item.kode}|${item.detail_kode}`}>{item.kk_id} — {item.kk_title || "KK"} › {item.kode} {item.subunsur_name || "Subunsur"} › {item.detail_kode} {item.parameter_uraian || "Parameter terkait"}</option>)}
-                </select>
-              </label>
-              <label>Grade hasil pemeriksaan
-                <select value={correctionGrade} onChange={(event) => setCorrectionGrade(event.target.value)}>
-                  <option value="">Belum ditetapkan</option>
-                  {['E', 'D', 'C', 'B', 'A'].map((grade) => <option value={grade} key={grade}>Grade {grade}</option>)}
-                </select>
-              </label>
+            <div className="admin-correction-catalog">
+              <div className="admin-correction-catalog-heading">
+                <div><strong>Katalog penilaian lengkap</strong><p>Pilih berurutan dari seluruh KK, subunsur, parameter, lalu Grade.</p></div>
+                {correctionCatalog.length ? <span>{correctionCatalog.length} parameter</span> : null}
+              </div>
+              {correctionCatalogLoading ? <div className="admin-catalog-status"><Loader2 className="spin" size={17} />Memuat seluruh katalog penilaian…</div> : null}
+              {correctionCatalogError ? (
+                <div className="admin-catalog-error" role="alert"><span>{correctionCatalogError}</span><button type="button" className="text-action-button" onClick={reloadCorrectionCatalog}>Coba lagi</button></div>
+              ) : null}
+              {correctionCatalog.length ? (
+                <div className="admin-correction-grid">
+                  <label>1. Kelompok Kinerja (KK)
+                    <select
+                      value={correctionSelection.activeKk}
+                      onChange={(event) => {
+                        setCorrectionTarget(correctionTargetFor(correctionCatalog, { kkId: event.target.value }));
+                        setCorrectionGrade("");
+                      }}
+                    >
+                      {correctionSelection.kkOptions.map((item) => <option key={item.kk_id} value={item.kk_id}>{item.kk_id} — {item.kk_title || "Nama KK belum tersedia"}</option>)}
+                    </select>
+                  </label>
+                  <label>2. Subunsur
+                    <select
+                      value={correctionSelection.activeKode}
+                      onChange={(event) => {
+                        setCorrectionTarget(correctionTargetFor(correctionCatalog, { kkId: correctionSelection.activeKk, kode: event.target.value }));
+                        setCorrectionGrade("");
+                      }}
+                    >
+                      {correctionSelection.subunsurOptions.map((item) => <option key={`${item.kk_id}-${item.kode}`} value={item.kode}>{item.kode} — {item.subunsur_name || item.matrix_subunsur_name || "Nama subunsur belum tersedia"}</option>)}
+                    </select>
+                  </label>
+                  <label>3. Parameter
+                    <select
+                      value={correctionSelection.target}
+                      onChange={(event) => {
+                        setCorrectionTarget(event.target.value);
+                        setCorrectionGrade("");
+                      }}
+                    >
+                      {correctionSelection.parameterOptions.map((item) => <option key={`${item.kk_id}-${item.detail_kode}`} value={`${item.kk_id}|${item.kode}|${item.detail_kode}`}>{item.detail_kode} — {item.uraian || "Uraian parameter belum tersedia"}</option>)}
+                    </select>
+                  </label>
+                  <label>4. Grade hasil pemeriksaan
+                    <select value={correctionGrade} onChange={(event) => setCorrectionGrade(event.target.value)}>
+                      <option value="">Belum ditetapkan</option>
+                      {correctionSelection.gradeOptions.map((grade) => <option value={grade} key={grade}>Grade {grade}</option>)}
+                    </select>
+                  </label>
+                </div>
+              ) : null}
             </div>
           ) : null}
           <label>Catatan pemeriksaan<textarea value={reviewReason} onChange={(event) => setReviewReason(event.target.value)} placeholder="Tuliskan alasan singkat berdasarkan isi dokumen" /></label>
-          <button className="admin-primary-action" type="submit" disabled={Boolean(reviewAction)}>{reviewAction ? <Loader2 className="spin" size={17} /> : <CheckCircle2 size={17} />}Simpan Keputusan</button>
+          <button className="admin-primary-action" type="submit" disabled={Boolean(reviewAction) || correctionCatalogUnavailable}>{reviewAction ? <Loader2 className="spin" size={17} /> : <CheckCircle2 size={17} />}Simpan Keputusan</button>
         </form>
       ) : null}
 

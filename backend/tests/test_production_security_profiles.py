@@ -284,7 +284,7 @@ class ProductionSecurityProfileTests(unittest.TestCase):
             )
             self.assertEqual(
                 report["authorization_contract"]["classified_operation_count"],
-                61,
+                62,
             )
             self.assertFalse(report["sensitive_url_in_report"])
             self.assertNotIn("private-token", json.dumps(report))

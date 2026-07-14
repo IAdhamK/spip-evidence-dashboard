@@ -82,6 +82,7 @@ Scope produksi: rule memakai `domain_owner`; expert dataset memakai `domain_owne
 
 | Method | Path | Fungsi |
 |---|---|---|
+| GET | `/api/analysis-runs/parameter-catalog` | Katalog lengkap KK, subunsur, parameter, dan Grade yang tersedia untuk koreksi hasil pemeriksaan. Mendukung filter `kk_id`, `kode`, `offset`, dan `limit`; tidak menetapkan Grade secara otomatis. |
 | GET | `/api/analysis-runs/rule-catalog` | Seluruh compiled rule, checksum, dan approval state. |
 | POST | `/api/analysis-runs/rule-approvals` | Endpoint kompatibel untuk satu keputusan rule. |
 | GET | `/api/analysis-runs/governance/rules` | Ringkasan rule per parameter untuk UI governance. |
