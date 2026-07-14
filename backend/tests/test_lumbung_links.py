@@ -4,7 +4,12 @@ import unittest
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlparse
 
-from app.evidence_structure import canonical_folder_path
+from app.evidence_structure import (
+    SPECIAL_KK32_310_PARAMETER,
+    SPECIAL_KK32_310_ROOT,
+    SPECIAL_KK32_310_SUBUNSUR,
+    canonical_folder_path,
+)
 from app.webdav_client import public_folder_link
 from scripts.export_static_snapshot import refresh_nested_public_urls
 
@@ -35,6 +40,39 @@ class LumbungPublicLinkTests(unittest.TestCase):
     def test_existing_canonical_path_remains_stable(self) -> None:
         path = "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/1.5 Pendelegasian Wewenang/Grade C"
         self.assertEqual(canonical_folder_path(path), path)
+
+    def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
+        stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"
+
+        for grade in "ABCDE":
+            with self.subTest(grade=grade):
+                stale_path = "/".join(
+                    [
+                        SPECIAL_KK32_310_ROOT,
+                        SPECIAL_KK32_310_SUBUNSUR,
+                        stale_parameter,
+                        f"Grade {grade}",
+                    ]
+                )
+                expected_path = "/".join(
+                    [
+                        SPECIAL_KK32_310_ROOT,
+                        SPECIAL_KK32_310_SUBUNSUR,
+                        SPECIAL_KK32_310_PARAMETER,
+                        f"Grade {grade}",
+                    ]
+                )
+
+                self.assertGreater(len(SPECIAL_KK32_310_PARAMETER), 118)
+                self.assertEqual(canonical_folder_path(stale_path), expected_path)
+
+                public_url = public_folder_link(
+                    "https://lumbungfile.kemendesa.go.id",
+                    "CiJYTHFxZaJ83YF",
+                    stale_path,
+                )
+                query = parse_qs(urlparse(public_url).query)
+                self.assertEqual(query["dir"], [f"/{expected_path}"])
 
     def test_snapshot_refresh_replaces_stale_nested_public_urls(self) -> None:
         full_path = (

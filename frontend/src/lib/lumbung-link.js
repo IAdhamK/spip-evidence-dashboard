@@ -1,4 +1,7 @@
 const FOLDER_SEGMENT_MAX_LENGTH = 118;
+export const SPECIAL_KK32_310_ROOT = "KK 3.2 KEANDALAN PELAPORAN KEUANGAN";
+export const SPECIAL_KK32_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya";
+export const SPECIAL_KK32_310_PARAMETER = "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya keuangan yang diberikan atau dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi";
 
 export function canonicalLumbungUrl(publicUrl, folderPath = "") {
   if (!publicUrl) return null;
@@ -23,12 +26,26 @@ export function canonicalLumbungUrl(publicUrl, folderPath = "") {
 }
 
 export function canonicalFolderPath(folderPath) {
-  return String(folderPath || "")
+  const parts = String(folderPath || "")
     .replace(/^\/+|\/+$/g, "")
     .split("/")
-    .filter((part) => part.trim())
-    .map(canonicalFolderSegment)
-    .join("/");
+    .filter((part) => part.trim());
+  const canonicalParts = parts.map(canonicalFolderSegment);
+
+  // Pengecualian sesuai struktur folder fisik LumbungFile KK3.2/3.10/3.10.1.
+  // Nama parameter ini memang tidak dipotong; hanya segmen Grade A-E yang berubah.
+  if (
+    parts.length >= 3
+    && parts[0].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK32_310_ROOT.toLocaleLowerCase("id-ID")
+    && parts[1].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK32_310_SUBUNSUR.toLocaleLowerCase("id-ID")
+    && parts[2].trim().toLocaleLowerCase("id-ID").startsWith("3.10.1 ")
+  ) {
+    canonicalParts[0] = SPECIAL_KK32_310_ROOT;
+    canonicalParts[1] = SPECIAL_KK32_310_SUBUNSUR;
+    canonicalParts[2] = SPECIAL_KK32_310_PARAMETER;
+  }
+
+  return canonicalParts.join("/");
 }
 
 export function canonicalFolderSegment(value) {
