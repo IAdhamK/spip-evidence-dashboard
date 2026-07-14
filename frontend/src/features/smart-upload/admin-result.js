@@ -180,7 +180,8 @@ export function gradeDirection(assessment = {}, mapping = {}) {
     };
   }
   if (assessment.candidate_grade) {
-    const isOfficiallyAllowed = assessment.primary_allowed === true || gradeStatus === "supported";
+    const isOfficiallyAllowed = gradeStatus === "supported"
+      || (!gradeStatus && assessment.primary_allowed === true);
     return {
       grade: assessment.candidate_grade,
       label: isOfficiallyAllowed

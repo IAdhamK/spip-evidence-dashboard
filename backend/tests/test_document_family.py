@@ -17,7 +17,7 @@ from app.analysis.document_family_registry import (
     restrict_parameters,
 )
 from app.analysis.document_map import CoverageEngine, NativeParsingEngine
-from app.analysis.domain.grading import DomainRuleGradeEngine
+from app.analysis.domain.grading import DomainRuleGradeEngine, finalize_grade_statuses
 from app.analysis.domain.retrieval import ParameterRetrievalEngine, SPIPMappingEngine
 from app.analysis.facts import FactExtractionEngine, classify_fact_type
 from app.analysis.orchestrator import AnalysisOrchestrator
@@ -377,6 +377,38 @@ class DocumentFamilyTests(unittest.TestCase):
         self.assertIsNone(assessments[0]["candidate_grade"])
         self.assertEqual(assessments[0]["grade_status"], "not_applicable")
         self.assertFalse(assessments[0]["primary_allowed"])
+
+    def test_supported_grade_requires_successful_independent_verification(self) -> None:
+        assessment = {
+            "mapping_candidate_id": 10,
+            "candidate_grade": "C",
+            "primary_allowed": True,
+            "grade_eligible": True,
+            "grade_status": "direction_only",
+            "grade_block_reasons": [],
+            "rule_trace": {"approval_status": "approved"},
+        }
+        rejected = finalize_grade_statuses(
+            [assessment],
+            [{"mapping_candidate_id": 10, "status": "needs_human_review"}],
+        )[0]
+        self.assertEqual(rejected["grade_status"], "direction_only")
+        self.assertIn(
+            "independent_verification_not_passed",
+            rejected["grade_block_reasons"],
+        )
+        self.assertEqual(
+            rejected["rule_trace"]["grade_block_reasons"],
+            rejected["grade_block_reasons"],
+        )
+
+        verified = finalize_grade_statuses(
+            [assessment],
+            [{"mapping_candidate_id": 10, "status": "verified"}],
+        )[0]
+        self.assertEqual(verified["grade_status"], "supported")
+        self.assertEqual(verified["grade_block_reasons"], [])
+        self.assertTrue(verified["rule_trace"]["verification_passed"])
 
     def test_synthetic_document_family_accuracy_meets_target(self) -> None:
         cases = [

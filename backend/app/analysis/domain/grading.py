@@ -207,11 +207,9 @@ class DomainRuleGradeEngine:
                     next_missing = trace["missing_requirements"]
                     break
             primary_allowed = bool(parameter_rules_approved and passed_grade)
-            final_grade_status = (
-                "supported" if primary_allowed
-                else "direction_only" if passed_grade
-                else "blocked"
-            )
+            # Independent Verification runs after this engine. Even an approved
+            # rule remains a direction until every verification result passes.
+            final_grade_status = "direction_only" if passed_grade else "blocked"
             final_block_reasons = [] if passed_grade else ["parameter_requirements_not_met"]
             assessments.append(
                 {
@@ -267,6 +265,64 @@ class DomainRuleGradeEngine:
             },
         ).finish()
         return assessments, result
+
+
+def finalize_grade_statuses(
+    assessments: list[dict],
+    verification_results: list[dict],
+) -> list[dict]:
+    """Promote a Grade to supported only after all verification passes."""
+    verification_by_mapping: dict[int, list[dict]] = {}
+    for item in verification_results:
+        mapping_id = item.get("mapping_candidate_id")
+        if mapping_id is not None:
+            verification_by_mapping.setdefault(int(mapping_id), []).append(item)
+
+    finalized: list[dict] = []
+    for assessment in assessments:
+        mapping_id = assessment.get("mapping_candidate_id")
+        current_status = str(assessment.get("grade_status") or "blocked")
+        checks = verification_by_mapping.get(int(mapping_id), []) if mapping_id is not None else []
+        verification_passed = bool(checks) and all(
+            item.get("status") == "verified" for item in checks
+        )
+        supported = bool(
+            current_status in {"direction_only", "supported"}
+            and assessment.get("candidate_grade")
+            and assessment.get("primary_allowed")
+            and verification_passed
+        )
+        final_status = (
+            "supported" if supported
+            else "direction_only"
+            if current_status in {"direction_only", "supported"}
+            else current_status
+        )
+        block_reasons = [
+            reason
+            for reason in (assessment.get("grade_block_reasons") or [])
+            if reason != "independent_verification_not_passed"
+        ]
+        if (
+            final_status == "direction_only"
+            and assessment.get("candidate_grade")
+            and assessment.get("primary_allowed")
+            and not verification_passed
+        ):
+            block_reasons.append("independent_verification_not_passed")
+        block_reasons = list(dict.fromkeys(block_reasons))
+        finalized.append({
+            **assessment,
+            "grade_status": final_status,
+            "grade_block_reasons": block_reasons,
+            "rule_trace": {
+                **(assessment.get("rule_trace") or {}),
+                "grade_status": final_status,
+                "grade_block_reasons": block_reasons,
+                "verification_passed": verification_passed,
+            },
+        })
+    return finalized
 
 
 def compile_parameter_rules(grades: list[dict]) -> dict[str, dict]:

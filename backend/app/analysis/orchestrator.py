@@ -28,6 +28,7 @@ from app.analysis.domain.grading import (
     DomainRuleGradeEngine,
     IndependentVerificationEngine,
     ModelSecondPassVerificationEngine,
+    finalize_grade_statuses,
 )
 from app.analysis.domain.retrieval import (
     ParameterRetrievalEngine,
@@ -1023,9 +1024,10 @@ class AnalysisOrchestrator:
             self.repository.list_rule_approvals(),
         )
         self.repository.save_engine_result(run_id, grade_result)
-        for assessment in assessments:
-            self.repository.save_grade_assessment(run_id, assessment)
-        saved_assessments = self.repository.list_grade_assessments(run_id)
+        # Persist only the post-verification status. The in-memory assessment is
+        # sufficient input for verification and avoids a misleading active
+        # `supported`/direction record before verification completes.
+        saved_assessments = assessments
         self.repository.add_event(
             run_id,
             event_type="stage_completed",
@@ -1098,6 +1100,14 @@ class AnalysisOrchestrator:
             for verification in model_results:
                 self.repository.save_verification_result(run_id, verification)
             all_verification_results.extend(model_results)
+        finalized_assessments = finalize_grade_statuses(
+            saved_assessments,
+            all_verification_results,
+        )
+        self.repository.supersede_active_assessments(run_id)
+        for assessment in finalized_assessments:
+            self.repository.save_grade_assessment(run_id, assessment)
+        saved_assessments = self.repository.list_grade_assessments(run_id)
         verification_by_mapping: dict[int, list[dict]] = {}
         for item in all_verification_results:
             if item.get("mapping_candidate_id") is not None:
@@ -1708,6 +1718,7 @@ class AnalysisOrchestrator:
             )
             all_results.extend(model_results)
 
+        assessments = finalize_grade_statuses(assessments, all_results)
         self.repository.supersede_active_assessments(run_id)
         self.repository.save_engine_result(run_id, grade_result)
         self.repository.save_engine_result(run_id, verification_result)

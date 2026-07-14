@@ -54,7 +54,7 @@ Scope produksi: `evidence_reviewer` membuat intake; pembacaan/pembatalan job ata
 
 Run sumber tidak ditimpa oleh retry, OCR rescue, atau visual correction. Hubungan turunan disimpan sebagai lineage; checkpoint stale/tampered ditolak.
 
-Response run menambahkan `document_family` secara additive. Contract memuat `family`, `family_confidence`, `evidence_role`, `grade_eligible`, `grade_status`, `grade_block_reasons`, primary/secondary parameter keys, reasons, warnings, structural features, relevant coverage, dan relationship hints. Item `mappings` memisahkan `raw_retrieval_score`, `mapping_score`, `calibrated_decision_confidence`, `confidence_components`, `decision_status`, serta family/Grade gate. Item `grade_assessments` memuat `grade_status`: `not_applicable`, `blocked`, `direction_only`, atau `supported`. Klien tidak boleh menurunkan Grade sendiri dari rule trace ketika `candidate_grade` kosong.
+Response run menambahkan `document_family` secara additive. Contract memuat `family`, `family_confidence`, `evidence_role`, `grade_eligible`, `grade_status`, `grade_block_reasons`, primary/secondary parameter keys, reasons, warnings, structural features, relevant coverage, dan relationship hints. Item `mappings` memisahkan `raw_retrieval_score`, `mapping_score`, `calibrated_decision_confidence`, `confidence_components`, `decision_status`, serta family/Grade gate. Item `grade_assessments` memuat `grade_status`: `not_applicable`, `blocked`, `direction_only`, atau `supported`; `supported` hanya diterbitkan setelah rule disahkan, requirement terpenuhi, dan seluruh Independent Verification terkait berstatus `verified`. Klien tidak boleh menurunkan Grade sendiri dari rule trace ketika `candidate_grade` kosong.
 
 ## Human review
 

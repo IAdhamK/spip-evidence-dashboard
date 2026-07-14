@@ -47,6 +47,14 @@ assert.deepEqual(
   gradeDirection({ grade_status: "blocked", candidate_grade: null }),
   { grade: null, label: "Belum dapat dinilai", basis: "blocked" },
 );
+assert.equal(
+  gradeDirection({ grade_status: "direction_only", candidate_grade: "C", primary_allowed: true }).label,
+  "Mendekati Grade C",
+);
+assert.equal(
+  gradeDirection({ grade_status: "supported", candidate_grade: "C", primary_allowed: true }).label,
+  "Grade C",
+);
 assert.deepEqual(
   decisionConfidence({ calibrated_decision_confidence: 0.59, decision_confidence_label: "ambiguous" }),
   { score: 0.59, label: "Ambigu" },

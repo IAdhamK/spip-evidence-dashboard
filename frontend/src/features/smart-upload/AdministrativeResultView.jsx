@@ -68,7 +68,7 @@ export default function AdministrativeResultView({
   const reviewGroups = administrativeReviewGroups({ run, assessment, verifications });
   const hasReviewItems = Object.values(reviewGroups).some((items) => items.length);
   const parameterLabel = mapping.parameter_uraian || mapping.subunsur_name || "Uraian parameter belum tersedia";
-  const evidenceGrade = assessment.candidate_grade && assessment.primary_allowed === true
+  const evidenceGrade = assessment.candidate_grade && assessment.grade_status === "supported"
     ? `Grade ${assessment.candidate_grade}`
     : "Belum dapat ditetapkan";
   const documentRole = family.evidenceRoleLabel;
