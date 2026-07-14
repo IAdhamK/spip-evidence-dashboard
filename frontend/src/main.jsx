@@ -21,6 +21,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { apiGet, apiPost, apiUpload, apiUploadMany, isStaticSnapshot } from "./lib/api.js";
+import { canonicalLumbungUrl } from "./lib/lumbung-link.js";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
@@ -502,7 +503,11 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
           </thead>
           <tbody>
             {folders.map((folder) => {
-              const lumbungUrl = folder.parameter_entry_public_url || folder.public_url;
+              const rawLumbungUrl = folder.parameter_entry_public_url || folder.public_url;
+              const lumbungUrl = canonicalLumbungUrl(
+                rawLumbungUrl,
+                folder.parameter_entry_folder_path || folder.folder_path,
+              );
               const lumbungTitle = folder.parameter_entry_public_url
                 ? `Buka struktur parameter ${folder.parameter_entry_detail_kode || ""} di Lumbung File`
                 : "Buka folder Lumbung File untuk upload evidence";
@@ -570,7 +575,10 @@ function FolderTable({ folders, statusExplanations, onOpenDetail, onWatchFolder 
 
 function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, staticSnapshot }) {
   const files = detail.files ?? [];
-  const detailLumbungUrl = detail.parameter_entry_public_url || detail.public_url;
+  const detailLumbungUrl = canonicalLumbungUrl(
+    detail.parameter_entry_public_url || detail.public_url,
+    detail.parameter_entry_folder_path || detail.folder_path,
+  );
   const detailLumbungTitle = detail.parameter_entry_public_url
     ? `Buka struktur parameter ${detail.parameter_entry_detail_kode || ""} di Lumbung File`
     : "Buka folder Lumbung File";
@@ -939,7 +947,7 @@ function BatchPlacementList({ title, placements, files, tone }) {
             <div className="placement-actions">
               <span>File terkait: {relatedFileNames(placement.file_indexes, files)}</span>
               {placement.public_url ? (
-                <a className="row-link-button" href={placement.public_url} target="_blank" rel="noreferrer">
+                <a className="row-link-button" href={canonicalLumbungUrl(placement.public_url, placement.folder_path)} target="_blank" rel="noreferrer">
                   <ExternalLink size={15} />
                   Buka Folder
                 </a>
@@ -1143,7 +1151,7 @@ function SmartUploadResult({ result, ordinal }) {
                 <span>{candidate.folder_path}</span>
                 <div className="candidate-button-group">
                   {candidate.public_url ? (
-                    <a className="row-link-button" href={candidate.public_url} target="_blank" rel="noreferrer">
+                    <a className="row-link-button" href={canonicalLumbungUrl(candidate.public_url, candidate.folder_path)} target="_blank" rel="noreferrer">
                       <ExternalLink size={15} />
                       Buka Folder
                     </a>
@@ -1250,7 +1258,7 @@ function PlacementList({ title, description, placements, tone, uploadLabel, acti
                 <span>{placement.folder_path}</span>
                 <div className="candidate-button-group">
                   {placement.public_url ? (
-                    <a className="row-link-button" href={placement.public_url} target="_blank" rel="noreferrer">
+                    <a className="row-link-button" href={canonicalLumbungUrl(placement.public_url, placement.folder_path)} target="_blank" rel="noreferrer">
                       <ExternalLink size={15} />
                       Buka Folder
                     </a>
@@ -1415,7 +1423,7 @@ function GradeEvidenceFolder({ folder }) {
         <strong>{folder.file_count ?? 0} file</strong>
       </div>
       {folder.public_url ? (
-        <a href={folder.public_url} target="_blank" rel="noreferrer" title="Buka folder grade di Lumbung File">
+        <a href={canonicalLumbungUrl(folder.public_url, folder.folder_path)} target="_blank" rel="noreferrer" title="Buka folder grade di Lumbung File">
           <ExternalLink size={15} />
           Buka
         </a>
