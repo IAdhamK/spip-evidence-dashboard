@@ -1,0 +1,49 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r backend/requirements.txt
+      - run: PYTHONPATH=backend python -W error::ResourceWarning -m unittest discover -s backend/tests -v
+      - run: PYTHONPATH=backend python scripts/validate_handover_docs.py
+      - run: PYTHONPATH=backend python evals/run_evals.py --enforce --output eval-report.json
+      - run: PYTHONPATH=backend python evals/build_bootstrap_cases.py --count 50 --output bootstrap-cases.jsonl
+      - run: PYTHONPATH=backend python evals/run_evals.py --cases bootstrap-cases.jsonl --enforce --output bootstrap-eval-report.json
+      - run: PYTHONPATH=backend python evals/run_synthetic_pilot.py --enforce --output synthetic-pilot-report.json
+      - run: python scripts/run_incident_drill.py --output incident-drill-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-eval-report
+          path: |
+            eval-report.json
+            bootstrap-cases.jsonl
+            bootstrap-eval-report.json
+            synthetic-pilot-report.json
+            incident-drill-report.json
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run check:boundaries
+      - run: npm run build

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SPIP Evidence Corpus Manifest Item",
+  "type": "object",
+  "required": ["document_id", "file_name", "sha256", "consent_scope", "sensitivity", "dataset_status", "case_types"],
+  "properties": {
+    "document_id": {"type": "string", "minLength": 3},
+    "file_name": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "consent_scope": {"enum": ["local_analysis_only", "regression_testing", "expert_labelling"]},
+    "sensitivity": {"enum": ["public", "internal", "restricted"]},
+    "dataset_status": {"enum": ["pilot_unlabelled", "expert_candidate", "expert_gold"]},
+    "organization": {"type": ["string", "null"]},
+    "period": {"type": ["string", "null"]},
+    "case_types": {"type": "array", "items": {"enum": ["positive", "negative", "edge", "adversarial", "historical_failure"]}, "minItems": 1},
+    "expected_mappings": {"type": "array", "items": {"type": "string"}},
+    "expected_source_locations": {"type": "array", "items": {"type": "object"}},
+    "labelled_by": {"type": ["string", "null"]},
+    "labelled_at": {"type": ["string", "null"]},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": false
+}

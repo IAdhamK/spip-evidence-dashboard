@@ -1,0 +1,174 @@
+groups:
+  - name: spip-document-intelligence
+    rules:
+      - alert: SpipAnalysisWorkerDown
+        expr: >-
+          (spip_analysis_workers{state="started"} != 1
+          and on() spip_analysis_workers{state="stopping"} != 1
+          and on() spip_analysis_workers{state="draining"} != 1)
+          or
+          (spip_analysis_workers{state="alive"} < 1
+          and on() spip_analysis_workers{state="stopping"} != 1
+          and on() spip_analysis_workers{state="draining"} != 1)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Worker Document Intelligence tidak aktif
+          description: Worker di luar graceful shutdown tidak started atau tidak mempunyai thread hidup selama dua menit.
+
+      - alert: SpipAnalysisWorkerDrainStuck
+        expr: spip_analysis_worker_drain_seconds > 600
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Graceful shutdown worker melebihi batas aman
+          description: Worker draining lebih dari sepuluh menit; leader tetap ditahan untuk mencegah split-brain dan operator harus memeriksa engine atau subprocess yang macet.
+
+      - alert: SpipAnalysisQueueBacklog
+        expr: spip_analysis_queue_jobs{status="queued"} > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Antrean Document Intelligence menumpuk
+          description: Lebih dari 20 job menunggu selama lima menit.
+
+      - alert: SpipAnalysisJobRecoveryLoop
+        expr: spip_analysis_job_recovery_active_loops > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Job berulang kali kehilangan lease
+          description: Sedikitnya satu job aktif mencapai claim ketiga; periksa crash worker, resource budget, dan durable checkpoint sebelum menaikkan kapasitas.
+
+      - alert: SpipAnalysisCriticalCondition
+        expr: spip_analysis_alerts{severity="critical"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Aplikasi mendeteksi kondisi kritis
+          description: Alert engine lokal melaporkan security/parser condition kritis.
+
+      - alert: SpipAnalysisParserFailureRate
+        expr: >-
+          sum(spip_analysis_engine_results_total{engine="native_parsing",status="failed"})
+          /
+          clamp_min(sum(spip_analysis_engine_results_total{engine="native_parsing"}), 1)
+          > 0.02
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Parser failure melebihi dua persen
+          description: Rasio kegagalan native parser melewati release threshold.
+
+      - alert: SpipAnalysisLatencyHigh
+        expr: spip_analysis_run_duration_average_seconds > 300
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Latency analisis tinggi
+          description: Rata-rata durasi run melebihi lima menit.
+
+      - alert: SpipAnalysisCostAnomaly
+        expr: >-
+          increase(spip_analysis_estimated_cost_usd_total[1h])
+          > on() spip_analysis_cost_budget_usd_per_hour
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Estimasi biaya analisis melampaui budget per jam
+          description: Kenaikan estimasi biaya model dalam satu jam melampaui budget runtime; periksa routing, retry, dan volume antrean sebelum menaikkan kapasitas.
+
+      - alert: SpipAnalysisOcrBudgetExhaustion
+        expr: >-
+          increase(spip_analysis_ocr_resource_events_total{event="budget_exhausted"}[15m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: OCR mencapai hard resource budget
+          description: Sedikitnya satu unit OCR dihentikan aman oleh budget dalam lima belas menit; coverage harus tetap fail-closed dan dokumen perlu retry atau review.
+
+      - alert: SpipAnalysisOcrTimeoutSpike
+        expr: >-
+          increase(spip_analysis_ocr_resource_events_total{event="timeout"}[15m]) >= 5
+        labels:
+          severity: warning
+        annotations:
+          summary: Timeout subprocess OCR meningkat
+          description: Sedikitnya lima timeout Tesseract terjadi dalam lima belas menit; periksa kualitas raster dan kapasitas worker.
+
+      - alert: SpipAnalysisBlockedUploadSpike
+        expr: >-
+          increase(spip_analysis_controlled_uploads_total{status=~"blocked|blocked_ambiguous"}[15m]) >= 3
+        labels:
+          severity: warning
+        annotations:
+          summary: Controlled upload berulang kali diblokir
+          description: Sedikitnya tiga upload diblokir dalam lima belas menit.
+
+      - alert: SpipAnalysisControlledUploadReservationStale
+        expr: spip_analysis_controlled_upload_reservations_stale > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Reservation controlled upload belum mencapai status terminal
+          description: Jangan retry otomatis; verifikasi folder WebDAV dan legacy review karena side effect eksternal mungkin telah terjadi.
+
+      - alert: SpipAnalysisControlledUploadAmbiguityUnresolved
+        expr: spip_analysis_controlled_upload_ambiguities{resolution="unresolved"} > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Hasil controlled upload ambigu belum direkonsiliasi
+          description: Jangan retry atau reset action; dua reviewer independen harus memeriksa folder tujuan dan legacy review lalu mencatat outcome yang sama.
+
+      - alert: SpipAnalysisReplicaMisconfiguration
+        expr: >-
+          spip_analysis_expected_replicas > 1
+          and on() spip_analysis_multi_instance_ready != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Replica ganda tanpa shared queue dan canonical persistence yang siap
+          description: Turunkan ke satu replica atau aktifkan adapter di atas shared PostgreSQL, atomic distributed claims, dan shared payload storage.
+
+      - alert: SpipAnalysisWorkerLeaderLeaseLost
+        expr: spip_analysis_worker_leader_lease{queue_backend="sqlite",enforced="true"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Worker kehilangan singleton leader lease
+          description: Worker SQLite tidak mempunyai leader lease aktif dan harus tetap fail-closed.
+
+      - alert: SpipStorageEncryptionAttestationInvalid
+        expr: >-
+          spip_storage_encryption_validation_claimed == 1
+          and spip_storage_encryption_attestation_valid != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Klaim enkripsi storage tidak mempunyai attestation valid
+          description: Bukti bertanda tangan hilang, kedaluwarsa, berubah, tidak private, atau tidak lagi terikat ke database dan payload runtime.
+
+      - alert: SpipStorageEncryptionAttestationExpiring
+        expr: >-
+          spip_storage_encryption_attestation_valid == 1
+          and spip_storage_encryption_attestation_seconds_until_expiry < 1209600
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Attestation enkripsi storage akan kedaluwarsa dalam 14 hari
+          description: Platform owner harus menerbitkan evidence baru dari namespace runtime dan merotasi mount sebelum expiry tanpa menimpa audit lama.

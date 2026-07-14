@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from app.config import get_settings
+from app.analysis.jobs import AnalysisJobManager
+from app.analysis.repository import AnalysisRepository
+from app.analysis.shadow import ShadowComparisonService
 from app.database import Database
+from app.evidence_link_crawler import EvidenceLinkCrawler
 from app.evidence_structure import canonical_folder_path
 from app.recommendations import attach_recommendations
 from app.scanner import EvidenceScanner
@@ -26,6 +31,7 @@ class SmartUploadActionRequest(BaseModel):
 
 
 sync_manager = SyncManager()
+evidence_link_crawler = EvidenceLinkCrawler()
 
 
 def current_folder_record(item: dict) -> dict:
@@ -52,8 +58,9 @@ def current_public_folder_link(settings, item: dict) -> str | None:
     )
 
 
-def create_router(db: Database) -> APIRouter:
+def create_router(db: Database, analysis_job_manager: AnalysisJobManager | None = None) -> APIRouter:
     router = APIRouter(prefix="/api")
+    legacy_telemetry = AnalysisRepository(db)
 
     def with_public_url(folder: dict) -> dict:
         settings = get_settings()
@@ -87,6 +94,41 @@ def create_router(db: Database) -> APIRouter:
         cleaned.pop("preview_text", None)
         return cleaned
 
+    def maybe_start_evidence_link_crawler(result: dict, settings) -> None:
+        if isinstance(result, dict) and (result.get("link_crawl") or {}).get("needs_crawl"):
+            evidence_link_crawler.start(db, settings)
+
+    def maybe_enqueue_v2_shadow(
+        result: dict,
+        settings,
+        *,
+        file_name: str,
+        content_type: str | None,
+        payload: bytes,
+        analysis_mode: str,
+    ) -> None:
+        if not (
+            settings.analysis_pipeline_v2_enabled
+            and settings.analysis_pipeline_v2_shadow
+            and analysis_job_manager
+        ):
+            return
+        job = analysis_job_manager.enqueue(
+            file_name=file_name,
+            content_type=content_type,
+            payload=payload,
+            analysis_mode=analysis_mode,
+        )
+        legacy_review_id = int(result.get("review_id") or 0)
+        if legacy_review_id:
+            ShadowComparisonService(db).track(legacy_review_id, str(job["id"]))
+        result["v2_shadow"] = {
+            "job_id": job["id"],
+            "status": job["status"],
+            "comparison_tracked": bool(legacy_review_id),
+            "decision_authority": "none",
+        }
+
     @router.get("/health")
     def health() -> dict:
         settings = get_settings()
@@ -94,6 +136,74 @@ def create_router(db: Database) -> APIRouter:
             "ok": True,
             "service": "spip-evidence-dashboard",
             "webdav_configured": settings.has_share_token,
+            "analysis_pipeline_v2_enabled": settings.analysis_pipeline_v2_enabled,
+            "analysis_pipeline_v2_shadow": settings.analysis_pipeline_v2_shadow,
+            "batch_intake": {
+                "enabled": settings.analysis_pipeline_v2_enabled,
+                "default_review_limit": min(50, settings.analysis_batch_max_files),
+                "max_files": settings.analysis_batch_max_files,
+                "max_archive_bytes": settings.analysis_batch_max_archive_bytes,
+                "max_entry_bytes": settings.analysis_batch_max_entry_bytes,
+                "max_uncompressed_bytes": settings.analysis_batch_max_uncompressed_bytes,
+                "default_local_only": True,
+            },
+        }
+
+    @router.get("/health/live")
+    def health_live() -> dict:
+        """Process liveness only; dependency and rollout gates are intentionally excluded."""
+
+        return {
+            "ok": True,
+            "status": "live",
+            "service": "spip-evidence-dashboard",
+        }
+
+    @router.get("/health/ready")
+    def health_ready(response: Response) -> dict:
+        """Traffic readiness; fail closed while the V2 worker cannot accept new jobs."""
+
+        settings = get_settings()
+        pipeline_required = bool(settings.analysis_pipeline_v2_enabled)
+        worker = analysis_job_manager.status() if analysis_job_manager else None
+        reasons: list[str] = []
+        if pipeline_required:
+            if worker is None:
+                reasons.append("worker_manager_unavailable")
+            else:
+                if worker.get("stopping"):
+                    reasons.append("worker_stopping")
+                if worker.get("draining"):
+                    reasons.append("worker_draining")
+                if not worker.get("started"):
+                    reasons.append("worker_not_started")
+                if not worker.get("leader_lease_active"):
+                    reasons.append("worker_leader_lease_inactive")
+                if worker.get("blocked_reason"):
+                    reasons.append("worker_blocked")
+                if not reasons and not worker.get("accepting_jobs"):
+                    reasons.append("worker_not_accepting_jobs")
+        ready = not reasons
+        if not ready:
+            response.status_code = 503
+        return {
+            "ok": ready,
+            "status": "ready" if ready else "not_ready",
+            "service": "spip-evidence-dashboard",
+            "analysis_pipeline_v2_required": pipeline_required,
+            "reason_codes": reasons,
+            "worker": (
+                {
+                    "started": bool(worker.get("started")),
+                    "stopping": bool(worker.get("stopping")),
+                    "draining": bool(worker.get("draining")),
+                    "accepting_jobs": bool(worker.get("accepting_jobs")),
+                    "leader_lease_active": bool(worker.get("leader_lease_active")),
+                    "queue_backend": worker.get("queue_backend") or "unknown",
+                }
+                if worker is not None
+                else None
+            ),
         }
 
     @router.get("/smart-upload/config")
@@ -108,13 +218,47 @@ def create_router(db: Database) -> APIRouter:
             "ai_configured": settings.has_ai_key,
             "ai_provider": settings.ai_provider,
             "ai_model": settings.deepseek_model,
+            "legacy_enabled": settings.legacy_smart_upload_enabled,
+            "analysis_pipeline_v2_enabled": settings.analysis_pipeline_v2_enabled,
+            "analysis_pipeline_v2_shadow": settings.analysis_pipeline_v2_shadow,
+            "advanced_rag": {
+                "enabled": settings.analysis_advanced_rag_enabled,
+                "deepseek_enabled": settings.analysis_advanced_rag_deepseek_enabled,
+                "model": (
+                    settings.deepseek_model
+                    if settings.analysis_advanced_rag_deepseek_enabled
+                    else None
+                ),
+                "retrieval": "bm25_cosine_semantic_vector_rrf",
+                "ai_authority": "query_expansion_and_demotion_only",
+                "grade_authority": "domain_rule_only",
+            },
+            "batch_intake": {
+                "enabled": settings.analysis_pipeline_v2_enabled,
+                "default_review_limit": min(50, settings.analysis_batch_max_files),
+                "max_files": settings.analysis_batch_max_files,
+                "max_archive_bytes": settings.analysis_batch_max_archive_bytes,
+                "max_entry_bytes": settings.analysis_batch_max_entry_bytes,
+                "max_uncompressed_bytes": settings.analysis_batch_max_uncompressed_bytes,
+                "default_local_only": True,
+            },
         }
 
     @router.get("/smart-upload/ai-diagnostics")
     def smart_upload_ai_diagnostics() -> dict:
         settings = get_settings()
+        legacy_telemetry.record_legacy_usage("ai_diagnostics", "legacy_api")
         service = SmartUploadService(db, settings)
         return service.test_ai_connection()
+
+    @router.get("/smart-upload/evidence-links/status")
+    def smart_upload_evidence_links_status() -> dict:
+        return evidence_link_crawler.status(db)
+
+    @router.post("/smart-upload/evidence-links/crawl")
+    def smart_upload_evidence_links_crawl() -> dict:
+        legacy_telemetry.record_legacy_usage("evidence_link_crawl", "legacy_api")
+        return evidence_link_crawler.start(db, get_settings())
 
     @router.get("/meta")
     def meta() -> dict:
@@ -244,17 +388,28 @@ def create_router(db: Database) -> APIRouter:
         candidate_limit: int | None = Form(None),
     ) -> dict:
         settings = get_settings()
-        if not settings.smart_upload_enabled:
+        if not settings.smart_upload_enabled or not settings.legacy_smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        legacy_telemetry.record_legacy_usage("recommendation", "legacy_api")
         payload = await read_smart_upload_payload(file, settings.smart_upload_max_bytes)
         service = SmartUploadService(db, settings)
-        result = service.recommend(
+        result = await run_in_threadpool(
+            service.recommend,
             file_name=file.filename or "evidence",
             content_type=file.content_type,
             payload=payload,
             analysis_mode=analysis_mode,
             candidate_limit=candidate_limit,
         )
+        maybe_enqueue_v2_shadow(
+            result,
+            settings,
+            file_name=file.filename or "evidence",
+            content_type=file.content_type,
+            payload=payload,
+            analysis_mode=analysis_mode,
+        )
+        maybe_start_evidence_link_crawler(result, settings)
         return hide_smart_upload_preview(result)
 
     @router.post("/smart-upload/recommendations/batch")
@@ -264,16 +419,18 @@ def create_router(db: Database) -> APIRouter:
         candidate_limit: int | None = Form(None),
     ) -> dict:
         settings = get_settings()
-        if not settings.smart_upload_enabled:
+        if not settings.smart_upload_enabled or not settings.legacy_smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
         if not files:
             raise HTTPException(status_code=400, detail="Pilih minimal satu file evidence.")
+        legacy_telemetry.record_legacy_usage("batch_recommendation", "legacy_api")
         service = SmartUploadService(db, settings)
         results = []
         skip_ai_message = None
         for upload in files:
             payload = await read_smart_upload_payload(upload, settings.smart_upload_max_bytes)
-            result = service.recommend(
+            result = await run_in_threadpool(
+                service.recommend,
                 file_name=upload.filename or "evidence",
                 content_type=upload.content_type,
                 payload=payload,
@@ -281,10 +438,19 @@ def create_router(db: Database) -> APIRouter:
                 analysis_mode=analysis_mode,
                 candidate_limit=candidate_limit,
             )
+            maybe_enqueue_v2_shadow(
+                result,
+                settings,
+                file_name=upload.filename or "evidence",
+                content_type=upload.content_type,
+                payload=payload,
+                analysis_mode=analysis_mode,
+            )
+            maybe_start_evidence_link_crawler(result, settings)
             results.append(result)
             if result.get("ai", {}).get("status") == "unavailable" and not skip_ai_message and not settings.smart_upload_require_ai:
                 skip_ai_message = "AI gateway sementara tidak tersedia; file berikutnya memakai rekomendasi lokal tanpa memanggil AI ulang."
-        batch_ai = service.interpret_batch(results, analysis_mode, candidate_limit)
+        batch_ai = await run_in_threadpool(service.interpret_batch, results, analysis_mode, candidate_limit)
         return {
             "count": len(results),
             "results": [hide_smart_upload_preview(item) for item in results],
@@ -295,8 +461,9 @@ def create_router(db: Database) -> APIRouter:
     @router.post("/smart-upload/action")
     def smart_upload_action(payload: SmartUploadActionRequest) -> dict:
         settings = get_settings()
-        if not settings.smart_upload_enabled:
+        if not settings.smart_upload_enabled or not settings.legacy_smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        legacy_telemetry.record_legacy_usage("action", "legacy_api")
         service = SmartUploadService(db, settings)
         try:
             return service.perform_action(payload.review_id, payload.candidate_index, payload.action_type)
@@ -308,8 +475,9 @@ def create_router(db: Database) -> APIRouter:
     @router.post("/smart-upload/confirm-upload")
     def smart_upload_confirm_upload(payload: SmartUploadConfirmRequest) -> dict:
         settings = get_settings()
-        if not settings.smart_upload_enabled:
+        if not settings.smart_upload_enabled or not settings.legacy_smart_upload_enabled:
             raise HTTPException(status_code=403, detail="Upload Evidence Pintar belum diaktifkan di environment ini.")
+        legacy_telemetry.record_legacy_usage("confirm_upload", "legacy_api")
         service = SmartUploadService(db, settings)
         try:
             return service.confirm_upload(payload.review_id, payload.candidate_index)

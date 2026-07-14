@@ -209,6 +209,7 @@ class LumbungPublicLinkTests(unittest.TestCase):
                 "sample.pdf",
                 "application/pdf",
                 123,
+                None,
                 "",
                 [stale_candidate],
                 "skipped",

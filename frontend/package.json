@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "check:lumbung-links": "node scripts/check-lumbung-links.mjs",
+    "check:boundaries": "node scripts/verify-boundaries.mjs",
+    "check:admin-ui": "node scripts/check-admin-result.mjs",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 3000"
   },
