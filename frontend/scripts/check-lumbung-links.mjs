@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 
 import {
+  SPECIAL_KK31_310_PARAMETER,
+  SPECIAL_KK31_310_ROOT,
+  SPECIAL_KK31_310_SUBUNSUR,
   SPECIAL_KK32_310_PARAMETER,
   SPECIAL_KK32_310_ROOT,
   SPECIAL_KK32_310_SUBUNSUR,
@@ -79,6 +82,30 @@ for (const grade of ["A", "B", "C", "D", "E"]) {
   assert.equal(
     canonicalLumbungUrl(staleSpecialUrl),
     `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${expectedSpecialPath.split("/").map(encodeURIComponent).join("/")}`,
+  );
+}
+
+const staleKk31Parameter = "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya yang diberikan atau dik_";
+for (const grade of ["A", "B", "C", "D", "E"]) {
+  const staleKk31Path = [
+    SPECIAL_KK31_310_ROOT,
+    SPECIAL_KK31_310_SUBUNSUR,
+    staleKk31Parameter,
+    `Grade ${grade}`,
+  ].join("/");
+  const expectedKk31Path = [
+    SPECIAL_KK31_310_ROOT,
+    SPECIAL_KK31_310_SUBUNSUR,
+    SPECIAL_KK31_310_PARAMETER,
+    `Grade ${grade}`,
+  ].join("/");
+  const staleKk31Url = `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${staleKk31Path.split("/").map(encodeURIComponent).join("/")}`;
+
+  assert.equal(Array.from(SPECIAL_KK31_310_PARAMETER).length, 118);
+  assert.equal(canonicalFolderPath(staleKk31Path), expectedKk31Path);
+  assert.equal(
+    canonicalLumbungUrl(staleKk31Url),
+    `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${expectedKk31Path.split("/").map(encodeURIComponent).join("/")}`,
   );
 }
 

@@ -9,10 +9,15 @@ from urllib.parse import parse_qs, urlparse
 
 from app.database import Database
 from app.evidence_structure import (
+    SPECIAL_KK31_310_PARAMETER,
+    SPECIAL_KK31_310_PARAMETER_SOURCE,
+    SPECIAL_KK31_310_ROOT,
+    SPECIAL_KK31_310_SUBUNSUR,
     SPECIAL_KK32_310_PARAMETER,
     SPECIAL_KK32_310_ROOT,
     SPECIAL_KK32_310_SUBUNSUR,
     canonical_folder_path,
+    parameter_folder,
 )
 from app.routes import current_folder_record, current_public_folder_link
 from app.webdav_client import canonical_public_folder_url, public_folder_link
@@ -254,6 +259,46 @@ class LumbungPublicLinkTests(unittest.TestCase):
                 self.assertGreater(len(SPECIAL_KK32_310_PARAMETER), 118)
                 self.assertEqual(canonical_folder_path(stale_path), expected_path)
 
+                public_url = public_folder_link(
+                    "https://lumbungfile.kemendesa.go.id",
+                    "CiJYTHFxZaJ83YF",
+                    stale_path,
+                )
+                query = parse_qs(urlparse(public_url).query)
+                self.assertEqual(query["dir"], [f"/{expected_path}"])
+
+    def test_kk31_310_uses_physical_hyphenated_folder_for_every_grade(self) -> None:
+        stale_parameter = (
+            "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber "
+            "daya yang diberikan atau dik_"
+        )
+
+        self.assertEqual(len(SPECIAL_KK31_310_PARAMETER), 118)
+        self.assertEqual(
+            parameter_folder("3.10.1", SPECIAL_KK31_310_PARAMETER_SOURCE.removeprefix("3.10.1 ")),
+            SPECIAL_KK31_310_PARAMETER,
+        )
+
+        for grade in "ABCDE":
+            with self.subTest(grade=grade):
+                stale_path = "/".join(
+                    [
+                        SPECIAL_KK31_310_ROOT,
+                        SPECIAL_KK31_310_SUBUNSUR,
+                        stale_parameter,
+                        f"Grade {grade}",
+                    ]
+                )
+                expected_path = "/".join(
+                    [
+                        SPECIAL_KK31_310_ROOT,
+                        SPECIAL_KK31_310_SUBUNSUR,
+                        SPECIAL_KK31_310_PARAMETER,
+                        f"Grade {grade}",
+                    ]
+                )
+
+                self.assertEqual(canonical_folder_path(stale_path), expected_path)
                 public_url = public_folder_link(
                     "https://lumbungfile.kemendesa.go.id",
                     "CiJYTHFxZaJ83YF",
