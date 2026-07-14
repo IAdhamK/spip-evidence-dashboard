@@ -10,7 +10,7 @@ from app.evidence_structure import (
     SPECIAL_KK32_310_SUBUNSUR,
     canonical_folder_path,
 )
-from app.routes import current_public_folder_link
+from app.routes import current_folder_record, current_public_folder_link
 from app.webdav_client import public_folder_link
 from scripts.export_static_snapshot import refresh_nested_public_urls
 
@@ -66,6 +66,25 @@ class LumbungPublicLinkTests(unittest.TestCase):
         self.assertNotEqual(resolved, item["public_url"])
         self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
         self.assertTrue(query["dir"][0].split("/")[3].endswith("mend_"))
+
+    def test_api_record_never_exposes_stale_long_folder_path(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "1.5 Pendelegasian Wewenang dan Tanggung Jawab yang Tepat/"
+            "1.5.1 Wewenang dan tanggung jawab pengelolaan aset diberikan kepada pegawai yang tepat "
+            "sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan "
+            "memperhatikan benturan kepentingan/Grade E"
+        )
+
+        current = current_folder_record(
+            {
+                "folder_path": full_path,
+                "public_url": "https://lumbungfile.kemendesa.go.id/stale-full-path",
+            }
+        )
+
+        self.assertEqual(current["folder_path"], canonical_folder_path(full_path))
+        self.assertTrue(current["folder_path"].split("/")[2].endswith("mend_"))
 
     def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
         stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"

@@ -12,6 +12,7 @@ from zipfile import BadZipFile, ZipFile
 
 from app.config import Settings
 from app.database import Database
+from app.evidence_structure import canonical_folder_path
 from app.evidence_structure import safe_segment
 from app.webdav_client import PublicShareWebDavClient, public_folder_link
 
@@ -292,6 +293,10 @@ class SmartUploadService:
         if candidate_index is None or candidate_index < 0 or candidate_index >= len(candidates):
             raise SmartUploadError("Pilihan kandidat tidak valid.")
         candidate = candidates[candidate_index]
+        candidate = {
+            **candidate,
+            "folder_path": canonical_folder_path(candidate["folder_path"]),
+        }
         folder_url = candidate.get("public_url")
         if self.settings.has_share_token:
             folder_url = public_folder_link(self.settings.lumbung_host, self.settings.lumbung_share_token, candidate["folder_path"])
@@ -498,6 +503,7 @@ class SmartUploadService:
                     slot = slot_map.get((parameter["detail_kode"], grade_value))
                     if not slot:
                         continue
+                    canonical_slot_path = canonical_folder_path(slot["folder_path"])
                     corpus = " ".join(
                         [
                             folder["kk_id"], folder["kk_title"], folder["kode"], folder["subunsur_name"],
@@ -518,12 +524,12 @@ class SmartUploadService:
                             kriteria=grade.get("kriteria") or "",
                             penjelasan=grade.get("penjelasan") or "",
                             cara_pengujian=grade.get("cara_pengujian") or parameter.get("cara_pengujian"),
-                            folder_path=slot["folder_path"],
+                            folder_path=canonical_slot_path,
                             public_url=(
                                 public_folder_link(
                                     self.settings.lumbung_host,
                                     self.settings.lumbung_share_token,
-                                    slot["folder_path"],
+                                    canonical_slot_path,
                                 )
                                 if self.settings.has_share_token
                                 else slot.get("public_url")

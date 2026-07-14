@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.database import Database
+from app.evidence_structure import canonical_folder_path
 from app.recommendations import attach_recommendations
 from app.scanner import EvidenceScanner
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS
@@ -27,6 +28,14 @@ class SmartUploadActionRequest(BaseModel):
 sync_manager = SyncManager()
 
 
+def current_folder_record(item: dict) -> dict:
+    """Return an API-safe record whose path matches the physical folder."""
+    enriched = dict(item)
+    if item.get("folder_path"):
+        enriched["folder_path"] = canonical_folder_path(item["folder_path"])
+    return enriched
+
+
 def current_public_folder_link(settings, item: dict) -> str | None:
     """Resolve a fresh link instead of trusting a URL cached by an older release."""
     if not settings.has_share_token:
@@ -43,9 +52,10 @@ def create_router(db: Database) -> APIRouter:
 
     def with_public_url(folder: dict) -> dict:
         settings = get_settings()
-        enriched = dict(folder)
+        enriched = current_folder_record(folder)
         parameter_entry = db.parameter_folder_entry(folder["kk_id"], folder["kode"])
         if parameter_entry:
+            parameter_entry = current_folder_record(parameter_entry)
             enriched["parameter_entry_folder_path"] = parameter_entry["folder_path"]
             enriched["parameter_entry_detail_kode"] = parameter_entry["detail_kode"]
             enriched["parameter_count"] = parameter_entry["parameter_count"]
@@ -56,7 +66,7 @@ def create_router(db: Database) -> APIRouter:
         # Selalu bentuk ulang dari folder_path. Nilai public_url di database
         # dapat berasal dari sinkronisasi versi lama dan masih menunjuk ke
         # segmen panjang yang tidak ada secara fisik di LumbungFile.
-        enriched["public_url"] = current_public_folder_link(settings, folder)
+        enriched["public_url"] = current_public_folder_link(settings, enriched)
         if parameter_entry:
             enriched["parameter_entry_public_url"] = public_folder_link(
                 settings.lumbung_host,
@@ -320,11 +330,12 @@ def attach_slots(parameters: list[dict], slots: list[dict]) -> None:
 
 def with_slot_public_url(slot: dict) -> dict:
     settings = get_settings()
+    enriched = current_folder_record(slot)
     if not settings.has_share_token:
-        return slot
+        return enriched
     return {
-        **slot,
-        "public_url": current_public_folder_link(settings, slot),
+        **enriched,
+        "public_url": current_public_folder_link(settings, enriched),
     }
 
 
