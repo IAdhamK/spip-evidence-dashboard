@@ -11,7 +11,7 @@ from app.scanner import EvidenceScanner
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS
 from app.smart_upload import SmartUploadError, SmartUploadService
 from app.sync_manager import SyncManager
-from app.webdav_client import WebDavError, public_folder_link
+from app.webdav_client import WebDavError, canonical_public_folder_url, public_folder_link
 
 
 class SmartUploadConfirmRequest(BaseModel):
@@ -33,13 +33,18 @@ def current_folder_record(item: dict) -> dict:
     enriched = dict(item)
     if item.get("folder_path"):
         enriched["folder_path"] = canonical_folder_path(item["folder_path"])
+    if item.get("public_url"):
+        enriched["public_url"] = canonical_public_folder_url(
+            item["public_url"],
+            enriched.get("folder_path") or item.get("folder_path"),
+        )
     return enriched
 
 
 def current_public_folder_link(settings, item: dict) -> str | None:
     """Resolve a fresh link instead of trusting a URL cached by an older release."""
     if not settings.has_share_token:
-        return item.get("public_url")
+        return canonical_public_folder_url(item.get("public_url"), item.get("folder_path"))
     return public_folder_link(
         settings.lumbung_host,
         settings.lumbung_share_token,

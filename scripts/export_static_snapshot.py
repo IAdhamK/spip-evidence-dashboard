@@ -13,7 +13,7 @@ from app.config import get_settings  # noqa: E402
 from app.database import Database  # noqa: E402
 from app.recommendations import attach_recommendations  # noqa: E402
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS  # noqa: E402
-from app.webdav_client import public_folder_link  # noqa: E402
+from app.webdav_client import canonical_public_folder_url, public_folder_link  # noqa: E402
 
 
 def main() -> None:
@@ -96,6 +96,7 @@ def build_snapshot_from_database(settings) -> dict:
 
 def inject_public_urls(payload: dict, settings) -> None:
     if not settings.has_share_token:
+        canonicalize_cached_public_urls(payload)
         return
 
     by_key = {}
@@ -120,6 +121,27 @@ def inject_public_urls(payload: dict, settings) -> None:
         detail["files"] = [sanitize_file(file) for file in detail.get("files", [])]
 
     refresh_nested_public_urls(payload, settings)
+
+
+def canonicalize_cached_public_urls(value) -> None:
+    if isinstance(value, list):
+        for item in value:
+            canonicalize_cached_public_urls(item)
+        return
+    if not isinstance(value, dict):
+        return
+
+    folder_path = str(value.get("folder_path") or "").strip()
+    if value.get("public_url"):
+        value["public_url"] = canonical_public_folder_url(value.get("public_url"), folder_path)
+    parameter_path = str(value.get("parameter_entry_folder_path") or "").strip()
+    if value.get("parameter_entry_public_url"):
+        value["parameter_entry_public_url"] = canonical_public_folder_url(
+            value.get("parameter_entry_public_url"),
+            parameter_path,
+        )
+    for item in value.values():
+        canonicalize_cached_public_urls(item)
 
 
 def refresh_nested_public_urls(value, settings) -> None:

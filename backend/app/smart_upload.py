@@ -14,7 +14,7 @@ from app.config import Settings
 from app.database import Database
 from app.evidence_structure import canonical_folder_path
 from app.evidence_structure import safe_segment
-from app.webdav_client import PublicShareWebDavClient, public_folder_link
+from app.webdav_client import PublicShareWebDavClient, canonical_public_folder_url, public_folder_link
 
 
 STOPWORDS = {
@@ -297,7 +297,7 @@ class SmartUploadService:
             **candidate,
             "folder_path": canonical_folder_path(candidate["folder_path"]),
         }
-        folder_url = candidate.get("public_url")
+        folder_url = canonical_public_folder_url(candidate.get("public_url"), candidate["folder_path"])
         if self.settings.has_share_token:
             folder_url = public_folder_link(self.settings.lumbung_host, self.settings.lumbung_share_token, candidate["folder_path"])
 
@@ -532,7 +532,7 @@ class SmartUploadService:
                                     canonical_slot_path,
                                 )
                                 if self.settings.has_share_token
-                                else slot.get("public_url")
+                                else canonical_public_folder_url(slot.get("public_url"), canonical_slot_path)
                             ),
                             corpus=corpus,
                         )

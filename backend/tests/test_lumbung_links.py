@@ -11,8 +11,8 @@ from app.evidence_structure import (
     canonical_folder_path,
 )
 from app.routes import current_folder_record, current_public_folder_link
-from app.webdav_client import public_folder_link
-from scripts.export_static_snapshot import refresh_nested_public_urls
+from app.webdav_client import canonical_public_folder_url, public_folder_link
+from scripts.export_static_snapshot import inject_public_urls, refresh_nested_public_urls
 
 
 class LumbungPublicLinkTests(unittest.TestCase):
@@ -85,6 +85,49 @@ class LumbungPublicLinkTests(unittest.TestCase):
 
         self.assertEqual(current["folder_path"], canonical_folder_path(full_path))
         self.assertTrue(current["folder_path"].split("/")[2].endswith("mend_"))
+        query = parse_qs(urlparse(current["public_url"]).query)
+        self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
+
+    def test_cached_public_url_is_canonicalized_without_share_token(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "1.5 Pendelegasian Wewenang dan Tanggung Jawab yang Tepat/"
+            "1.5.1 Wewenang dan tanggung jawab pengelolaan aset diberikan kepada pegawai yang tepat "
+            "sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan "
+            "memperhatikan benturan kepentingan/Grade A"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+        settings = SimpleNamespace(has_share_token=False)
+
+        resolved = current_public_folder_link(
+            settings,
+            {"folder_path": full_path, "public_url": stale_url},
+        )
+        query = parse_qs(urlparse(resolved).query)
+
+        self.assertNotEqual(resolved, stale_url)
+        self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
+
+    def test_stale_lumbung_url_can_be_repaired_from_its_own_dir_query(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "1.5 Pendelegasian Wewenang dan Tanggung Jawab yang Tepat/"
+            "1.5.1 Wewenang dan tanggung jawab pengelolaan aset diberikan kepada pegawai yang tepat "
+            "sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan "
+            "memperhatikan benturan kepentingan/Grade E"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+
+        resolved = canonical_public_folder_url(stale_url)
+        query = parse_qs(urlparse(resolved).query)
+
+        self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
 
     def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
         stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"
@@ -141,6 +184,26 @@ class LumbungPublicLinkTests(unittest.TestCase):
         refresh_nested_public_urls(payload, settings)
 
         query = parse_qs(urlparse(payload["result"]["public_url"]).query)
+        self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
+
+    def test_snapshot_seed_public_urls_are_canonicalized_without_share_token(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "1.5 Pendelegasian Wewenang dan Tanggung Jawab yang Tepat/"
+            "1.5.1 Wewenang dan tanggung jawab pengelolaan aset diberikan kepada pegawai yang tepat "
+            "sesuai tingkatannya untuk mendukung efektivitas dan efisiensi pelaksanaan kegiatan dan "
+            "memperhatikan benturan kepentingan/Grade A"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+        payload = {"subunsur_details": {"x": {"folder_path": full_path, "public_url": stale_url}}}
+        settings = SimpleNamespace(has_share_token=False)
+
+        inject_public_urls(payload, settings)
+
+        query = parse_qs(urlparse(payload["subunsur_details"]["x"]["public_url"]).query)
         self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
 
 

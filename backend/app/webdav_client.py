@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, unquote
+from urllib.parse import parse_qsl, quote, unquote, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
@@ -131,6 +131,34 @@ def encode_path(path: str) -> str:
 def public_folder_link(host: str, share_token: str, folder_path: str) -> str:
     encoded_dir = "/" + encode_path(canonical_folder_path(folder_path))
     return f"{host.rstrip('/')}/s/{share_token}?dir={encoded_dir}"
+
+
+def canonical_public_folder_url(public_url: str | None, folder_path: str | None = None) -> str | None:
+    if not public_url:
+        return None
+
+    source_path = str(folder_path or "").strip()
+    try:
+        parsed = urlsplit(public_url)
+        query_items = parse_qsl(parsed.query, keep_blank_values=True)
+    except ValueError:
+        return public_url
+
+    if not source_path:
+        for key, value in query_items:
+            if key == "dir":
+                source_path = value
+                break
+    if not source_path:
+        return public_url
+
+    query_parts = [
+        f"{quote(key, safe='')}={quote(value, safe='')}"
+        for key, value in query_items
+        if key != "dir"
+    ]
+    query_parts.append("dir=/" + encode_path(canonical_folder_path(source_path)))
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "&".join(query_parts), parsed.fragment))
 
 
 def parse_propfind_response(xml_data: bytes, folder_path: str) -> list[WebDavItem]:
