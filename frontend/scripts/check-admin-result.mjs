@@ -107,6 +107,25 @@ assert.equal(
   correctionTargetFor(correctionCatalog, { kkId: "KK3.2", kode: "2.1" }),
   "KK3.2|2.1|2.1.2",
 );
+assert.deepEqual(
+  correctionCatalogSelection([], ""),
+  {
+    kkOptions: [],
+    subunsurOptions: [],
+    parameterOptions: [],
+    selectedParameter: null,
+    activeKk: "",
+    activeKode: "",
+    target: "",
+    gradeOptions: [],
+  },
+);
+assert.equal(
+  correctionTargetFor([null, undefined], { kkId: "KK3.1" }),
+  "",
+);
+assert.equal(correctionCatalogSelection(null, "").target, "");
+assert.equal(correctionTargetFor(null, { kkId: "KK3.1" }), "");
 
 assert.deepEqual(
   administrativeMissingItems({

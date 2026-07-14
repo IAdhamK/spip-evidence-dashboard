@@ -10,12 +10,14 @@ function uniqueBy(items, keyFor) {
   });
 }
 
-function correctionKey(item = {}) {
-  return [item.kk_id, item.kode, item.detail_kode].filter(Boolean).join("|");
+function correctionKey(item) {
+  const safeItem = item || {};
+  return [safeItem.kk_id, safeItem.kode, safeItem.detail_kode].filter(Boolean).join("|");
 }
 
 export function correctionCatalogSelection(catalog = [], target = "") {
-  const validCatalog = catalog.filter((item) => (
+  const safeCatalog = Array.isArray(catalog) ? catalog : [];
+  const validCatalog = safeCatalog.filter((item) => (
     item?.kk_id && item?.kode && item?.detail_kode
   ));
   const [requestedKk, requestedKode, requestedDetail] = String(target || "").split("|");
@@ -50,8 +52,10 @@ export function correctionCatalogSelection(catalog = [], target = "") {
 }
 
 export function correctionTargetFor(catalog = [], selection = {}) {
-  const filtered = catalog.filter((item) => (
-    (!selection.kkId || item.kk_id === selection.kkId)
+  const safeCatalog = Array.isArray(catalog) ? catalog : [];
+  const filtered = safeCatalog.filter((item) => (
+    item
+    && (!selection.kkId || item.kk_id === selection.kkId)
     && (!selection.kode || item.kode === selection.kode)
     && (!selection.detailKode || item.detail_kode === selection.detailKode)
   ));

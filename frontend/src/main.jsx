@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { Component, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+import "./lib/browser-compat.js";
 import {
   AlertCircle,
   ArrowLeft,
@@ -31,6 +32,41 @@ import SmartUploadPage from "./features/SmartUploadPage.jsx";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
+
+class AppErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false, message: "" };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { failed: true, message: error?.message || "render_error" };
+  }
+
+  componentDidCatch(error, info) {
+    console.error("Antarmuka SPIP gagal dirender", error, info);
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <main className="app-error-boundary" role="alert">
+        <div>
+          <h1>Antarmuka belum berhasil ditampilkan</h1>
+          <p>Data Anda tidak berubah. Muat ulang halaman untuk mengambil versi aplikasi terbaru.</p>
+          <details className="app-error-detail">
+            <summary>Informasi untuk perbaikan</summary>
+            <code>{this.state.message}</code>
+          </details>
+          <button className="primary-button" type="button" onClick={() => window.location.reload()}>
+            Muat Ulang Aplikasi
+          </button>
+        </div>
+      </main>
+    );
+  }
+}
+
 function parseRouteHash() {
   if (typeof window === "undefined") return { page: "dashboard" };
   const hash = window.location.hash || "";
@@ -1027,4 +1063,8 @@ function SegmentedControl({ label, options, value, onChange, variant = "default"
   );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <AppErrorBoundary>
+    <App />
+  </AppErrorBoundary>,
+);

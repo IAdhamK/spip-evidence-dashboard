@@ -559,6 +559,42 @@ body {
   background: var(--bg);
 }
 
+.app-error-boundary {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.app-error-boundary > div {
+  max-width: 580px;
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.app-error-boundary h1 { margin-top: 0; }
+.app-error-boundary p { color: var(--muted); line-height: 1.55; }
+
+.app-error-detail {
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.app-error-detail code {
+  display: block;
+  margin-top: 8px;
+  padding: 10px;
+  color: var(--danger);
+  background: #fff4f2;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
 button,
 input {
   font: inherit;
