@@ -259,6 +259,19 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const handleLumbungClick = (event) => {
+      const link = event.target?.closest?.("a[href*='lumbungfile.kemendesa.go.id']");
+      if (!link) return;
+      const fixedUrl = canonicalLumbungUrl(link.href);
+      if (fixedUrl && fixedUrl !== link.href) {
+        link.href = fixedUrl;
+      }
+    };
+    document.addEventListener("click", handleLumbungClick, true);
+    return () => document.removeEventListener("click", handleLumbungClick, true);
+  }, []);
+
+  useEffect(() => {
     const intervalId = window.setInterval(() => {
       loadData({ silent: true });
     }, 1000);

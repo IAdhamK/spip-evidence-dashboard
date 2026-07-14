@@ -129,6 +129,28 @@ class LumbungPublicLinkTests(unittest.TestCase):
 
         self.assertEqual(query["dir"], [f"/{canonical_folder_path(full_path)}"])
 
+    def test_kk33_52_long_evaluation_folder_is_shortened_to_physical_name(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "5.2 Evaluasi Terpisah/"
+            "5.2.1 Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan "
+            "dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian "
+            "intern, mengidentifikasi kelemahan pengendalian, menentukan/Grade A"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+
+        canonical = canonical_folder_path(full_path)
+        parameter_segment = canonical.split("/")[2]
+        resolved = canonical_public_folder_url(stale_url)
+        query = parse_qs(urlparse(resolved).query)
+
+        self.assertEqual(len(parameter_segment), 118)
+        self.assertTrue(parameter_segment.endswith("APIP at_"))
+        self.assertEqual(query["dir"], [f"/{canonical}"])
+
     def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
         stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"
 
