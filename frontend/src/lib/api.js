@@ -1,3 +1,5 @@
+import { normalizeLumbungLinks } from "./lumbung-link.js";
+
 const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 const STATIC_SNAPSHOT = import.meta.env.VITE_STATIC_SNAPSHOT === "true";
 let snapshotPromise;
@@ -57,7 +59,7 @@ async function request(path, options) {
   if (!response.ok) {
     throw new Error(data?.detail || data?.message || `Request gagal: ${response.status}`);
   }
-  return data;
+  return normalizeLumbungLinks(data);
 }
 
 function parseApiResponse(text, response) {
@@ -130,7 +132,7 @@ async function loadSnapshot() {
       if (!response.ok) {
         throw new Error("Snapshot dashboard online belum tersedia.");
       }
-      return response.json();
+      return normalizeLumbungLinks(await response.json());
     });
   }
   return snapshotPromise;

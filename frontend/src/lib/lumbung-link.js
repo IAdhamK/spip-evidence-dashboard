@@ -25,6 +25,38 @@ export function canonicalLumbungUrl(publicUrl, folderPath = "") {
   }
 }
 
+export function normalizeLumbungLinks(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeLumbungLinks(item));
+  }
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const normalized = {};
+  for (const [key, item] of Object.entries(value)) {
+    normalized[key] = normalizeLumbungLinks(item);
+  }
+
+  if (normalized.public_url) {
+    normalized.public_url = canonicalLumbungUrl(normalized.public_url, normalized.folder_path);
+  }
+  if (normalized.parameter_entry_public_url) {
+    normalized.parameter_entry_public_url = canonicalLumbungUrl(
+      normalized.parameter_entry_public_url,
+      normalized.parameter_entry_folder_path,
+    );
+  }
+  if (normalized.folder_path) {
+    normalized.folder_path = canonicalFolderPath(normalized.folder_path);
+  }
+  if (normalized.parameter_entry_folder_path) {
+    normalized.parameter_entry_folder_path = canonicalFolderPath(normalized.parameter_entry_folder_path);
+  }
+
+  return normalized;
+}
+
 export function canonicalFolderPath(folderPath) {
   const parts = String(folderPath || "")
     .replace(/^\/+|\/+$/g, "")

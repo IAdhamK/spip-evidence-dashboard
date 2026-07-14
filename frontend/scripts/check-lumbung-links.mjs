@@ -6,6 +6,7 @@ import {
   SPECIAL_KK32_310_SUBUNSUR,
   canonicalFolderPath,
   canonicalLumbungUrl,
+  normalizeLumbungLinks,
 } from "../src/lib/lumbung-link.js";
 
 const fullPath = [
@@ -28,6 +29,19 @@ assert.equal(
   canonicalLumbungUrl(malformedUrl, canonicalPath),
   canonicalLumbungUrl(malformedUrl),
 );
+
+const normalizedPayload = normalizeLumbungLinks({
+  dashboard: {
+    folders: [
+      {
+        folder_path: fullPath,
+        public_url: malformedUrl,
+      },
+    ],
+  },
+});
+assert.equal(normalizedPayload.dashboard.folders[0].folder_path, canonicalPath);
+assert.equal(normalizedPayload.dashboard.folders[0].public_url, canonicalLumbungUrl(malformedUrl));
 
 const staleSpecialParameter = `${Array.from(SPECIAL_KK32_310_PARAMETER).slice(0, 117).join("")}_`;
 for (const grade of ["A", "B", "C", "D", "E"]) {
