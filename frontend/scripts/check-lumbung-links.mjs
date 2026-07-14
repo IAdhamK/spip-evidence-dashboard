@@ -7,6 +7,12 @@ import {
   SPECIAL_KK32_310_PARAMETER,
   SPECIAL_KK32_310_ROOT,
   SPECIAL_KK32_310_SUBUNSUR,
+  SPECIAL_KK33_310_PARAMETER,
+  SPECIAL_KK33_310_ROOT,
+  SPECIAL_KK33_310_SUBUNSUR,
+  SPECIAL_KK34_310_PARAMETER,
+  SPECIAL_KK34_310_ROOT,
+  SPECIAL_KK34_310_SUBUNSUR,
   canonicalFolderPath,
   canonicalLumbungUrl,
   normalizeLumbungLinks,
@@ -107,6 +113,35 @@ for (const grade of ["A", "B", "C", "D", "E"]) {
     canonicalLumbungUrl(staleKk31Url),
     `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${expectedKk31Path.split("/").map(encodeURIComponent).join("/")}`,
   );
+}
+
+const remainingKk310Cases = [
+  {
+    root: SPECIAL_KK33_310_ROOT,
+    subunsur: SPECIAL_KK33_310_SUBUNSUR,
+    parameter: SPECIAL_KK33_310_PARAMETER,
+    stale: "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola aset yang diberikan atau dikuas_",
+  },
+  {
+    root: SPECIAL_KK34_310_ROOT,
+    subunsur: SPECIAL_KK34_310_SUBUNSUR,
+    parameter: SPECIAL_KK34_310_PARAMETER,
+    stale: staleKk31Parameter,
+  },
+];
+for (const item of remainingKk310Cases) {
+  for (const grade of ["A", "B", "C", "D", "E"]) {
+    const stalePath = [item.root, item.subunsur, item.stale, `Grade ${grade}`].join("/");
+    const expectedPath = [item.root, item.subunsur, item.parameter, `Grade ${grade}`].join("/");
+    const staleUrl = `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${stalePath.split("/").map(encodeURIComponent).join("/")}`;
+
+    assert.equal(Array.from(item.parameter).length, 118);
+    assert.equal(canonicalFolderPath(stalePath), expectedPath);
+    assert.equal(
+      canonicalLumbungUrl(staleUrl),
+      `https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/${expectedPath.split("/").map(encodeURIComponent).join("/")}`,
+    );
+  }
 }
 
 console.log("LumbungFile link checks passed.");

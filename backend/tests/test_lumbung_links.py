@@ -16,8 +16,16 @@ from app.evidence_structure import (
     SPECIAL_KK32_310_PARAMETER,
     SPECIAL_KK32_310_ROOT,
     SPECIAL_KK32_310_SUBUNSUR,
+    SPECIAL_KK33_310_PARAMETER,
+    SPECIAL_KK33_310_PARAMETER_SOURCE,
+    SPECIAL_KK33_310_ROOT,
+    SPECIAL_KK33_310_SUBUNSUR,
+    SPECIAL_KK34_310_PARAMETER,
+    SPECIAL_KK34_310_ROOT,
+    SPECIAL_KK34_310_SUBUNSUR,
     canonical_folder_path,
     parameter_folder,
+    safe_segment,
 )
 from app.routes import current_folder_record, current_public_folder_link
 from app.webdav_client import canonical_public_folder_url, public_folder_link
@@ -306,6 +314,46 @@ class LumbungPublicLinkTests(unittest.TestCase):
                 )
                 query = parse_qs(urlparse(public_url).query)
                 self.assertEqual(query["dir"], [f"/{expected_path}"])
+
+    def test_kk33_and_kk34_310_use_verified_physical_folders(self) -> None:
+        cases = (
+            (
+                SPECIAL_KK33_310_ROOT,
+                SPECIAL_KK33_310_SUBUNSUR,
+                SPECIAL_KK33_310_PARAMETER_SOURCE,
+                SPECIAL_KK33_310_PARAMETER,
+            ),
+            (
+                SPECIAL_KK34_310_ROOT,
+                SPECIAL_KK34_310_SUBUNSUR,
+                SPECIAL_KK31_310_PARAMETER_SOURCE,
+                SPECIAL_KK34_310_PARAMETER,
+            ),
+        )
+
+        for root, subunsur, source, physical_parameter in cases:
+            stale_parameter = safe_segment(
+                source.replace("diberikan/dikuasakan", "diberikan atau dikuasakan")
+            )
+            self.assertEqual(len(physical_parameter), 118)
+            self.assertEqual(
+                parameter_folder("3.10.1", source.removeprefix("3.10.1 ")),
+                physical_parameter,
+            )
+
+            for grade in "ABCDE":
+                with self.subTest(root=root, grade=grade):
+                    stale_path = "/".join([root, subunsur, stale_parameter, f"Grade {grade}"])
+                    expected_path = "/".join([root, subunsur, physical_parameter, f"Grade {grade}"])
+                    self.assertEqual(canonical_folder_path(stale_path), expected_path)
+
+                    public_url = public_folder_link(
+                        "https://lumbungfile.kemendesa.go.id",
+                        "CiJYTHFxZaJ83YF",
+                        stale_path,
+                    )
+                    query = parse_qs(urlparse(public_url).query)
+                    self.assertEqual(query["dir"], [f"/{expected_path}"])
 
     def test_snapshot_refresh_replaces_stale_nested_public_urls(self) -> None:
         full_path = (

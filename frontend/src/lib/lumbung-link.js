@@ -5,6 +5,19 @@ export const SPECIAL_KK31_310_PARAMETER = "3.10.1 Terdapat pertanggungjawaban se
 export const SPECIAL_KK32_310_ROOT = "KK 3.2 KEANDALAN PELAPORAN KEUANGAN";
 export const SPECIAL_KK32_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya";
 export const SPECIAL_KK32_310_PARAMETER = "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya keuangan yang diberikan atau dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi";
+export const SPECIAL_KK33_310_ROOT = "KK 3.3 PENGAMANAN ASET NEGARA DAERAH";
+export const SPECIAL_KK33_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya";
+export const SPECIAL_KK33_310_PARAMETER = "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola aset yang diberikan-dikuasakan kepa_";
+export const SPECIAL_KK34_310_ROOT = "KK 3.4 KETAATAN PADA PERATURAN PERUNDANG UNDANGAN";
+export const SPECIAL_KK34_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya";
+export const SPECIAL_KK34_310_PARAMETER = SPECIAL_KK31_310_PARAMETER;
+
+const SPECIAL_310_FOLDER_OVERRIDES = [
+  [SPECIAL_KK31_310_ROOT, SPECIAL_KK31_310_SUBUNSUR, SPECIAL_KK31_310_PARAMETER],
+  [SPECIAL_KK32_310_ROOT, SPECIAL_KK32_310_SUBUNSUR, SPECIAL_KK32_310_PARAMETER],
+  [SPECIAL_KK33_310_ROOT, SPECIAL_KK33_310_SUBUNSUR, SPECIAL_KK33_310_PARAMETER],
+  [SPECIAL_KK34_310_ROOT, SPECIAL_KK34_310_SUBUNSUR, SPECIAL_KK34_310_PARAMETER],
+];
 
 export function canonicalLumbungUrl(publicUrl, folderPath = "") {
   if (!publicUrl) return null;
@@ -67,30 +80,18 @@ export function canonicalFolderPath(folderPath) {
     .filter((part) => part.trim());
   const canonicalParts = parts.map(canonicalFolderSegment);
 
-  // Pengecualian sesuai nama folder fisik LumbungFile KK3.1/3.10/3.10.1.
-  // Folder lama memakai tanda hubung dan terpotong tepat pada 118 karakter.
-  if (
-    parts.length >= 3
-    && parts[0].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK31_310_ROOT.toLocaleLowerCase("id-ID")
-    && parts[1].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK31_310_SUBUNSUR.toLocaleLowerCase("id-ID")
-    && parts[2].trim().toLocaleLowerCase("id-ID").startsWith("3.10.1 ")
-  ) {
-    canonicalParts[0] = SPECIAL_KK31_310_ROOT;
-    canonicalParts[1] = SPECIAL_KK31_310_SUBUNSUR;
-    canonicalParts[2] = SPECIAL_KK31_310_PARAMETER;
-  }
-
-  // Pengecualian sesuai struktur folder fisik LumbungFile KK3.2/3.10/3.10.1.
-  // Nama parameter ini memang tidak dipotong; hanya segmen Grade A-E yang berubah.
-  if (
-    parts.length >= 3
-    && parts[0].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK32_310_ROOT.toLocaleLowerCase("id-ID")
-    && parts[1].trim().toLocaleLowerCase("id-ID") === SPECIAL_KK32_310_SUBUNSUR.toLocaleLowerCase("id-ID")
-    && parts[2].trim().toLocaleLowerCase("id-ID").startsWith("3.10.1 ")
-  ) {
-    canonicalParts[0] = SPECIAL_KK32_310_ROOT;
-    canonicalParts[1] = SPECIAL_KK32_310_SUBUNSUR;
-    canonicalParts[2] = SPECIAL_KK32_310_PARAMETER;
+  // Keempat KK memakai nama fisik 3.10.1 yang berbeda. Sesuaikan berdasarkan
+  // root KK dan subunsur; segmen Grade A-E tetap dipertahankan.
+  if (parts.length >= 3 && parts[2].trim().toLocaleLowerCase("id-ID").startsWith("3.10.1 ")) {
+    const root = parts[0].trim().toLocaleLowerCase("id-ID");
+    const subunsur = parts[1].trim().toLocaleLowerCase("id-ID");
+    const override = SPECIAL_310_FOLDER_OVERRIDES.find(([candidateRoot, candidateSubunsur]) => (
+      root === candidateRoot.toLocaleLowerCase("id-ID")
+      && subunsur === candidateSubunsur.toLocaleLowerCase("id-ID")
+    ));
+    if (override) {
+      [canonicalParts[0], canonicalParts[1], canonicalParts[2]] = override;
+    }
   }
 
   return canonicalParts.join("/");

@@ -21,6 +21,42 @@ SPECIAL_KK32_310_PARAMETER = (
     "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola sumber daya "
     "keuangan yang diberikan atau dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi"
 )
+SPECIAL_KK33_310_ROOT = "KK 3.3 PENGAMANAN ASET NEGARA DAERAH"
+SPECIAL_KK33_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya"
+SPECIAL_KK33_310_PARAMETER_SOURCE = (
+    "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola aset yang "
+    "diberikan/dikuasakan kepadanya dalam rangka pencapaian tujuan organisasi"
+)
+SPECIAL_KK33_310_PARAMETER = (
+    "3.10.1 Terdapat pertanggungjawaban seseorang atau unit organisasi dalam mengelola aset yang "
+    "diberikan-dikuasakan kepa_"
+)
+SPECIAL_KK34_310_ROOT = "KK 3.4 KETAATAN PADA PERATURAN PERUNDANG UNDANGAN"
+SPECIAL_KK34_310_SUBUNSUR = "3.10 Akuntabilitas terhadap Sumber Daya dan Pencatatannya"
+SPECIAL_KK34_310_PARAMETER = SPECIAL_KK31_310_PARAMETER
+
+SPECIAL_310_FOLDER_OVERRIDES = {
+    (SPECIAL_KK31_310_ROOT.casefold(), SPECIAL_KK31_310_SUBUNSUR.casefold()): (
+        SPECIAL_KK31_310_ROOT,
+        SPECIAL_KK31_310_SUBUNSUR,
+        SPECIAL_KK31_310_PARAMETER,
+    ),
+    (SPECIAL_KK32_310_ROOT.casefold(), SPECIAL_KK32_310_SUBUNSUR.casefold()): (
+        SPECIAL_KK32_310_ROOT,
+        SPECIAL_KK32_310_SUBUNSUR,
+        SPECIAL_KK32_310_PARAMETER,
+    ),
+    (SPECIAL_KK33_310_ROOT.casefold(), SPECIAL_KK33_310_SUBUNSUR.casefold()): (
+        SPECIAL_KK33_310_ROOT,
+        SPECIAL_KK33_310_SUBUNSUR,
+        SPECIAL_KK33_310_PARAMETER,
+    ),
+    (SPECIAL_KK34_310_ROOT.casefold(), SPECIAL_KK34_310_SUBUNSUR.casefold()): (
+        SPECIAL_KK34_310_ROOT,
+        SPECIAL_KK34_310_SUBUNSUR,
+        SPECIAL_KK34_310_PARAMETER,
+    ),
+}
 
 
 def safe_segment(value: str, max_length: int = 118) -> str:
@@ -36,6 +72,8 @@ def parameter_folder(detail_kode: str, uraian: str) -> str:
     label = f"{detail_kode} {uraian}"
     if label.casefold() == SPECIAL_KK31_310_PARAMETER_SOURCE.casefold():
         return SPECIAL_KK31_310_PARAMETER
+    if label.casefold() == SPECIAL_KK33_310_PARAMETER_SOURCE.casefold():
+        return SPECIAL_KK33_310_PARAMETER
     label = re.sub(r"\bdiberikan\s*/\s*dikuasakan\b", "diberikan atau dikuasakan", label)
     if label.casefold() == SPECIAL_KK32_310_PARAMETER.casefold():
         return SPECIAL_KK32_310_PARAMETER
@@ -50,29 +88,14 @@ def canonical_folder_path(folder_path: str) -> str:
         for part in parts
     ]
 
-    # Folder fisik KK3.1/3.10/3.10.1 mempertahankan tanda hubung dari uraian lama.
-    # Pulihkan path yang telanjur dibentuk sebagai "diberikan atau ...".
-    if (
-        len(parts) >= 3
-        and parts[0].strip().casefold() == SPECIAL_KK31_310_ROOT.casefold()
-        and parts[1].strip().casefold() == SPECIAL_KK31_310_SUBUNSUR.casefold()
-        and parts[2].strip().casefold().startswith("3.10.1 ")
-    ):
-        canonical_parts[0] = SPECIAL_KK31_310_ROOT
-        canonical_parts[1] = SPECIAL_KK31_310_SUBUNSUR
-        canonical_parts[2] = SPECIAL_KK31_310_PARAMETER
-
-    # Folder fisik KK3.2/3.10/3.10.1 dibuat dengan nama parameter lengkap.
-    # Pulihkan juga path lama yang telanjur tersimpan dalam bentuk terpotong.
-    if (
-        len(parts) >= 3
-        and parts[0].strip().casefold() == SPECIAL_KK32_310_ROOT.casefold()
-        and parts[1].strip().casefold() == SPECIAL_KK32_310_SUBUNSUR.casefold()
-        and parts[2].strip().casefold().startswith("3.10.1 ")
-    ):
-        canonical_parts[0] = SPECIAL_KK32_310_ROOT
-        canonical_parts[1] = SPECIAL_KK32_310_SUBUNSUR
-        canonical_parts[2] = SPECIAL_KK32_310_PARAMETER
+    # Keempat KK mempunyai nama fisik 3.10.1 yang tidak seragam. Pulihkan path
+    # lama berdasarkan KK dan subunsur, lalu pertahankan Grade A-E sesudahnya.
+    if len(parts) >= 3 and parts[2].strip().casefold().startswith("3.10.1 "):
+        override = SPECIAL_310_FOLDER_OVERRIDES.get(
+            (parts[0].strip().casefold(), parts[1].strip().casefold())
+        )
+        if override:
+            canonical_parts[0], canonical_parts[1], canonical_parts[2] = override
 
     return "/".join(canonical_parts)
 
