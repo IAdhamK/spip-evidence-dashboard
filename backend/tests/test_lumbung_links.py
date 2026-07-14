@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import tempfile
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlparse
 
+from app.database import Database
 from app.evidence_structure import (
     SPECIAL_KK32_310_PARAMETER,
     SPECIAL_KK32_310_ROOT,
@@ -150,6 +153,40 @@ class LumbungPublicLinkTests(unittest.TestCase):
         self.assertEqual(len(parameter_segment), 118)
         self.assertTrue(parameter_segment.endswith("APIP at_"))
         self.assertEqual(query["dir"], [f"/{canonical}"])
+
+    def test_database_startup_normalization_rewrites_stale_lumbung_links(self) -> None:
+        full_path = (
+            "KK 3.3 PENGAMANAN ASET NEGARA DAERAH/"
+            "5.2 Evaluasi Terpisah/"
+            "5.2.1 Evaluasi terpisah dilakukan oleh pegawai dengan keahlian tertentu yang disyaratkan "
+            "dan dapat melibatkan APIP atau auditor eksternal untuk menilai kinerja sistem pengendalian "
+            "intern, mengidentifikasi kelemahan pengendalian, menentukan/Grade A"
+        )
+        stale_url = (
+            "https://lumbungfile.kemendesa.go.id/s/CiJYTHFxZaJ83YF?dir=/"
+            + "/".join(part.replace(" ", "%20") for part in full_path.split("/"))
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db = Database(str(Path(tmpdir) / "evidence.db"))
+            with db.connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO evidence_slots (
+                        kk_id, kode, detail_kode, parameter_no, grade, category_name,
+                        category_folder, folder_path, public_url
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    ("KK3.3", "5.2", "5.2.1", "1", "A", "Evidence Grade", "", full_path, stale_url),
+                )
+
+            db.normalize_lumbung_links()
+            slot = db.evidence_slots("KK3.3", "5.2")[0]
+            query = parse_qs(urlparse(slot["public_url"]).query)
+
+            self.assertTrue(slot["folder_path"].split("/")[2].endswith("APIP at_"))
+            self.assertEqual(query["dir"], [f'/{slot["folder_path"]}'])
 
     def test_kk32_310_uses_full_parameter_folder_for_every_grade(self) -> None:
         stale_parameter = SPECIAL_KK32_310_PARAMETER[:117] + "_"

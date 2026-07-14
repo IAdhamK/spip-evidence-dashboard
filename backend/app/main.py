@@ -15,6 +15,7 @@ settings = get_settings()
 db = Database(settings.database_path)
 db.ensure_mapping()
 db.ensure_parameters()
+db.normalize_lumbung_links()
 
 app = FastAPI(title="SPIP Evidence Dashboard", version="0.1.0")
 

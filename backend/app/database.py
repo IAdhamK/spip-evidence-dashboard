@@ -6,8 +6,9 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator
 
-from app.evidence_structure import parameter_folder, slot_folder_path
+from app.evidence_structure import canonical_folder_path, parameter_folder, slot_folder_path
 from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
+from app.webdav_client import canonical_public_folder_url
 
 
 SCHEMA = """
@@ -316,6 +317,24 @@ class Database:
                     """,
                     key,
                 )
+
+    def normalize_lumbung_links(self) -> None:
+        with self.connect() as conn:
+            for table in ("folders", "evidence_slots"):
+                rows = conn.execute(
+                    f"SELECT rowid, folder_path, public_url FROM {table}"
+                ).fetchall()
+                for row in rows:
+                    folder_path = canonical_folder_path(row["folder_path"])
+                    public_url = canonical_public_folder_url(row["public_url"], folder_path)
+                    conn.execute(
+                        f"""
+                        UPDATE {table}
+                        SET folder_path = ?, public_url = ?
+                        WHERE rowid = ?
+                        """,
+                        (folder_path, public_url, row["rowid"]),
+                    )
 
     def folders(self, kk_id: str | None = None) -> list[dict]:
         query = "SELECT * FROM folders"
