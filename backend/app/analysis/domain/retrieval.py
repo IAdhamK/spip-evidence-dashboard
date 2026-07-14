@@ -15,6 +15,7 @@ from app.analysis.advanced_rag import (
     vector_cosine,
 )
 from app.analysis.contracts import DocumentIdentity, EngineResult, EngineStatus
+from app.analysis.document_family_registry import parameter_key as registry_parameter_key
 
 
 STOPWORDS = {
@@ -43,8 +44,19 @@ class ParameterRetrievalEngine:
         feedback_terms: list[dict] | None = None,
         query_expansions: list[str] | None = None,
         catalog_shortlist: list[dict] | None = None,
+        parameter_scope: dict | None = None,
     ) -> tuple[list[dict], EngineResult]:
         started = perf_counter()
+        unscoped_parameter_count = len(parameters)
+        scope = parameter_scope or {}
+        scope_primary = set(scope.get("primary_parameter_keys") or [])
+        scope_secondary = set(scope.get("secondary_parameter_keys") or [])
+        scope_allowed = scope_primary | scope_secondary
+        scope_exploratory = bool(scope.get("exploratory"))
+        if parameter_scope is not None and not scope_exploratory:
+            parameters = [
+                item for item in parameters if registry_parameter_key(item) in scope_allowed
+            ]
         file_name_text = re.sub(r"[_\-.]+", " ", str(identity.file_name or ""))
         query_text = " ".join([
             file_name_text,
@@ -85,7 +97,7 @@ class ParameterRetrievalEngine:
             for item in (catalog_shortlist or [])
             if item.get("kk_id") and item.get("kode") and item.get("detail_kode")
         }
-        local_document_role = infer_document_role(identity, facts)
+        local_document_role = str(scope.get("evidence_role") or "") or infer_document_role(identity, facts)
         feedback_by_parameter: dict[tuple[str, str, str], list[dict]] = {}
         feedback_registry_sha256 = sorted({
             str(item.get("registry_sha256") or "")
@@ -134,6 +146,17 @@ class ParameterRetrievalEngine:
             semantic_overlap = sorted(semantic_query_tokens & semantic_tokens)
             parameter_feedback = feedback_by_parameter.get(parameter_key, [])
             catalog_match = catalog_by_parameter.get(parameter_key)
+            serialized_parameter_key = "|".join(parameter_key)
+            scope_tier = (
+                "primary" if serialized_parameter_key in scope_primary
+                else "secondary" if serialized_parameter_key in scope_secondary
+                else "exploratory"
+            )
+            family_scope_bonus = (
+                0.34 if scope_tier == "primary"
+                else 0.16 if scope_tier == "secondary"
+                else 0.0
+            )
             feedback_matches = [
                 {
                     **item,
@@ -142,7 +165,7 @@ class ParameterRetrievalEngine:
                 for item in parameter_feedback
                 if item["term_sha256"] in query_tokens_by_sha256
             ]
-            if not catalog_match and not overlap and not feedback_matches and not (
+            if not catalog_match and not overlap and not feedback_matches and not family_scope_bonus and not (
                 self.advanced_rag_enabled and semantic_overlap
             ):
                 continue
@@ -228,6 +251,7 @@ class ParameterRetrievalEngine:
                         + kk_bonus
                         + feedback_bonus
                         + domain_intent_adjustment
+                        + family_scope_bonus
                     ),
                     "matched_terms": overlap[:20],
                     "matched_semantic_terms": semantic_overlap[:20],
@@ -243,6 +267,8 @@ class ParameterRetrievalEngine:
                         local_document_role,
                         str((catalog_match or {}).get("document_role") or ""),
                     ),
+                    "family_scope_tier": scope_tier,
+                    "family_scope_bonus": family_scope_bonus,
                     "corpus_tokens": sorted(
                         (semantic_tokens if self.advanced_rag_enabled else tokens)
                         | learned_tokens
@@ -317,6 +343,8 @@ class ParameterRetrievalEngine:
             metrics={
                 "duration_ms": max(0, round((perf_counter() - started) * 1000)),
                 "parameter_pool_count": len(parameters),
+                "unscoped_parameter_pool_count": unscoped_parameter_count,
+                "incompatible_parameter_count": unscoped_parameter_count - len(parameters),
                 "candidate_count": len(ranked),
                 "active_feedback_term_count": sum(
                     len(items) for items in feedback_by_parameter.values()
@@ -334,7 +362,15 @@ class ParameterRetrievalEngine:
             output={
                 "candidate_count": len(ranked),
                 "query_token_count": len(query_tokens),
-                "parameter_scope": "all_kk_subunsur_and_parameters_without_grade",
+                "parameter_scope": (
+                    scope.get("registry_version")
+                    if parameter_scope is not None
+                    else "all_kk_subunsur_and_parameters_without_grade"
+                ),
+                "document_family": scope.get("family") if parameter_scope is not None else None,
+                "scope_exploratory": scope_exploratory if parameter_scope is not None else True,
+                "primary_parameter_keys": sorted(scope_primary),
+                "secondary_parameter_keys": sorted(scope_secondary),
                 "kk_context_scores": kk_context_scores,
                 "minimum_retrieval_score": MIN_RETRIEVAL_SCORE,
                 "retrieval_method": (

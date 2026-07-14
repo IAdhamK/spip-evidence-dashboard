@@ -24,7 +24,7 @@ from app.migrations import MIGRATIONS
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-VALIDATOR_VERSION = "document-intelligence-production-profile-v7"
+VALIDATOR_VERSION = "document-intelligence-production-profile-v8"
 EXPECTED_SCHEMA_VERSION = max(version for version, _name, _sql in MIGRATIONS)
 PAYLOAD_KEY_PATTERN = re.compile(r"^[a-f0-9]{2}/[a-f0-9]{2}/[a-f0-9]{64}\.blob$")
 
@@ -42,6 +42,7 @@ def database_runtime_status(database_path: Path | None) -> tuple[dict, dict]:
         "controlled_upload_reconciliation_schema": False,
         "fact_evidence_role_schema": False,
         "expert_template_expectation_schema": False,
+        "document_family_gate_schema": False,
         "controlled_upload_stale_reservations_clear": False,
         "controlled_upload_unresolved_ambiguities_clear": False,
     }
@@ -143,6 +144,46 @@ def database_runtime_status(database_path: Path | None) -> tuple[dict, dict]:
             checks["expert_template_expectation_schema"] = bool(
                 "expected_template_status" in expert_label_columns
                 and "idx_expert_review_labels_template_status" in expert_label_indexes
+            )
+            mapping_columns = {
+                str(row[1])
+                for row in conn.execute(
+                    "PRAGMA table_info(mapping_candidates)"
+                ).fetchall()
+            }
+            mapping_indexes = {
+                str(row[1])
+                for row in conn.execute(
+                    "PRAGMA index_list(mapping_candidates)"
+                ).fetchall()
+            }
+            assessment_columns = {
+                str(row[1])
+                for row in conn.execute(
+                    "PRAGMA table_info(grade_assessments)"
+                ).fetchall()
+            }
+            checks["document_family_gate_schema"] = bool(
+                {
+                    "raw_retrieval_score",
+                    "calibrated_decision_confidence",
+                    "confidence_components_json",
+                    "decision_status",
+                    "document_family",
+                    "document_role",
+                    "family_parameter_compatible",
+                    "grade_eligible",
+                    "grade_status",
+                    "grade_block_reasons_json",
+                }
+                <= mapping_columns
+                and {
+                    "grade_eligible",
+                    "grade_status",
+                    "grade_block_reasons_json",
+                }
+                <= assessment_columns
+                and "idx_mapping_candidates_family_decision" in mapping_indexes
             )
             stale = conn.execute(
                 """

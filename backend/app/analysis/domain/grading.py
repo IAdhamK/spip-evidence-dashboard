@@ -69,6 +69,36 @@ class DomainRuleGradeEngine:
             for item in (rule_approvals or [])
         }
         for mapping in mappings:
+            gate_present = "grade_eligible" in mapping or "grade_status" in mapping
+            mapping_grade_eligible = (
+                bool(mapping.get("grade_eligible")) if gate_present else True
+            )
+            gate_status = str(mapping.get("grade_status") or "direction_only")
+            gate_block_reasons = list(mapping.get("grade_block_reasons") or [])
+            if not mapping_grade_eligible or gate_status in {"not_applicable", "blocked"}:
+                assessments.append({
+                    "mapping_candidate_id": mapping.get("id"),
+                    "kk_id": mapping["kk_id"],
+                    "kode": mapping["kode"],
+                    "detail_kode": mapping["detail_kode"],
+                    "candidate_grade": None,
+                    "grade_ceiling": None,
+                    "rule_version": RULE_VERSION,
+                    "rule_trace": {
+                        "approval_status": "not_evaluated",
+                        "source": "document_family_grade_eligibility_gate",
+                        "grade_status": gate_status,
+                        "grade_eligible": False,
+                        "grade_block_reasons": gate_block_reasons,
+                        "rules": [],
+                    },
+                    "missing_requirements": gate_block_reasons,
+                    "primary_allowed": False,
+                    "grade_eligible": False,
+                    "grade_status": gate_status,
+                    "grade_block_reasons": gate_block_reasons,
+                })
+                continue
             supporting = [facts_by_id[item] for item in mapping.get("supporting_fact_ids") or [] if item in facts_by_id]
             present_stages = {
                 str(fact.get("fact_type"))
@@ -176,6 +206,13 @@ class DomainRuleGradeEngine:
                 if trace["missing_requirements"]:
                     next_missing = trace["missing_requirements"]
                     break
+            primary_allowed = bool(parameter_rules_approved and passed_grade)
+            final_grade_status = (
+                "supported" if primary_allowed
+                else "direction_only" if passed_grade
+                else "blocked"
+            )
+            final_block_reasons = [] if passed_grade else ["parameter_requirements_not_met"]
             assessments.append(
                 {
                     "mapping_candidate_id": mapping.get("id"),
@@ -191,10 +228,16 @@ class DomainRuleGradeEngine:
                         "present_stages": sorted(present_stages),
                         "context_resolution": context_resolution,
                         "plan_result_evidence_found": has_result_evidence(supporting),
+                        "grade_status": final_grade_status,
+                        "grade_eligible": True,
+                        "grade_block_reasons": final_block_reasons,
                         "rules": traces,
                     },
                     "missing_requirements": next_missing,
-                    "primary_allowed": bool(parameter_rules_approved and passed_grade),
+                    "primary_allowed": primary_allowed,
+                    "grade_eligible": True,
+                    "grade_status": final_grade_status,
+                    "grade_block_reasons": final_block_reasons,
                 }
             )
         result = EngineResult(

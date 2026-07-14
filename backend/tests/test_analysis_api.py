@@ -128,6 +128,11 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
             config.json()["checkpointing"]["policy_version"],
             "unit-checkpoint-v2",
         )
+        family_gate = config.json()["document_family_gate"]
+        self.assertEqual(family_gate["engine_version"], "document-family-v1")
+        self.assertEqual(family_gate["minimum_family_confidence"], 0.7)
+        self.assertEqual(family_gate["minimum_relevant_coverage_ratio"], 0.7)
+        self.assertEqual(family_gate["ambiguity_margin"], 0.08)
         self.assertTrue(
             config.json()["checkpointing"]["visual_ocr_batch_durable"]
         )
@@ -1454,9 +1459,9 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
             file_name="approved-evidence.txt",
             content_type="text/plain",
             payload=(
-                b"Kebijakan indikator kinerja Ditjen PDP telah ditetapkan tahun 2026. "
-                b"Pelaksanaan indikator Ditjen PDP telah dilaksanakan tahun 2026. "
-                b"Evaluasi indikator Ditjen PDP dilakukan secara berkala tahun 2026."
+                b"Kebijakan manajemen risiko Ditjen PDP telah ditetapkan melalui keputusan tahun 2026. "
+                b"Pedoman manajemen risiko memuat ruang lingkup dan telah dilaksanakan tahun 2026. "
+                b"Evaluasi pelaksanaan kebijakan manajemen risiko dilakukan secara berkala tahun 2026."
             ),
             analysis_mode="full_audit",
         )
@@ -1642,9 +1647,9 @@ class AnalysisApiIntegrationTests(unittest.TestCase):
             file_name="ambiguous-upload-evidence.txt",
             content_type="text/plain",
             payload=(
-                b"Kebijakan indikator kinerja Ditjen PDP telah ditetapkan tahun 2026. "
-                b"Pelaksanaan indikator Ditjen PDP telah dilaksanakan tahun 2026. "
-                b"Evaluasi indikator Ditjen PDP dilakukan secara berkala tahun 2026."
+                b"Kebijakan manajemen risiko Ditjen PDP telah ditetapkan melalui keputusan tahun 2026. "
+                b"Pedoman manajemen risiko memuat ruang lingkup dan telah dilaksanakan tahun 2026. "
+                b"Evaluasi pelaksanaan kebijakan manajemen risiko dilakukan secara berkala tahun 2026."
             ),
             analysis_mode="full_audit",
         )

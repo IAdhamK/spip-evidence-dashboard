@@ -171,6 +171,22 @@ class CoverageEngine:
         partial = counts.get("partial", 0)
         pending = counts.get("pending", 0)
         percentage = round((processed / total) * 100, 2) if total else 0.0
+        structurally_relevant = [
+            unit for unit in units
+            if (unit.get("metadata") or {}).get("risk_matrix_relevant")
+        ]
+        relevant_units = structurally_relevant or list(units)
+        relevant_counts = Counter(
+            str(unit.get("status") or "pending") for unit in relevant_units
+        )
+        relevant_total = len(relevant_units)
+        relevant_processed = relevant_counts.get("processed", 0)
+        relevant_partial = relevant_counts.get("partial", 0)
+        relevant_failed = relevant_counts.get("failed", 0)
+        relevant_pending = relevant_total - relevant_processed
+        relevant_ratio = (
+            relevant_processed / relevant_total if relevant_total else 0.0
+        )
         if total == 0 or failed == total:
             coverage_status = "failed"
         elif processed == total:
@@ -195,6 +211,18 @@ class CoverageEngine:
             "pending_units": pending,
             "coverage_percentage": percentage,
             "coverage_status": coverage_status,
+            "relevant_total_units": relevant_total,
+            "relevant_processed_units": relevant_processed,
+            "relevant_partial_units": relevant_partial,
+            "relevant_failed_units": relevant_failed,
+            "relevant_pending_units": relevant_pending,
+            "unprocessed_relevant_units": relevant_pending,
+            "relevant_coverage_ratio": round(relevant_ratio, 4),
+            "relevant_coverage_percentage": round(relevant_ratio * 100, 2),
+            "relevant_scope_method": (
+                "adaptive_xlsx_risk_sheet_profile_v1"
+                if structurally_relevant else "all_document_units_v1"
+            ),
             "primary_blocked": coverage_status != "complete",
             "block_reasons": reasons,
         }

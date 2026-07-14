@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 
 from app.analysis.contracts import DocumentIdentity
+from app.analysis.document_family_registry import RISK_MATRIX_HEADER_ALIASES
 
 
 MAX_UNIT_TEXT_CHARS = 2_000_000
@@ -171,12 +172,38 @@ def parse_xlsx(payload: bytes, analysis_mode: str) -> tuple[list[dict], dict]:
         }
         for sheet_index, sheet in enumerate(sheets):
             sheet["print_area"] = print_areas.get(sheet_index)
+            try:
+                with archive.open(sheet["path"]) as sheet_stream:
+                    sheet.update(_xlsx_risk_matrix_features(
+                        sheet_stream,
+                        shared_strings,
+                        row_limit=40,
+                    ))
+            except Exception as exc:
+                sheet["inventory_warning"] = f"Profiling sheet gagal: {exc}"
+                sheet["risk_matrix_relevant"] = False
         drawing_context: dict[str, dict] = {}
         limit = _processing_limit(len(sheets), "xlsx", analysis_mode)
+        selected_sheet_indexes = set(range(limit))
+        if analysis_mode != "full_audit":
+            adaptive_candidates = sorted(
+                (
+                    (index, sheet) for index, sheet in enumerate(sheets)
+                    if sheet.get("risk_matrix_relevant") and index not in selected_sheet_indexes
+                ),
+                key=lambda item: (
+                    -int(item[1].get("risk_header_category_count") or 0),
+                    -int(item[1].get("substantive_row_count") or 0),
+                    item[0],
+                ),
+            )
+            selected_sheet_indexes.update(index for index, _sheet in adaptive_candidates[:4])
+        for sheet_index, sheet in enumerate(sheets):
+            sheet["adaptive_selected"] = sheet_index in selected_sheet_indexes
         units: list[dict] = []
         for index, sheet in enumerate(sheets, start=1):
             location = {"sheet": sheet["name"], "sheet_index": index, "hidden": sheet["state"] != "visible"}
-            if index > limit:
+            if index - 1 not in selected_sheet_indexes:
                 units.append(_unit(f"sheet-{index}", "sheet", index, "pending", location, metadata=sheet))
                 continue
             try:
@@ -202,6 +229,11 @@ def parse_xlsx(payload: bytes, analysis_mode: str) -> tuple[list[dict], dict]:
                     relationships,
                     comments,
                 )
+                risk_features = _xlsx_risk_matrix_features(
+                    archive.read(sheet["path"]),
+                    shared_strings,
+                    row_limit=5_000,
+                )
                 text = "\n".join(rows)
                 status, text, warnings = _bounded_text(text)
                 units.append(
@@ -214,7 +246,12 @@ def parse_xlsx(payload: bytes, analysis_mode: str) -> tuple[list[dict], dict]:
                         text=text,
                         heading_path=[sheet["name"]],
                         warnings=warnings,
-                        metadata={**sheet, **metadata},
+                        metadata={
+                            **sheet,
+                            **metadata,
+                            **risk_features,
+                            "risk_matrix_features": risk_features,
+                        },
                     )
                 )
             except Exception as exc:
@@ -394,7 +431,18 @@ def parse_xlsx(payload: bytes, analysis_mode: str) -> tuple[list[dict], dict]:
             name for name in archive_names if name.startswith("xl/tables/") and name.endswith(".xml")
         )
     return units, {
-        "file_kind": "xlsx", "total_sheets": len(sheets), "selected_sheets": limit,
+        "file_kind": "xlsx", "total_sheets": len(sheets),
+        "selected_sheets": len(selected_sheet_indexes),
+        "adaptive_screening": analysis_mode != "full_audit",
+        "relevant_sheet_count": sum(bool(item.get("risk_matrix_relevant")) for item in sheets),
+        "selected_relevant_sheet_count": sum(
+            bool(item.get("risk_matrix_relevant")) and bool(item.get("adaptive_selected"))
+            for item in sheets
+        ),
+        "unprocessed_relevant_sheet_count": sum(
+            bool(item.get("risk_matrix_relevant")) and not bool(item.get("adaptive_selected"))
+            for item in sheets
+        ),
         "sheets": sheets,
         "embedded_image_count": len(media_paths),
         "drawing_part_count": len(drawing_paths),
@@ -1160,6 +1208,198 @@ def _xlsx_sheet_rows(
         "hyperlinks": hyperlinks,
         "comment_cells": sorted((comments or {}).keys()),
     }
+
+
+def _xlsx_risk_matrix_features(
+    xml_data,
+    shared_strings: list[str],
+    *,
+    row_limit: int,
+) -> dict:
+    """Profile bounded worksheet rows before normal screening selection.
+
+    The profile is structural and deterministic.  It never promotes a Grade and
+    keeps the adaptive screening budget bounded even when a workbook has many
+    sheets.
+    """
+    source = BytesIO(xml_data) if isinstance(xml_data, bytes) else xml_data
+    rows: list[tuple[int, dict[int, str], set[int]]] = []
+    formula_cell_count = 0
+    literal_value_cell_count = 0
+    total_value_cell_count = 0
+    dimension_ref = None
+    for _event, element in ET.iterparse(source, events=("end",)):
+        tag = element.tag.rsplit("}", 1)[-1]
+        if tag == "dimension" and element.attrib.get("ref"):
+            dimension_ref = element.attrib.get("ref")
+            element.clear()
+            continue
+        if tag != "row":
+            continue
+        if len(rows) >= max(1, row_limit):
+            break
+        row_number = int(element.attrib.get("r") or len(rows) + 1)
+        values: dict[int, str] = {}
+        formula_columns: set[int] = set()
+        for cell in element:
+            if cell.tag.rsplit("}", 1)[-1] != "c":
+                continue
+            reference = str(cell.attrib.get("r") or "")
+            column = _xlsx_column_number(reference)
+            if column <= 0:
+                continue
+            value, formula = _xlsx_profile_cell_value(cell, shared_strings)
+            if formula:
+                formula_cell_count += 1
+                formula_columns.add(column)
+            if value:
+                literal_value_cell_count += int(not formula)
+                total_value_cell_count += 1
+                values[column] = value
+        if values or formula_columns:
+            rows.append((row_number, values, formula_columns))
+        element.clear()
+
+    header_row_number = None
+    header_categories: set[str] = set()
+    header_columns: dict[str, int] = {}
+    for row_number, values, _formulas in rows[:20]:
+        candidate_columns: dict[str, int] = {}
+        for column, value in values.items():
+            normalized = " ".join(value.casefold().split())
+            for category, aliases in RISK_MATRIX_HEADER_ALIASES.items():
+                if any(alias == normalized or alias in normalized for alias in aliases):
+                    candidate_columns.setdefault(category, column)
+        if len(candidate_columns) > len(header_categories):
+            header_row_number = row_number
+            header_categories = set(candidate_columns)
+            header_columns = candidate_columns
+
+    placeholder_count = 0
+    considered_value_count = 0
+    substantive_row_count = 0
+    risk_statement_values: set[str] = set()
+    filled_rtp_count = 0
+    filled_likelihood_count = 0
+    filled_impact_count = 0
+    filled_risk_owner_count = 0
+    contains_example_data = False
+    placeholder_re = re.compile(
+        r"^(?:[-–—_. ]+|x{2,}|n/?a|tbd|isi(?:lah)?|diisi|contoh(?: pengisian)?)$",
+        flags=re.IGNORECASE,
+    )
+    for row_number, values, _formulas in rows:
+        if header_row_number is None or row_number <= header_row_number:
+            continue
+        normalized_values = {
+            column: " ".join(value.casefold().split())
+            for column, value in values.items()
+            if value.strip()
+        }
+        if not normalized_values:
+            continue
+        placeholders = {
+            column for column, value in normalized_values.items()
+            if placeholder_re.fullmatch(value) or "contoh pengisian" in value
+        }
+        placeholder_count += len(placeholders)
+        considered_value_count += len(normalized_values)
+        contains_example_data = contains_example_data or any(
+            "contoh" in value or "petunjuk" in value for value in normalized_values.values()
+        )
+        risk_value = normalized_values.get(header_columns.get("risk_statement", -1), "")
+        cause_value = normalized_values.get(header_columns.get("cause", -1), "")
+        impact_value = normalized_values.get(header_columns.get("impact", -1), "")
+        core_values = [value for value in (risk_value, cause_value, impact_value) if value]
+        non_placeholder_values = [
+            value for column, value in normalized_values.items()
+            if column not in placeholders
+        ]
+        is_substantive = bool(
+            len(non_placeholder_values) >= 3
+            and core_values
+            and len(placeholders) < max(1, len(normalized_values) / 2)
+            and not all("contoh" in value for value in core_values)
+        )
+        if not is_substantive:
+            continue
+        substantive_row_count += 1
+        if risk_value and "contoh" not in risk_value:
+            risk_statement_values.add(risk_value)
+        filled_rtp_count += int(bool(
+            normalized_values.get(header_columns.get("control_plan", -1), "")
+        ))
+        filled_likelihood_count += int(bool(
+            normalized_values.get(header_columns.get("likelihood", -1), "")
+        ))
+        filled_impact_count += int(bool(impact_value))
+        filled_risk_owner_count += int(bool(
+            normalized_values.get(header_columns.get("risk_owner", -1), "")
+        ))
+
+    max_column = max(
+        (max(values, default=0) for _row_number, values, _formulas in rows),
+        default=0,
+    )
+    filled_denominator = max(1, len(rows) * max_column)
+    placeholder_ratio = placeholder_count / max(1, considered_value_count)
+    header_count = len(header_categories)
+    return {
+        "dimension_ref": dimension_ref,
+        "profiled_row_count": len(rows),
+        "profiled_cell_count": total_value_cell_count,
+        "risk_matrix_relevant": header_count >= 3,
+        "risk_header_categories": sorted(header_categories),
+        "risk_header_category_count": header_count,
+        "risk_header_row": header_row_number,
+        "substantive_row_count": substantive_row_count,
+        "risk_statement_values": sorted(risk_statement_values)[:100],
+        "filled_rtp_count": filled_rtp_count,
+        "filled_likelihood_count": filled_likelihood_count,
+        "filled_impact_count": filled_impact_count,
+        "filled_risk_owner_count": filled_risk_owner_count,
+        "filled_cell_ratio": round(total_value_cell_count / filled_denominator, 4),
+        "placeholder_ratio": round(placeholder_ratio, 4),
+        "contains_example_data": contains_example_data,
+        "formula_only": bool(formula_cell_count and not literal_value_cell_count),
+        "formula_cell_count": formula_cell_count,
+    }
+
+
+def _xlsx_profile_cell_value(
+    cell: ET.Element,
+    shared_strings: list[str],
+) -> tuple[str, str]:
+    cell_type = str(cell.attrib.get("t") or "")
+    raw_value = next(
+        (item.text or "" for item in cell if item.tag.rsplit("}", 1)[-1] == "v"),
+        "",
+    )
+    inline_value = normalize_text(" ".join(
+        item.text or "" for item in cell.iter()
+        if item.tag.rsplit("}", 1)[-1] == "t"
+    ))
+    formula = normalize_text(next(
+        (item.text or "" for item in cell if item.tag.rsplit("}", 1)[-1] == "f"),
+        "",
+    ))
+    if cell_type == "s" and raw_value.isdigit() and int(raw_value) < len(shared_strings):
+        value = shared_strings[int(raw_value)]
+    elif cell_type == "inlineStr":
+        value = inline_value
+    else:
+        value = raw_value or inline_value
+    return normalize_text(value), formula
+
+
+def _xlsx_column_number(reference: str) -> int:
+    match = re.match(r"([A-Za-z]+)", reference)
+    if not match:
+        return 0
+    value = 0
+    for character in match.group(1).upper():
+        value = value * 26 + (ord(character) - ord("A") + 1)
+    return value
 
 
 def _relationship_targets(xml_data: bytes | None) -> dict[str, str]:

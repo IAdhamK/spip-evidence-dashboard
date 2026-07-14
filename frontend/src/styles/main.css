@@ -94,6 +94,48 @@
   font-weight: 820;
 }
 
+.admin-family-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.admin-family-summary > div {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #cfe3df;
+  border-radius: 12px;
+  background: #f7fffd;
+}
+
+.admin-family-summary span,
+.admin-family-summary small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.admin-family-summary span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.admin-family-summary strong { line-height: 1.35; }
+
+.admin-reference-panel {
+  padding: 14px 16px;
+  color: #245f9e;
+  background: #eef6ff;
+  border: 1px solid #c9dff6;
+  border-radius: 12px;
+}
+
+.admin-reference-panel p { margin: 5px 0 0; line-height: 1.45; }
+
 .admin-classification-path {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

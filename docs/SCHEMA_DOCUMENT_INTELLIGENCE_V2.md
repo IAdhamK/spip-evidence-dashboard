@@ -1,6 +1,6 @@
 # Referensi Schema Document Intelligence V2
 
-Status dokumen: Migration V1–V30, 13 Juli 2026. DDL otoritatif berada di `backend/app/database.py` dan `backend/app/migrations.py`. Schema bersifat forward-only dan idempotent; rollback produksi dilakukan melalui feature flag dan restore backup terverifikasi, bukan menurunkan versi tabel secara destruktif.
+Status dokumen: Migration V1–V32, 15 Juli 2026. DDL otoritatif berada di `backend/app/database.py` dan `backend/app/migrations.py`. Schema bersifat forward-only dan idempotent; rollback produksi dilakukan melalui feature flag dan restore backup terverifikasi, bukan menurunkan versi tabel secara destruktif.
 
 ## Prinsip penyimpanan
 
@@ -46,11 +46,11 @@ Status job/run hanya bergerak melalui repository service. Worker lama tidak bole
 | Tabel | Engine/artefak |
 |---|---|
 | `document_units` | Unit normalized beserta locator, text, checksum, parser/OCR status, dan metadata. |
-| `document_structures` | Document Map dan coverage ledger. |
+| `document_structures` | Document Map, coverage ledger, kontrak `document_family`, dan registry `parameter_scope` yang digunakan setiap run. |
 | `extracted_facts` | Claim terstruktur, fact type, status, evidence role/provenance, dan confidence score. |
 | `fact_sources` | Kutipan/locator sumber yang harus cocok dengan unit. |
-| `mapping_candidates` | Kandidat parameter-first retrieval dan ranking trace. Migration V31 menambah `rag_rank`, `rag_relevance`, dan `rag_method`; ketiganya advisory dan terpisah dari `mapping_score` serta keputusan Grade. |
-| `grade_assessments` | Hasil Domain Rule Grade Engine dan missing requirements. |
+| `mapping_candidates` | Kandidat parameter-first retrieval dan ranking trace. Migration V31 menambah ranking Advanced RAG. Migration V32 memisahkan raw retrieval, mapping score, calibrated decision confidence beserta komponennya, family/role, compatibility, decision status, dan hasil grade eligibility gate. |
+| `grade_assessments` | Hasil Domain Rule Grade Engine, `grade_eligible`, `grade_status` (`not_applicable`, `blocked`, `direction_only`, `supported`), block reasons, dan missing requirements. |
 | `verification_results` | Independent source/rule/cross-document verification. |
 | `engine_results` | Artefak ter-version untuk engine per run. |
 | `security_findings` | Temuan file/archive/network dengan severity dan status. |
@@ -105,7 +105,7 @@ Report manual/informational tidak boleh membuka promotion. Release `passed` meme
 |---|---|
 | `schema_migrations` | Version/name/checksum migration yang sudah diterapkan. |
 
-Migration V1–V30 harus diterapkan berurutan. Deployment menolak schema yang bukan exact Migration V30 pada production preflight saat ini. Menambah migration baru wajib memperbarui validator produksi, backup/restore drill, dokumen ini, dan test upgrade fixture.
+Migration V1–V32 harus diterapkan berurutan. Deployment menolak schema yang bukan exact Migration V32 pada production preflight saat ini. Menambah migration baru wajib memperbarui validator produksi, backup/restore drill, dokumen ini, dan test upgrade fixture.
 
 ## Retensi dan data sensitif
 

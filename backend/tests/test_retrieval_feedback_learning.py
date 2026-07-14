@@ -463,7 +463,7 @@ class RetrievalFeedbackLearningTests(unittest.TestCase):
         self.assertEqual(label["dataset_partition"], "evaluation")
         self.assertEqual(snapshot["is_active"], 0)
         self.assertEqual(report["release_authority"], 0)
-        self.assertEqual(max_migration, 31)
+        self.assertEqual(max_migration, 32)
         self.assertEqual(label["expected_template_status"], "not_assessed")
         self.assertIn("idempotency_key", controlled_upload_columns)
         self.assertIn(

@@ -2,7 +2,7 @@
 
 Status dokumen: kontrak teknis pengembangan/shadow, 13 Juli 2026. Spesifikasi request dan response yang paling otoritatif tetap `GET /openapi.json`; dokumen ini menjelaskan batas operasi dan memastikan seluruh route V2 mempunyai pintu masuk handover yang dapat ditelusuri.
 
-Kontrak authorization `analysis-rbac-v1` mengklasifikasikan seluruh 61 operasi aktif: 55 operasi role-secured dan 6 operasi read-only pada authenticated-proxy/internal-network boundary. Regression dan handover validator menolak route baru yang belum diklasifikasikan, policy stale, overlap klasifikasi, atau mutation yang hanya mengandalkan network boundary.
+Kontrak authorization `analysis-rbac-v1` mengklasifikasikan seluruh 62 operasi aktif: 55 operasi role-secured dan 7 operasi read-only pada authenticated-proxy/internal-network boundary. Regression dan handover validator menolak route baru yang belum diklasifikasikan, policy stale, overlap klasifikasi, atau mutation yang hanya mengandalkan network boundary.
 
 ## Konvensi dan batas keamanan
 
@@ -53,6 +53,8 @@ Scope produksi: `evidence_reviewer` membuat intake; pembacaan/pembatalan job ata
 | POST | `/api/analysis-runs/{run_id}/cancel` | Membatalkan melalui run ID secara idempotent bila state mengizinkan. |
 
 Run sumber tidak ditimpa oleh retry, OCR rescue, atau visual correction. Hubungan turunan disimpan sebagai lineage; checkpoint stale/tampered ditolak.
+
+Response run menambahkan `document_family` secara additive. Contract memuat `family`, `family_confidence`, `evidence_role`, `grade_eligible`, `grade_status`, `grade_block_reasons`, primary/secondary parameter keys, reasons, warnings, structural features, relevant coverage, dan relationship hints. Item `mappings` memisahkan `raw_retrieval_score`, `mapping_score`, `calibrated_decision_confidence`, `confidence_components`, `decision_status`, serta family/Grade gate. Item `grade_assessments` memuat `grade_status`: `not_applicable`, `blocked`, `direction_only`, atau `supported`. Klien tidak boleh menurunkan Grade sendiri dari rule trace ketika `candidate_grade` kosong.
 
 ## Human review
 

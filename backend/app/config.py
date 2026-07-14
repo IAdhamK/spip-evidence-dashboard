@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     analysis_advanced_rag_deepseek_enabled: bool = False
     analysis_advanced_rag_min_confidence: float = 0.68
     analysis_advanced_rag_ambiguity_margin: float = 0.08
+    analysis_document_family_min_confidence: float = 0.70
+    analysis_relevant_coverage_min_ratio: float = 0.70
+    analysis_mapping_ambiguity_margin: float = 0.08
+    analysis_decision_confidence_high_threshold: float = 0.80
     analysis_model_verifier_enabled: bool = False
     analysis_model_retry_attempts: int = 2
     analysis_routing_structured_min_complexity: float = 0.25

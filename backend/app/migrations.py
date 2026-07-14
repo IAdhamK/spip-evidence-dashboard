@@ -1133,6 +1133,53 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         ON mapping_candidates(run_id, rag_rank, mapping_score DESC, id);
         """,
     ),
+    (
+        32,
+        "document_family_confidence_and_grade_gate",
+        """
+        ALTER TABLE mapping_candidates
+        ADD COLUMN raw_retrieval_score REAL NOT NULL DEFAULT 0;
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN calibrated_decision_confidence REAL NOT NULL DEFAULT 0;
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN confidence_components_json TEXT NOT NULL DEFAULT '{}';
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN decision_status TEXT NOT NULL DEFAULT 'needs_review';
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN document_family TEXT NOT NULL DEFAULT 'unknown';
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN document_role TEXT NOT NULL DEFAULT 'reject';
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN family_parameter_compatible INTEGER NOT NULL DEFAULT 0;
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN grade_eligible INTEGER NOT NULL DEFAULT 0;
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN grade_status TEXT NOT NULL DEFAULT 'blocked';
+
+        ALTER TABLE mapping_candidates
+        ADD COLUMN grade_block_reasons_json TEXT NOT NULL DEFAULT '[]';
+
+        ALTER TABLE grade_assessments
+        ADD COLUMN grade_eligible INTEGER NOT NULL DEFAULT 0;
+
+        ALTER TABLE grade_assessments
+        ADD COLUMN grade_status TEXT NOT NULL DEFAULT 'blocked';
+
+        ALTER TABLE grade_assessments
+        ADD COLUMN grade_block_reasons_json TEXT NOT NULL DEFAULT '[]';
+
+        CREATE INDEX IF NOT EXISTS idx_mapping_candidates_family_decision
+        ON mapping_candidates(run_id, document_family, decision_status, calibrated_decision_confidence DESC);
+        """,
+    ),
 ]
 
 

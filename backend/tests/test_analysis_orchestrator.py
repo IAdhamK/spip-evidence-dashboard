@@ -106,8 +106,14 @@ class AnalysisOrchestratorTests(unittest.TestCase):
         self.assertIn("evidence_role", fact_columns)
         self.assertIn("evidence_role_method", fact_columns)
         self.assertIn("expected_template_status", expert_label_columns)
-        self.assertTrue({"rag_rank", "rag_relevance", "rag_method"} <= mapping_columns)
-        self.assertEqual(versions, list(range(1, 32)))
+        self.assertTrue({
+            "rag_rank", "rag_relevance", "rag_method",
+            "document_family", "document_role", "raw_retrieval_score",
+            "calibrated_decision_confidence", "confidence_components_json",
+            "decision_status", "grade_eligible", "grade_status",
+            "grade_block_reasons_json",
+        } <= mapping_columns)
+        self.assertEqual(versions, list(range(1, 33)))
 
     def test_compute_routing_policy_changes_invalidate_resume_configuration_hash(self) -> None:
         baseline = configuration_hash(self.settings, "full_audit")
@@ -352,11 +358,13 @@ class AnalysisOrchestratorTests(unittest.TestCase):
             "document_structure",
             "unitization_coverage",
             "template_completeness",
+            "document_family",
             "fact_extraction",
             "compute_routing_fact",
             "parameter_retrieval",
             "spip_mapping",
             "compute_routing_mapping",
+            "grade_eligibility_gate",
             "domain_rule_grade",
             "independent_verification",
             "compute_routing_verification",

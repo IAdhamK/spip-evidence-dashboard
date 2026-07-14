@@ -386,6 +386,24 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
                     0.0, min(1.0, settings.analysis_advanced_rag_ambiguity_margin)
                 ),
             },
+            "document_family_gate": {
+                "engine_version": "document-family-v1",
+                "scope_registry_version": "document-family-parameter-scope-v1",
+                "grade_gate_version": "grade-eligibility-v1",
+                "minimum_family_confidence": max(
+                    0.0, min(1.0, settings.analysis_document_family_min_confidence)
+                ),
+                "minimum_relevant_coverage_ratio": max(
+                    0.0, min(1.0, settings.analysis_relevant_coverage_min_ratio)
+                ),
+                "ambiguity_margin": max(
+                    0.0, min(1.0, settings.analysis_mapping_ambiguity_margin)
+                ),
+                "high_confidence_threshold": max(
+                    0.0, min(1.0, settings.analysis_decision_confidence_high_threshold)
+                ),
+                "authority": "deterministic_family_scope_and_grade_gate",
+            },
             "compute_routing": {
                 "policy_version": ROUTING_POLICY_VERSION,
                 "mapping_reasoning_enabled": (

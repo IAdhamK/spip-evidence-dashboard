@@ -3,13 +3,15 @@ import { EmptyState } from "../shared/Feedback.jsx";
 import {
   administrativeReviewGroups,
   administrativeRunStatus,
-  confidenceLabel,
   correctionCatalogSelection,
   correctionTargetFor,
+  decisionConfidence,
+  documentFamilyPresentation,
 } from "./admin-result.js";
 
 export default function AdministrativeResultView({
   run,
+  documentFamily,
   primaryResult,
   mappings,
   reviewIntent,
@@ -31,28 +33,45 @@ export default function AdministrativeResultView({
   submitReview,
   cancelReview,
 }) {
+  const family = documentFamilyPresentation(documentFamily);
+  const familyReasons = documentFamily?.reasons ?? [];
+  const familyWarnings = documentFamily?.warnings ?? [];
+  const relationshipHints = documentFamily?.relationship_hints ?? [];
+  const referencedTypes = relationshipHints.flatMap((item) => item.referenced_document_types ?? []);
+  const referencedPeriod = relationshipHints.find((item) => item.referenced_period)?.referenced_period;
   if (!primaryResult) {
     return (
       <section className="admin-result-view">
-        <EmptyState text="Belum ada parameter yang cukup didukung oleh isi dokumen. Periksa kembali dokumen atau tambahkan dokumen pendukung." />
+        <div className="admin-result-intro">
+          <div><span className="admin-eyebrow">Hasil pengenalan fungsi dokumen</span><h4>{family.familyLabel}</h4><p>Sistem menentukan jenis dan fungsi dokumen sebelum mencari parameter penilaian.</p></div>
+          <span className="admin-status-badge">{administrativeRunStatus(run)}</span>
+        </div>
+        <div className="admin-family-summary">
+          <div><span>Jenis dokumen</span><strong>{family.familyLabel}</strong><small>Confidence jenis dokumen {Math.round(family.familyConfidence * 100)}%</small></div>
+          <div><span>Fungsi evidence</span><strong>{family.evidenceRoleLabel}</strong><small>Menentukan kewenangan dokumen dalam penilaian</small></div>
+          <div><span>Coverage relevan</span><strong>{Math.round(family.relevantCoverage * 100)}%</strong><small>Bagian penting yang berhasil dibaca</small></div>
+          <div><span>Parameter utama</span><strong>Tidak mempunyai parameter utama</strong><small>Dokumen yang dirujuk perlu dianalisis terpisah</small></div>
+          <div><span>Status Grade</span><strong>{family.gradeStatus === "not_applicable" ? "Grade tidak berlaku untuk jenis dokumen ini" : "Belum dapat dinilai"}</strong><small>Tidak ada Grade mandiri yang dipaksakan</small></div>
+        </div>
+        {referencedTypes.length ? (
+          <div className="admin-reference-panel"><strong>Dokumen yang dirujuk</strong><p>{[...new Set(referencedTypes)].map((item) => item.replaceAll("_", " ")).join(", ")}{referencedPeriod ? ` · periode ${referencedPeriod}` : ""}</p></div>
+        ) : null}
+        {familyReasons.length ? <div className="admin-detected-panel"><div><strong>Alasan utama</strong></div><ul>{familyReasons.map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
+        {familyWarnings.length ? <div className="admin-confirmation-panel"><div><strong>Yang perlu diperiksa</strong></div><ul>{familyWarnings.map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
+        {!familyReasons.length && !familyWarnings.length ? <EmptyState text="Belum ada parameter yang cukup didukung oleh isi dokumen." /> : null}
       </section>
     );
   }
 
   const { mapping, assessment, verifications, direction } = primaryResult;
+  const confidence = decisionConfidence(mapping);
   const reviewGroups = administrativeReviewGroups({ run, assessment, verifications });
   const hasReviewItems = Object.values(reviewGroups).some((items) => items.length);
   const parameterLabel = mapping.parameter_uraian || mapping.subunsur_name || "Uraian parameter belum tersedia";
   const evidenceGrade = assessment.candidate_grade && assessment.primary_allowed === true
     ? `Grade ${assessment.candidate_grade}`
     : "Belum dapat ditetapkan";
-  const documentRoleLabels = {
-    primary: "Bukti utama",
-    supporting: "Dokumen pendukung",
-    context: "Dokumen konteks",
-    not_evidence: "Belum teridentifikasi sebagai evidence",
-  };
-  const documentRole = documentRoleLabels[mapping.document_role] || "Peran dokumen perlu diperiksa";
+  const documentRole = family.evidenceRoleLabel;
   const subunsurLabel = mapping.subunsur_name || mapping.matrix_subunsur_name || "Belum ditemukan";
   const correctionSelection = correctionCatalogSelection(
     correctionCatalog,
@@ -77,6 +96,12 @@ export default function AdministrativeResultView({
         <span className="admin-status-badge">{administrativeRunStatus(run)}</span>
       </div>
 
+      <div className="admin-family-summary">
+        <div><span>Jenis dokumen</span><strong>{family.familyLabel}</strong><small>Confidence jenis dokumen {Math.round(family.familyConfidence * 100)}%</small></div>
+        <div><span>Fungsi evidence</span><strong>{documentRole}</strong><small>Wewenang dokumen terhadap parameter dan Grade</small></div>
+        <div><span>Coverage relevan</span><strong>{Math.round(family.relevantCoverage * 100)}%</strong><small>Bagian penting yang berhasil dibaca</small></div>
+      </div>
+
       <div className="admin-classification-path" aria-label="Hasil klasifikasi dokumen">
         <div><span>KK yang ditemukan</span><strong>{mapping.kk_id}</strong><small>{mapping.kk_title || "Nama KK belum tersedia"}</small></div>
         <div><span>Unsur</span><strong>{mapping.unsur || mapping.matrix_subunsur_name || "Belum ditemukan"}</strong></div>
@@ -84,7 +109,7 @@ export default function AdministrativeResultView({
         <div><span>Parameter</span><strong>{mapping.detail_kode}</strong><small>{parameterLabel}</small></div>
       </div>
 
-      <div className={`admin-document-role admin-document-role-${mapping.document_role || "unknown"}`}>
+      <div className={`admin-document-role admin-document-role-${family.evidenceRole || mapping.document_role || "unknown"}`}>
         <strong>Peran dokumen: {documentRole}</strong>
         <span>{mapping.document_role === "primary"
           ? "Isi dokumen dapat diperiksa sebagai bukti pelaksanaan, hasil, evaluasi, atau tindak lanjut."
@@ -93,14 +118,14 @@ export default function AdministrativeResultView({
 
       <div className="admin-result-metrics">
         <div>
-          <span>Kecocokan</span>
-          <strong>{confidenceLabel(mapping.mapping_score)} · {Math.round((mapping.mapping_score ?? 0) * 100)}%</strong>
-          <small>Kesesuaian isi dokumen dengan parameter</small>
+          <span>Confidence Keputusan</span>
+          <strong>{confidence.label} · {Math.round(confidence.score * 100)}%</strong>
+          <small>Sudah dikalibrasi dengan family, coverage, fakta, dan margin kandidat</small>
         </div>
         <div className="grade-direction">
           <span>Arah Grade</span>
           <strong>{direction.label}</strong>
-          <small>Perkiraan awal, bukan keputusan akhir</small>
+          <small>{direction.basis === "not_applicable" ? "Dokumen tidak mempunyai Grade mandiri" : direction.basis === "blocked" ? "Parameter atau isi belum cukup terkonfirmasi" : "Perkiraan awal, bukan keputusan akhir"}</small>
         </div>
         <div>
           <span>Grade yang sudah terbukti</span>
@@ -108,6 +133,14 @@ export default function AdministrativeResultView({
           <small>Berdasarkan syarat yang berhasil ditemukan</small>
         </div>
       </div>
+
+      {mapping.decision_status === "ambiguous" ? (
+        <div className="admin-confirmation-panel"><div><strong>Kandidat parameter masih ambigu</strong></div><ul><li>Selisih kandidat pertama dan kedua terlalu kecil; pemeriksa perlu memilih parameter yang benar.</li></ul></div>
+      ) : null}
+
+      {familyWarnings.length ? (
+        <div className="admin-confirmation-panel"><div><strong>Peringatan jenis dokumen atau coverage</strong></div><ul>{familyWarnings.map((item) => <li key={item}>{item}</li>)}</ul></div>
+      ) : null}
 
       <div className="admin-explanation">
         <Info size={18} aria-hidden="true" />
@@ -228,7 +261,7 @@ export default function AdministrativeResultView({
             {mappings.filter((item) => item.id !== mapping.id).map((item) => (
               <article key={item.id}>
                 <div><strong>{item.kk_id} · {item.kk_title || "KK"}</strong><p>Subunsur {item.kode}: {item.subunsur_name || item.matrix_subunsur_name || "belum tersedia"}</p><p>Parameter {item.detail_kode}: {item.parameter_uraian || "uraian belum tersedia"}</p></div>
-                <span>{confidenceLabel(item.mapping_score)} · {Math.round((item.mapping_score ?? 0) * 100)}%</span>
+                <span>{decisionConfidence(item).label} · {Math.round(decisionConfidence(item).score * 100)}%</span>
               </article>
             ))}
           </div>

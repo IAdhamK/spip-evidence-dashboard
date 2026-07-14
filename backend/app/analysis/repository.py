@@ -37,6 +37,8 @@ JSON_FIELDS = {
     "supporting_fact_ids_json": ("supporting_fact_ids", []),
     "reasons_json": ("reasons", []),
     "missing_evidence_json": ("missing_evidence", []),
+    "confidence_components_json": ("confidence_components", {}),
+    "grade_block_reasons_json": ("grade_block_reasons", []),
     "rule_trace_json": ("rule_trace", {}),
     "missing_requirements_json": ("missing_requirements", []),
     "findings_json": ("findings", []),
@@ -81,6 +83,8 @@ def _decode_json_fields(row: dict[str, Any]) -> dict[str, Any]:
         "external_ai_allowed",
         "attested",
         "release_authority",
+        "family_parameter_compatible",
+        "grade_eligible",
     ):
         if boolean_field in item:
             item[boolean_field] = bool(item[boolean_field])
@@ -3306,9 +3310,14 @@ class AnalysisRepository:
                         run_id, kk_id, kode, detail_kode, retrieval_score,
                         mapping_score, rag_rank, rag_relevance, rag_method,
                         status, supporting_fact_ids_json,
-                        reasons_json, missing_evidence_json
+                        reasons_json, missing_evidence_json,
+                        raw_retrieval_score, calibrated_decision_confidence,
+                        confidence_components_json, decision_status,
+                        document_family, document_role,
+                        family_parameter_compatible, grade_eligible,
+                        grade_status, grade_block_reasons_json
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(run_id, kk_id, kode, detail_kode) DO UPDATE SET
                         retrieval_score = excluded.retrieval_score,
                         mapping_score = excluded.mapping_score,
@@ -3318,7 +3327,17 @@ class AnalysisRepository:
                         status = excluded.status,
                         supporting_fact_ids_json = excluded.supporting_fact_ids_json,
                         reasons_json = excluded.reasons_json,
-                        missing_evidence_json = excluded.missing_evidence_json
+                        missing_evidence_json = excluded.missing_evidence_json,
+                        raw_retrieval_score = excluded.raw_retrieval_score,
+                        calibrated_decision_confidence = excluded.calibrated_decision_confidence,
+                        confidence_components_json = excluded.confidence_components_json,
+                        decision_status = excluded.decision_status,
+                        document_family = excluded.document_family,
+                        document_role = excluded.document_role,
+                        family_parameter_compatible = excluded.family_parameter_compatible,
+                        grade_eligible = excluded.grade_eligible,
+                        grade_status = excluded.grade_status,
+                        grade_block_reasons_json = excluded.grade_block_reasons_json
                     """,
                     (
                         run_id,
@@ -3334,6 +3353,16 @@ class AnalysisRepository:
                         _json(candidate.get("supporting_fact_ids") or []),
                         _json(candidate.get("reasons") or []),
                         _json(candidate.get("missing_evidence") or []),
+                        candidate.get("raw_retrieval_score") or candidate.get("retrieval_score") or 0,
+                        candidate.get("calibrated_decision_confidence") or 0,
+                        _json(candidate.get("confidence_components") or {}),
+                        candidate.get("decision_status") or "needs_review",
+                        candidate.get("document_family") or "unknown",
+                        candidate.get("document_role") or "reject",
+                        int(bool(candidate.get("family_parameter_compatible"))),
+                        int(bool(candidate.get("grade_eligible"))),
+                        candidate.get("grade_status") or "blocked",
+                        _json(candidate.get("grade_block_reasons") or []),
                     ),
                 )
                 row = conn.execute(
@@ -3371,9 +3400,10 @@ class AnalysisRepository:
                 INSERT INTO grade_assessments (
                     run_id, mapping_candidate_id, candidate_grade, grade_ceiling,
                     rule_version, rule_trace_json, missing_requirements_json,
-                    primary_allowed
+                    primary_allowed, grade_eligible, grade_status,
+                    grade_block_reasons_json
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     run_id,
@@ -3384,6 +3414,9 @@ class AnalysisRepository:
                     _json(assessment.get("rule_trace") or {}),
                     _json(assessment.get("missing_requirements") or []),
                     int(bool(assessment.get("primary_allowed"))),
+                    int(bool(assessment.get("grade_eligible"))),
+                    assessment.get("grade_status") or "blocked",
+                    _json(assessment.get("grade_block_reasons") or []),
                 ),
             )
             return int(cursor.lastrowid)

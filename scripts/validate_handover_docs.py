@@ -22,7 +22,7 @@ REQUIRED_DOC_MARKERS = {
         "controlled-upload",
     ),
     "docs/SCHEMA_DOCUMENT_INTELLIGENCE_V2.md": (
-        "Migration V1–V30",
+        "Migration V1–V32",
         "forward-only",
         "append-only",
         "integrity_check=ok",

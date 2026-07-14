@@ -68,6 +68,7 @@ class FactExtractionEngine:
         self,
         identity: DocumentIdentity,
         units: list[dict],
+        document_family: dict | None = None,
     ) -> tuple[list[dict], EngineResult]:
         started = perf_counter()
         eligible = [unit for unit in units if is_fact_eligible_unit(unit)]
@@ -87,7 +88,11 @@ class FactExtractionEngine:
                     continue
                 period_matches = PERIOD_RE.findall(claim)
                 organization = _extract_organization(claim)
-                evidence_role = derive_evidence_role(claim, fact_type)
+                local_evidence_role = derive_evidence_role(claim, fact_type)
+                evidence_role = inherit_evidence_role(
+                    local_evidence_role,
+                    _unit_evidence_role(unit, document_family),
+                )
                 raw_key = f"{unit.get('unit_key')}:{sentence_index}:{claim}"
                 fact_key = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()[:24]
                 facts.append(
@@ -96,7 +101,10 @@ class FactExtractionEngine:
                         "claim": claim,
                         "fact_type": fact_type,
                         "evidence_role": evidence_role,
-                        "evidence_role_method": "deterministic_fact_type_v1",
+                        "evidence_role_method": (
+                            "document_family_inheritance_v1"
+                            if document_family else "deterministic_fact_type_v1"
+                        ),
                         "organization": organization,
                         "period": period_matches[-1] if period_matches else None,
                         "confidence": 0.82 if matched_terms else 0.65,
@@ -163,7 +171,12 @@ class StructuredFactExtractionEngine:
     def __init__(self, provider: StructuredModelProvider):
         self.provider = provider
 
-    def run(self, identity: DocumentIdentity, units: list[dict]) -> tuple[list[dict], EngineResult]:
+    def run(
+        self,
+        identity: DocumentIdentity,
+        units: list[dict],
+        document_family: dict | None = None,
+    ) -> tuple[list[dict], EngineResult]:
         started = perf_counter()
         eligible_units = [unit for unit in units if is_fact_eligible_unit(unit)]
         visual_semantics_blocked = sum(
@@ -228,8 +241,14 @@ class StructuredFactExtractionEngine:
                     "fact_key": hashlib.sha256(raw_key.encode()).hexdigest()[:24],
                     "claim": item.claim,
                     "fact_type": item.fact_type,
-                    "evidence_role": item.evidence_role,
-                    "evidence_role_method": "structured_model_advisory_v1",
+                    "evidence_role": inherit_evidence_role(
+                        item.evidence_role,
+                        _unit_evidence_role(unit, document_family),
+                    ),
+                    "evidence_role_method": (
+                        "structured_model_document_family_inheritance_v1"
+                        if document_family else "structured_model_advisory_v1"
+                    ),
                     "organization": item.organization,
                     "period": item.period,
                     "confidence": item.confidence,
@@ -299,6 +318,33 @@ def derive_evidence_role(claim: str, fact_type: str) -> str:
     if fact_type in {"policy", "socialization"}:
         return "supporting"
     return "context"
+
+
+def inherit_evidence_role(fact_role: str, document_role: str) -> str:
+    """A fact cannot receive more authority than its parent document."""
+    if fact_role == "contradictory":
+        return "contradictory"
+    fact_order = {"context": 0, "supporting": 1, "primary": 2}
+    document_ceiling = {
+        "reject": "context",
+        "optional": "context",
+        "supporting": "supporting",
+        "primary": "primary",
+    }.get(document_role, "context")
+    normalized_fact_role = fact_role if fact_role in fact_order else "context"
+    return min(
+        (normalized_fact_role, document_ceiling),
+        key=lambda role: fact_order[role],
+    )
+
+
+def _unit_evidence_role(unit: dict, document_family: dict | None) -> str:
+    metadata = unit.get("metadata") or {}
+    return str(
+        metadata.get("unit_evidence_role")
+        or (document_family or {}).get("evidence_role")
+        or "primary"
+    )
 
 
 def _claims_from_text(text: str) -> list[str]:

@@ -272,7 +272,7 @@ class ProductionSecurityProfileTests(unittest.TestCase):
             self.assertTrue(report["passed"], report)
             self.assertEqual(
                 report["validator_version"],
-                "document-intelligence-production-profile-v7",
+                "document-intelligence-production-profile-v8",
             )
             self.assertTrue(report["checks"]["trusted_role_proxy_boundary"])
             self.assertTrue(report["checks"]["reviewer_identity_required"])
@@ -293,8 +293,8 @@ class ProductionSecurityProfileTests(unittest.TestCase):
             self.assertFalse(report["payload_storage"]["root_path_in_report"])
             self.assertTrue(report["storage_encryption_attestation"]["effective"])
             self.assertNotIn(str(attestation_file), json.dumps(report))
-            self.assertEqual(report["database"]["schema_version"], 31)
-            self.assertEqual(report["database"]["expected_schema_version"], 31)
+            self.assertEqual(report["database"]["schema_version"], 32)
+            self.assertEqual(report["database"]["expected_schema_version"], 32)
             self.assertTrue(
                 report["checks"]["controlled_upload_reconciliation_schema"]
             )
@@ -302,6 +302,7 @@ class ProductionSecurityProfileTests(unittest.TestCase):
             self.assertTrue(
                 report["checks"]["expert_template_expectation_schema"]
             )
+            self.assertTrue(report["checks"]["document_family_gate_schema"])
             self.assertEqual(
                 report["database"]["stale_controlled_upload_reservation_count"],
                 0,
@@ -416,7 +417,7 @@ class ProductionSecurityProfileTests(unittest.TestCase):
             )
 
             with runtime_database.connect() as conn:
-                conn.execute("DELETE FROM schema_migrations WHERE version = 31")
+                conn.execute("DELETE FROM schema_migrations WHERE version = 32")
             stale_schema = validate_production_profile(
                 secret, payload_root, **validator_args
             )

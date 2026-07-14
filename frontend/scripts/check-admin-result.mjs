@@ -6,6 +6,8 @@ import {
   confidenceLabel,
   correctionCatalogSelection,
   correctionTargetFor,
+  decisionConfidence,
+  documentFamilyPresentation,
   gradeDirection,
   primaryAdministrativeResult,
 } from "../src/features/smart-upload/admin-result.js";
@@ -35,7 +37,35 @@ assert.deepEqual(
       ],
     },
   }),
-  { grade: "E", label: "Mendekati Grade E", basis: "administrative_gap" },
+  { grade: null, label: "Belum dapat dinilai", basis: "unavailable" },
+);
+assert.deepEqual(
+  gradeDirection({ grade_status: "not_applicable", candidate_grade: null }),
+  { grade: null, label: "Grade tidak berlaku untuk jenis dokumen ini", basis: "not_applicable" },
+);
+assert.deepEqual(
+  gradeDirection({ grade_status: "blocked", candidate_grade: null }),
+  { grade: null, label: "Belum dapat dinilai", basis: "blocked" },
+);
+assert.deepEqual(
+  decisionConfidence({ calibrated_decision_confidence: 0.59, decision_confidence_label: "ambiguous" }),
+  { score: 0.59, label: "Ambigu" },
+);
+assert.equal(
+  documentFamilyPresentation({ family: "transmittal_letter", evidence_role: "supporting" }).familyLabel,
+  "Nota Dinas atau Surat Pengantar",
+);
+assert.equal(
+  documentFamilyPresentation({ family: "transmittal_letter" }).gradeApplicable,
+  false,
+);
+assert.equal(
+  documentFamilyPresentation({ family: "unknown" }).gradeApplicable,
+  true,
+);
+assert.equal(
+  documentFamilyPresentation({ family: "unknown" }).gradeStatus,
+  "blocked",
 );
 
 const primary = primaryAdministrativeResult({

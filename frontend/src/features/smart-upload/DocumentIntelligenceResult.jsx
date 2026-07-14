@@ -245,6 +245,7 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
       {viewMode === "simple" ? (
         <AdministrativeResultView
           run={run}
+          documentFamily={snapshot.document_family ?? {}}
           primaryResult={primaryResult}
           mappings={mappings}
           reviewIntent={reviewIntent}

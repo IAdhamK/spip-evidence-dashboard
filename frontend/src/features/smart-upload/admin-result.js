@@ -90,15 +90,86 @@ export function confidenceLabel(score = 0) {
   return "Rendah";
 }
 
-function missingCoreRequirements(trace = {}) {
-  return (trace.missing_requirements ?? []).filter((item) => (
-    !String(item).startsWith("period:")
-    && !String(item).startsWith("organization:")
-    && !String(item).startsWith("prerequisite_grade:")
-  ));
+const FAMILY_LABELS = {
+  risk_matrix: "Matriks Peta Risiko",
+  monitoring_report: "Laporan Monitoring Risiko",
+  risk_policy: "Kebijakan Manajemen Risiko",
+  review_audit: "Laporan Reviu atau Audit",
+  transmittal_letter: "Nota Dinas atau Surat Pengantar",
+  meeting_invitation: "Undangan Rapat",
+  meeting_minutes: "Notulen atau Berita Acara",
+  photo_documentation: "Dokumentasi Foto",
+  template_form: "Formulir atau Template Kosong",
+  unknown: "Jenis Dokumen Belum Dikenali",
+};
+
+const DOCUMENT_ROLE_LABELS = {
+  primary: "Bukti utama",
+  supporting: "Referensi pendukung",
+  optional: "Bukti opsional",
+  reject: "Bukan evidence mandiri",
+  context: "Dokumen konteks",
+  not_evidence: "Bukan evidence",
+};
+
+const NON_GRADE_FAMILIES = new Set([
+  "transmittal_letter",
+  "meeting_invitation",
+  "photo_documentation",
+  "template_form",
+]);
+
+export function documentFamilyPresentation(documentFamily = {}) {
+  const family = documentFamily.family || "unknown";
+  const evidenceRole = documentFamily.evidence_role || "reject";
+  return {
+    family,
+    familyLabel: documentFamily.family_label || FAMILY_LABELS[family] || FAMILY_LABELS.unknown,
+    evidenceRole,
+    evidenceRoleLabel: DOCUMENT_ROLE_LABELS[evidenceRole] || "Peran perlu diperiksa",
+    familyConfidence: Number(documentFamily.family_confidence || 0),
+    relevantCoverage: Number(documentFamily.features?.relevant_coverage_ratio || 0),
+    gradeApplicable: !NON_GRADE_FAMILIES.has(family),
+    gradeStatus: documentFamily.grade_status
+      || (NON_GRADE_FAMILIES.has(family) ? "not_applicable" : "blocked"),
+  };
+}
+
+export function decisionConfidence(mapping = {}) {
+  const score = Number(
+    mapping.calibrated_decision_confidence
+      ?? mapping.mapping_score
+      ?? 0,
+  );
+  const status = mapping.decision_confidence_label;
+  const label = status === "ambiguous"
+    ? "Ambigu"
+    : status === "needs_review"
+      ? "Perlu diperiksa"
+      : status === "high"
+        ? "Tinggi"
+        : status === "medium"
+          ? "Sedang"
+          : confidenceLabel(score);
+  return { score, label };
 }
 
 export function gradeDirection(assessment = {}, mapping = {}) {
+  const gradeStatus = assessment.grade_status || mapping.grade_status;
+  if (gradeStatus === "not_applicable") {
+    return {
+      grade: null,
+      label: "Grade tidak berlaku untuk jenis dokumen ini",
+      basis: "not_applicable",
+    };
+  }
+  if (gradeStatus === "blocked") {
+    return {
+      grade: null,
+      label: "Belum dapat dinilai",
+      basis: "blocked",
+    };
+  }
   if (mapping.document_role && mapping.document_role !== "primary") {
     return {
       grade: null,
@@ -109,7 +180,7 @@ export function gradeDirection(assessment = {}, mapping = {}) {
     };
   }
   if (assessment.candidate_grade) {
-    const isOfficiallyAllowed = assessment.primary_allowed === true;
+    const isOfficiallyAllowed = assessment.primary_allowed === true || gradeStatus === "supported";
     return {
       grade: assessment.candidate_grade,
       label: isOfficiallyAllowed
@@ -118,23 +189,10 @@ export function gradeDirection(assessment = {}, mapping = {}) {
       basis: isOfficiallyAllowed ? "supported" : "administrative_gap",
     };
   }
-
-  const traces = assessment.rule_trace?.rules ?? [];
-  const closest = traces
-    .filter((trace) => GRADE_ORDER.includes(trace.grade))
-    .map((trace) => ({ trace, missing: missingCoreRequirements(trace) }))
-    .sort((left, right) => (
-      left.missing.length - right.missing.length
-      || GRADE_ORDER.indexOf(left.trace.grade) - GRADE_ORDER.indexOf(right.trace.grade)
-    ))[0];
-
-  if (!closest) {
-    return { grade: null, label: "Belum dapat diperkirakan", basis: "unavailable" };
-  }
   return {
-    grade: closest.trace.grade,
-    label: `Mendekati Grade ${closest.trace.grade}`,
-    basis: closest.missing.length ? "closest" : "administrative_gap",
+    grade: null,
+    label: "Belum dapat dinilai",
+    basis: "unavailable",
   };
 }
 
@@ -202,7 +260,8 @@ export function administrativeMissingItems(input = {}) {
 export function primaryAdministrativeResult({ mappings = [], assessments = [], verificationResults = [] } = {}) {
   const primary = [...mappings].sort((left, right) => (
     (left.rag_rank ?? Number.MAX_SAFE_INTEGER) - (right.rag_rank ?? Number.MAX_SAFE_INTEGER)
-    || (right.mapping_score ?? 0) - (left.mapping_score ?? 0)
+    || (right.calibrated_decision_confidence ?? right.mapping_score ?? 0)
+      - (left.calibrated_decision_confidence ?? left.mapping_score ?? 0)
   ))[0];
   if (!primary) return null;
   const assessment = assessments.find((item) => item.mapping_candidate_id === primary.id) ?? {};

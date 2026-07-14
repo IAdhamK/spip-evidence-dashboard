@@ -15,6 +15,15 @@ from app.analysis.advanced_rag import (
 )
 from app.analysis.contracts import DocumentIdentity, EngineResult, EngineStatus, utc_now_iso
 from app.analysis.document_map import CoverageEngine, DocumentStructureEngine, NativeParsingEngine
+from app.analysis.document_family import (
+    DocumentFamilyEngine,
+    GradeEligibilityGate,
+    apply_document_evidence_role,
+)
+from app.analysis.document_family_registry import (
+    parameter_scope_for_family,
+    restrict_parameters,
+)
 from app.analysis.domain.grading import (
     DomainRuleGradeEngine,
     IndependentVerificationEngine,
@@ -101,6 +110,10 @@ def configuration_hash(settings: Settings, analysis_mode: str) -> str:
         "advanced_rag_version": ADVANCED_RAG_VERSION,
         "advanced_rag_min_confidence": settings.analysis_advanced_rag_min_confidence,
         "advanced_rag_ambiguity_margin": settings.analysis_advanced_rag_ambiguity_margin,
+        "document_family_min_confidence": settings.analysis_document_family_min_confidence,
+        "relevant_coverage_min_ratio": settings.analysis_relevant_coverage_min_ratio,
+        "mapping_ambiguity_margin": settings.analysis_mapping_ambiguity_margin,
+        "decision_confidence_high_threshold": settings.analysis_decision_confidence_high_threshold,
         "verification_enabled": settings.verification_pass_enabled,
         "model_verifier_enabled": settings.analysis_model_verifier_enabled,
         "routing_structured_min_complexity": settings.analysis_routing_structured_min_complexity,
@@ -127,11 +140,13 @@ class AnalysisOrchestrator:
         self.document_structure_engine = DocumentStructureEngine()
         self.coverage_engine = CoverageEngine()
         self.template_completeness_engine = TemplateCompletenessEngine()
+        self.document_family_engine = DocumentFamilyEngine()
         self.fact_extraction_engine = FactExtractionEngine()
         self.retrieval_engine = ParameterRetrievalEngine(
             advanced_rag_enabled=settings.analysis_advanced_rag_enabled
         )
         self.mapping_engine = SPIPMappingEngine()
+        self.grade_eligibility_gate = GradeEligibilityGate()
         self.grade_engine = DomainRuleGradeEngine()
         self.verification_engine = IndependentVerificationEngine()
         self.explainability_engine = OutputExplainabilityEngine()
@@ -650,7 +665,6 @@ class AnalysisOrchestrator:
             identity, units
         )
         self.repository.save_document_units(run_id, units)
-        self._checkpoint_units(run_id, "unit_preparation", units)
         self.repository.save_document_structure(run_id, "template_ledger", template_ledger)
         self.repository.save_engine_result(run_id, template_result)
         self.repository.add_event(
@@ -664,11 +678,37 @@ class AnalysisOrchestrator:
             ),
             payload=template_ledger,
         )
+        document_family, family_result = self.document_family_engine.run(
+            identity,
+            units,
+            ledger,
+            template_ledger,
+        )
+        units = apply_document_evidence_role(units, document_family)
+        self.repository.save_document_units(run_id, units)
+        self._checkpoint_units(run_id, "unit_preparation", units)
+        self.repository.save_document_structure(
+            run_id,
+            "document_family",
+            document_family,
+        )
+        self.repository.save_engine_result(run_id, family_result)
+        self.repository.add_event(
+            run_id,
+            event_type="stage_completed",
+            stage="document_family",
+            progress=55,
+            message=(
+                f"Document Family Engine mengenali {document_family['family']} "
+                f"dengan peran {document_family['evidence_role']}."
+            ),
+            payload=document_family,
+        )
         self.repository.add_event(
             run_id,
             event_type="stage_started",
             stage="fact_extraction",
-            progress=53,
+            progress=55,
             message="Fact Extraction Engine mulai membentuk fakta bersumber.",
         )
         stored_units = self.repository.list_document_units(run_id, include_text=True)
@@ -696,7 +736,11 @@ class AnalysisOrchestrator:
                 output={"fact_count": len(reused_facts), "resumed_from_run_id": resume_from_run_id},
             ).finish()
         else:
-            extracted_facts, fact_result = self.fact_extraction_engine.run(identity, stored_units)
+            extracted_facts, fact_result = self.fact_extraction_engine.run(
+                identity,
+                stored_units,
+                document_family,
+            )
             if extracted_facts:
                 self.repository.save_extracted_facts(run_id, extracted_facts)
         self.repository.save_engine_result(run_id, fact_result)
@@ -741,7 +785,7 @@ class AnalysisOrchestrator:
         if fact_routing["selected"] and self.structured_provider:
             structured_facts, structured_result = StructuredFactExtractionEngine(
                 self.structured_provider
-            ).run(identity, ambiguous_units)
+            ).run(identity, ambiguous_units, document_family)
             self.repository.save_engine_result(run_id, structured_result)
             if structured_facts:
                 self.repository.save_extracted_facts(run_id, structured_facts)
@@ -771,25 +815,37 @@ class AnalysisOrchestrator:
             return cancelled
 
         parameters = self.repository.parameter_index()
+        parameter_scope = parameter_scope_for_family(
+            document_family["family"],
+            saved_facts,
+        )
+        parameter_scope["evidence_role"] = document_family["evidence_role"]
+        document_family["parameter_scope"] = parameter_scope
+        document_family["allowed_parameter_keys"] = parameter_scope["primary_parameter_keys"]
+        document_family["secondary_parameter_keys"] = parameter_scope["secondary_parameter_keys"]
+        scoped_parameters = restrict_parameters(parameters, parameter_scope)
+        self.repository.save_document_structure(run_id, "parameter_scope", parameter_scope)
         feedback_terms = self.repository.active_retrieval_feedback_terms()
         retrieved, retrieval_result = self.retrieval_engine.run(
             identity,
             saved_facts,
             parameters,
             feedback_terms=feedback_terms,
+            parameter_scope=parameter_scope,
         )
         catalog_shortlist = []
         if (
             self.settings.analysis_advanced_rag_enabled
             and external_ai_allowed
             and self.rag_catalog_search_engine
+            and scoped_parameters
         ):
             retrieval_result.engine_name = "parameter_retrieval_local_baseline"
             self.repository.save_engine_result(run_id, retrieval_result)
             catalog_shortlist, catalog_search_result = self.rag_catalog_search_engine.run(
                 identity,
                 saved_facts,
-                parameters,
+                scoped_parameters,
             )
             self.repository.save_engine_result(run_id, catalog_search_result)
             if catalog_shortlist:
@@ -799,12 +855,14 @@ class AnalysisOrchestrator:
                     parameters,
                     feedback_terms=feedback_terms,
                     catalog_shortlist=catalog_shortlist,
+                    parameter_scope=parameter_scope,
                 )
         if (
             self.settings.analysis_advanced_rag_enabled
             and external_ai_allowed
             and self.rag_query_expansion_engine
             and not catalog_shortlist
+            and scoped_parameters
             and retrieval_needs_model_expansion(
                 retrieved,
                 minimum_confidence=max(
@@ -830,6 +888,7 @@ class AnalysisOrchestrator:
                     parameters,
                     feedback_terms=feedback_terms,
                     query_expansions=query_expansions,
+                    parameter_scope=parameter_scope,
                 )
             else:
                 retrieval_result.engine_name = "parameter_retrieval"
@@ -839,7 +898,10 @@ class AnalysisOrchestrator:
             event_type="stage_completed",
             stage="parameter_retrieval",
             progress=70,
-            message=f"Retrieval Engine memilih {len(retrieved)} parameter dari {len(parameters)} parameter.",
+            message=(
+                f"Retrieval Engine memilih {len(retrieved)} parameter dari "
+                f"{len(scoped_parameters)} parameter yang kompatibel dengan family."
+            ),
             payload=retrieval_result.output,
         )
 
@@ -878,6 +940,29 @@ class AnalysisOrchestrator:
                 candidate_keys=mapping_routing["candidate_keys"],
             )
             self.repository.save_engine_result(run_id, mapping_advisory_result)
+        mappings, grade_gate_result = self.grade_eligibility_gate.run(
+            identity,
+            mappings,
+            saved_facts,
+            document_family,
+            ledger,
+            family_confidence_threshold=self.settings.analysis_document_family_min_confidence,
+            relevant_coverage_threshold=self.settings.analysis_relevant_coverage_min_ratio,
+            ambiguity_margin_threshold=self.settings.analysis_mapping_ambiguity_margin,
+            high_confidence_threshold=self.settings.analysis_decision_confidence_high_threshold,
+        )
+        self.repository.save_engine_result(run_id, grade_gate_result)
+        self.repository.add_event(
+            run_id,
+            event_type="stage_completed",
+            stage="grade_eligibility",
+            progress=77,
+            message=(
+                f"Grade Eligibility Gate mengizinkan "
+                f"{grade_gate_result.output.get('grade_eligible_count', 0)} kandidat."
+            ),
+            payload=grade_gate_result.output,
+        )
         saved_mappings = self.repository.save_mapping_candidates(run_id, mappings) if mappings else []
         self.repository.add_event(
             run_id,
@@ -1274,6 +1359,29 @@ class AnalysisOrchestrator:
         facts = self.repository.list_facts(run_id)
         if not facts:
             raise ValueError("Candidate expansion membutuhkan fakta bersumber.")
+        structures = self.repository.list_document_structures(run_id)
+        document_family = next(
+            (
+                item.get("structure")
+                for item in reversed(structures)
+                if item.get("structure_type") == "document_family"
+            ),
+            None,
+        ) or {
+            "family": "unknown",
+            "family_confidence": 0.0,
+            "evidence_role": "reject",
+            "grade_eligible": False,
+        }
+        parameter_scope = parameter_scope_for_family(document_family["family"], facts)
+        parameter_scope["evidence_role"] = document_family.get("evidence_role") or "reject"
+        document_family["parameter_scope"] = parameter_scope
+        all_parameters = self.repository.parameter_index()
+        scoped_parameters = restrict_parameters(all_parameters, parameter_scope)
+        if not scoped_parameters:
+            raise ValueError(
+                "Jenis dokumen ini tidak mempunyai parameter utama yang dapat diperluas."
+            )
         existing = self.repository.list_mapping_candidates(run_id)
         existing_keys = {
             (item["kk_id"], item["kode"], item["detail_kode"])
@@ -1282,15 +1390,17 @@ class AnalysisOrchestrator:
         retrieved, retrieval_result = self.retrieval_engine.run(
             identity,
             facts,
-            self.repository.parameter_index(),
+            all_parameters,
             limit=safe_limit,
             feedback_terms=self.repository.active_retrieval_feedback_terms(),
+            parameter_scope=parameter_scope,
         )
         catalog_shortlist = []
         if (
             self.settings.analysis_advanced_rag_enabled
             and bool(run.get("external_ai_allowed", True))
             and self.rag_catalog_search_engine
+            and scoped_parameters
         ):
             retrieval_result.engine_name = "parameter_retrieval_expansion_local_baseline"
             retrieval_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}:local"
@@ -1298,7 +1408,7 @@ class AnalysisOrchestrator:
             catalog_shortlist, catalog_result = self.rag_catalog_search_engine.run(
                 identity,
                 facts,
-                self.repository.parameter_index(),
+                scoped_parameters,
             )
             catalog_result.engine_name = "advanced_rag_catalog_search_candidate_expansion"
             catalog_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}"
@@ -1307,16 +1417,18 @@ class AnalysisOrchestrator:
                 retrieved, retrieval_result = self.retrieval_engine.run(
                     identity,
                     facts,
-                    self.repository.parameter_index(),
+                    all_parameters,
                     limit=safe_limit,
                     feedback_terms=self.repository.active_retrieval_feedback_terms(),
                     catalog_shortlist=catalog_shortlist,
+                    parameter_scope=parameter_scope,
                 )
         if (
             self.settings.analysis_advanced_rag_enabled
             and bool(run.get("external_ai_allowed", True))
             and self.rag_query_expansion_engine
             and not catalog_shortlist
+            and scoped_parameters
             and retrieval_needs_model_expansion(
                 retrieved,
                 minimum_confidence=max(
@@ -1339,10 +1451,11 @@ class AnalysisOrchestrator:
                 retrieved, retrieval_result = self.retrieval_engine.run(
                     identity,
                     facts,
-                    self.repository.parameter_index(),
+                    all_parameters,
                     limit=safe_limit,
                     feedback_terms=self.repository.active_retrieval_feedback_terms(),
                     query_expansions=query_expansions,
+                    parameter_scope=parameter_scope,
                 )
         candidates, mapping_result = self.mapping_engine.run(identity, facts, retrieved)
         retrieval_result.engine_name = "parameter_retrieval_expansion"
@@ -1397,10 +1510,32 @@ class AnalysisOrchestrator:
             {**item, "rag_rank": rank}
             for rank, item in enumerate(merged_candidates, start=1)
         ]
+        coverage_ledger = next(
+            (
+                (item.get("output") or {}).get("coverage_ledger") or {}
+                for item in reversed(self.repository.list_engine_results(run_id))
+                if item.get("engine_name") == "unitization_coverage"
+            ),
+            {},
+        )
+        merged_candidates, expansion_gate_result = self.grade_eligibility_gate.run(
+            identity,
+            merged_candidates,
+            facts,
+            document_family,
+            coverage_ledger,
+            family_confidence_threshold=self.settings.analysis_document_family_min_confidence,
+            relevant_coverage_threshold=self.settings.analysis_relevant_coverage_min_ratio,
+            ambiguity_margin_threshold=self.settings.analysis_mapping_ambiguity_margin,
+            high_confidence_threshold=self.settings.analysis_decision_confidence_high_threshold,
+        )
+        expansion_gate_result.engine_name = "grade_eligibility_gate_expansion"
+        expansion_gate_result.input_checksum = f"{identity.sha256}:limit:{safe_limit}"
         saved = self.repository.save_mapping_candidates(run_id, merged_candidates)
         self.repository.save_engine_result(run_id, retrieval_result)
         self.repository.save_engine_result(run_id, mapping_result)
         self.repository.save_engine_result(run_id, expansion_routing_result)
+        self.repository.save_engine_result(run_id, expansion_gate_result)
         new_keys = {
             (item["kk_id"], item["kode"], item["detail_kode"])
             for item in candidates
@@ -1645,7 +1780,31 @@ class AnalysisOrchestrator:
         if not run:
             raise KeyError(run_id)
         facts = self.repository.list_facts(run_id)
-        document_role = infer_document_role(
+        structures = self.repository.list_document_structures(run_id)
+        document_family = next(
+            (
+                item.get("structure")
+                for item in reversed(structures)
+                if item.get("structure_type") == "document_family"
+            ),
+            None,
+        ) or {}
+        parameter_scope = next(
+            (
+                item.get("structure")
+                for item in reversed(structures)
+                if item.get("structure_type") == "parameter_scope"
+            ),
+            None,
+        ) or document_family.get("parameter_scope") or {}
+        if document_family:
+            document_family = {
+                **document_family,
+                "parameter_scope": parameter_scope,
+                "allowed_parameter_keys": parameter_scope.get("primary_parameter_keys") or [],
+                "secondary_parameter_keys": parameter_scope.get("secondary_parameter_keys") or [],
+            }
+        document_role = str(document_family.get("evidence_role") or "") or infer_document_role(
             self._identity_for_run(run_id, run),
             facts,
         )
@@ -1672,7 +1831,7 @@ class AnalysisOrchestrator:
                     for item in (parameter.get("grades") or [])
                     if item.get("grade")
                 ],
-                "document_role": document_role,
+                "document_role": mapping.get("document_role") or document_role,
             })
         return {
             "run": run,
@@ -1680,7 +1839,8 @@ class AnalysisOrchestrator:
             "engines": self.repository.list_engine_results(run_id),
             "security_findings": self.repository.list_security_findings(run_id),
             "document_units": self.repository.list_document_units(run_id),
-            "document_structures": self.repository.list_document_structures(run_id),
+            "document_structures": structures,
+            "document_family": document_family or None,
             "explainability": next(
                 (
                     item.get("structure")
