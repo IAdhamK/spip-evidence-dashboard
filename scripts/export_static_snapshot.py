@@ -37,8 +37,11 @@ def with_public_url(folder: dict, settings) -> dict:
         return {**folder, "public_url": None}
     return {
         **folder,
-        "public_url": folder.get("public_url")
-        or public_folder_link(settings.lumbung_host, settings.lumbung_share_token, folder["folder_path"]),
+        "public_url": public_folder_link(
+            settings.lumbung_host,
+            settings.lumbung_share_token,
+            folder["folder_path"],
+        ),
     }
 
 
@@ -115,6 +118,34 @@ def inject_public_urls(payload: dict, settings) -> None:
         if url:
             detail["public_url"] = url
         detail["files"] = [sanitize_file(file) for file in detail.get("files", [])]
+
+    refresh_nested_public_urls(payload, settings)
+
+
+def refresh_nested_public_urls(value, settings) -> None:
+    if isinstance(value, list):
+        for item in value:
+            refresh_nested_public_urls(item, settings)
+        return
+    if not isinstance(value, dict):
+        return
+
+    folder_path = str(value.get("folder_path") or "").strip()
+    if folder_path:
+        value["public_url"] = public_folder_link(
+            settings.lumbung_host,
+            settings.lumbung_share_token,
+            folder_path,
+        )
+    parameter_path = str(value.get("parameter_entry_folder_path") or "").strip()
+    if parameter_path:
+        value["parameter_entry_public_url"] = public_folder_link(
+            settings.lumbung_host,
+            settings.lumbung_share_token,
+            parameter_path,
+        )
+    for item in value.values():
+        refresh_nested_public_urls(item, settings)
 
 
 def sanitize_file(file: dict) -> dict:

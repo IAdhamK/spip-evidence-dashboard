@@ -7,6 +7,8 @@ from urllib.parse import quote, unquote
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
+from app.evidence_structure import canonical_folder_path
+
 
 @dataclass(frozen=True)
 class WebDavItem:
@@ -127,7 +129,7 @@ def encode_path(path: str) -> str:
 
 
 def public_folder_link(host: str, share_token: str, folder_path: str) -> str:
-    encoded_dir = "/" + encode_path(folder_path)
+    encoded_dir = "/" + encode_path(canonical_folder_path(folder_path))
     return f"{host.rstrip('/')}/s/{share_token}?dir={encoded_dir}"
 
 
