@@ -1133,6 +1133,7 @@ def _xlsx_sheet_rows(
     rows = []
     value_cells = 0
     formula_cells = 0
+    formula_error_codes: set[str] = set()
     for row in root.iter():
         if row.tag.rsplit("}", 1)[-1] != "row":
             continue
@@ -1154,6 +1155,8 @@ def _xlsx_sheet_rows(
                 value = raw_value or inline_value
             value = normalize_text(value)
             formula = normalize_text(formula)
+            if "#REF!" in value.upper() or "#REF!" in formula.upper():
+                formula_error_codes.add("XLSX_FORMULA_REF_ERROR")
             comment = normalize_text((comments or {}).get(reference) or "")
             if not value and not formula and not comment:
                 continue
@@ -1204,6 +1207,7 @@ def _xlsx_sheet_rows(
         "value_rows": len(rows),
         "value_cells": value_cells,
         "formula_cells": formula_cells,
+        "formula_error_codes": sorted(formula_error_codes),
         "merged_ranges": merge_ranges,
         "hyperlinks": hyperlinks,
         "comment_cells": sorted((comments or {}).keys()),

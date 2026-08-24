@@ -10,7 +10,10 @@ backend/data/analysis-payloads/
 data/*.db
 data/*.db-*
 data/analysis-payloads/
+/data/
 data-dev/
+/deliverables/
+/outputs/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/

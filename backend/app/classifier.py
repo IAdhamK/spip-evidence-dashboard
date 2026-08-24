@@ -42,8 +42,8 @@ def classify_folder(file_names: list[str]) -> StatusResult:
 
     if ambiguous:
         return StatusResult(
-            status="Perlu Kurasi",
-            reason=f"{len(ambiguous)} file memiliki nama yang perlu dicek ulang.",
+            status="Terisi Sebagian",
+            reason=f"{len(ambiguous)} file sudah ada, tetapi namanya perlu dicek ulang.",
             ambiguous_files=ambiguous,
         )
     if count == 0:
@@ -52,15 +52,8 @@ def classify_folder(file_names: list[str]) -> StatusResult:
             reason="Folder belum memiliki file evidence.",
             ambiguous_files=[],
         )
-    if count < 4:
-        return StatusResult(
-            status="Terisi Sebagian",
-            reason="Jumlah file belum mencapai acuan minimal empat kategori evidence.",
-            ambiguous_files=[],
-        )
     return StatusResult(
-        status="Terisi",
-        reason="Jumlah file sudah memenuhi acuan minimal awal.",
+        status="Terisi Sebagian",
+        reason="File sudah ada, tetapi kelengkapannya harus dinilai terhadap kode dan Grade parameter.",
         ambiguous_files=[],
     )
-

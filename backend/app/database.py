@@ -650,6 +650,42 @@ class Database:
             ).fetchall()
             return [dict(row) for row in rows]
 
+    def recalculate_evidence_statuses(self) -> None:
+        """Refresh persisted folder rollups from canonical parameter Grade slots."""
+
+        from app.evidence_status import evaluate_subunsur_status
+
+        updates: list[tuple[str, str, str, str]] = []
+        for folder in self.folders():
+            parameters = self.parameters(folder["kk_id"], folder["kode"])
+            slots = self.evidence_slots(folder["kk_id"], folder["kode"])
+            attributed_file_count = sum(max(int(slot.get("file_count") or 0), 0) for slot in slots)
+            unassigned_file_count = max(int(folder.get("file_count") or 0) - attributed_file_count, 0)
+            progress = evaluate_subunsur_status(
+                parameters,
+                slots,
+                unassigned_file_count=unassigned_file_count,
+            )
+            if str(folder.get("error_message") or "").strip():
+                progress = {
+                    **progress,
+                    "status": "Terisi Sebagian",
+                    "reason": "Status belum dapat dipastikan karena sinkronisasi terakhir gagal.",
+                }
+            updates.append(
+                (progress["status"], progress["reason"], folder["kk_id"], folder["kode"])
+            )
+
+        with self.connect() as conn:
+            conn.executemany(
+                """
+                UPDATE folders
+                SET status = ?, status_reason = ?
+                WHERE kk_id = ? AND kode = ?
+                """,
+                updates,
+            )
+
     def update_evidence_slot_scan(
         self,
         kk_id: str,
@@ -773,7 +809,7 @@ class Database:
             conn.execute(
                 """
                 UPDATE folders
-                SET error_message = ?, last_scanned_at = ?, status_reason = ?
+                SET error_message = ?, last_scanned_at = ?, status = 'Terisi Sebagian', status_reason = ?
                 WHERE kk_id = ? AND kode = ?
                 """,
                 (message, scanned_at, message, kk_id, kode),

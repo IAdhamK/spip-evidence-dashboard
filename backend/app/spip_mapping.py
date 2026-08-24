@@ -76,10 +76,8 @@ SUBUNSUR_LIST: list[Subunsur] = [
 
 STATUS_EXPLANATIONS = {
     "Kosong": "Belum ada file evidence pada folder ini.",
-    "Terisi Sebagian": "Sudah ada 1-3 file, tetapi belum memenuhi acuan minimal empat kategori evidence.",
-    "Terisi": "Sudah ada minimal 4 file evidence. Substansinya tetap perlu dicek koordinator.",
-    "Perlu Kurasi": "Ada file dengan nama terlalu umum, ambigu, atau berpotensi tidak mudah ditelusuri.",
-    "Final": "Sudah diverifikasi manual oleh koordinator.",
+    "Terisi Sebagian": "Sudah ada evidence, tetapi belum seluruh parameter memenuhi aturan kode SPIP/MRI/IEPK.",
+    "Terisi Penuh": "Seluruh parameter telah memenuhi aturan evidence sesuai jenis kode parameternya.",
 }
 
 

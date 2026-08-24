@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from app.classifier import classify_folder
 from app.config import Settings
 from app.database import Database
+from app.evidence_status import evaluate_subunsur_status
 from app.webdav_client import PublicShareWebDavClient, WebDavError, public_folder_link
 
 
@@ -63,11 +63,12 @@ class EvidenceScanner:
 
         slot_totals = self.sync_evidence_slots(kk_id, kode, folder["folder_path"], scanned_at)
         files = root_items + slot_totals["files"]
-        file_names = [item["name"] for item in files if not item["is_folder"]]
-        status = classify_folder(file_names)
-        status_reason = status.reason
-        if slot_totals["file_count"] > 0:
-            status_reason = f"Terbaca {slot_totals['file_count']} file dari folder detail grade."
+        direct_file_count = sum(1 for item in root_items if not item["is_folder"])
+        progress = evaluate_subunsur_status(
+            self.db.parameters(kk_id, kode),
+            self.db.evidence_slots(kk_id, kode),
+            unassigned_file_count=direct_file_count,
+        )
         public_url = public_folder_link(
             self.settings.lumbung_host,
             self.settings.lumbung_share_token,
@@ -77,8 +78,8 @@ class EvidenceScanner:
             kk_id=kk_id,
             kode=kode,
             files=files,
-            status=status.status,
-            status_reason=status_reason,
+            status=progress["status"],
+            status_reason=progress["reason"],
             public_url=public_url,
             scanned_at=scanned_at,
         )

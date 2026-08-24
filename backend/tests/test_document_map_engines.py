@@ -79,6 +79,21 @@ def minimal_docx_with_hyperlink() -> bytes:
     return buffer.getvalue()
 
 
+def xlsx_with_ref_formula_error() -> bytes:
+    source = BytesIO(minimal_xlsx())
+    output = BytesIO()
+    with ZipFile(source, "r") as existing, ZipFile(output, "w") as updated:
+        for info in existing.infolist():
+            content = existing.read(info.filename)
+            if info.filename == "xl/worksheets/sheet1.xml":
+                content = content.replace(
+                    b"<f>1+1</f><v>2</v>",
+                    b"<f>#REF!+1</f><v>#REF!</v>",
+                )
+            updated.writestr(info, content)
+    return output.getvalue()
+
+
 def minimal_docx_with_table() -> bytes:
     buffer = BytesIO()
     with ZipFile(buffer, "w") as archive:
@@ -275,6 +290,19 @@ class DocumentMapEngineTests(unittest.TestCase):
         self.assertEqual(units[0]["metadata"]["merged_ranges"], ["A1:B1"])
         self.assertEqual(units[0]["metadata"]["hyperlinks"][0]["target"], "https://example.org/evidence")
         self.assertEqual(units[0]["metadata"]["comment_cells"], ["B1"])
+
+    def test_xlsx_exposes_content_minimized_ref_formula_warning(self) -> None:
+        units, _inventory, result = self.parser.run(
+            identity("xlsx", "formula-error.xlsx"),
+            xlsx_with_ref_formula_error(),
+            "full_audit",
+        )
+
+        self.assertEqual(result.status, EngineStatus.COMPLETED)
+        self.assertEqual(
+            units[0]["metadata"]["formula_error_codes"],
+            ["XLSX_FORMULA_REF_ERROR"],
+        )
 
     def test_xlsx_structures_shape_anchor_and_chart_series_semantics(self) -> None:
         doc = identity("xlsx", "visual.xlsx")

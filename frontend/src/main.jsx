@@ -24,6 +24,7 @@ import { apiGet, apiPost, isStaticSnapshot } from "./lib/api.js";
 import { formatBytes, formatDate } from "./lib/formatters.js";
 import { createLatestRequestGuard } from "./lib/latest-request-guard.js";
 import { canonicalLumbungUrl } from "./lib/lumbung-link.js";
+import { gradeCodeItems, parameterCodeItems, parameterEvidenceRule } from "./lib/parameter-evidence.js";
 import { EmptyState, Notice } from "./features/shared/Feedback.jsx";
 import { StatusPill, Tooltip } from "./features/shared/StatusPill.jsx";
 import GuidedReviewPage from "./features/GuidedReviewPage.jsx";
@@ -32,7 +33,7 @@ import GovernancePage from "./features/GovernancePage.jsx";
 import SmartUploadPage from "./features/SmartUploadPage.jsx";
 import "./styles/main.css";
 
-const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
+const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi Penuh"];
 const SYNC_REFRESH_INTERVAL_MS = 15_000;
 
 // Disembunyikan sementara agar navigasi utama berfokus pada Upload Pintar.
@@ -610,8 +611,9 @@ function Summary({ dashboard, meta }) {
     <section className="summary-grid">
       <Metric label="Total Subunsur" value={dashboard?.total_folders ?? 0} hint="Total folder subunsur yang dipantau dari KK 3.1 sampai KK 3.4." />
       <Metric label="Total File" value={dashboard?.total_files ?? 0} hint="Jumlah file evidence yang sudah terbaca dari hasil sinkronisasi terakhir." />
-      <Metric label="Terisi" value={counts.Terisi ?? 0} tone="success" hint={meta?.status_explanations?.Terisi} />
-      <Metric label="Perlu Kurasi" value={counts["Perlu Kurasi"] ?? 0} tone="warning" hint={meta?.status_explanations?.["Perlu Kurasi"]} />
+      <Metric label="Kosong" value={counts.Kosong ?? 0} tone="danger" hint={meta?.status_explanations?.Kosong} />
+      <Metric label="Terisi Sebagian" value={counts["Terisi Sebagian"] ?? 0} tone="warning" hint={meta?.status_explanations?.["Terisi Sebagian"]} />
+      <Metric label="Terisi Penuh" value={counts["Terisi Penuh"] ?? 0} tone="success" hint={meta?.status_explanations?.["Terisi Penuh"]} />
     </section>
   );
 }
@@ -841,12 +843,18 @@ function ParameterList({ parameters, kkId, kode }) {
       ) : (
         parameters.map((parameter) => (
           <article className="parameter-item" key={parameter.id}>
-            <div className="parameter-meta">
-              <span>Detail {parameter.detail_kode || `${kode}.${parameter.parameter_no || "-"}`}</span>
-              <span>No {parameter.parameter_no || "-"}</span>
-              <span>Baris {parameter.source_row}</span>
-              <span>{compactCodes(parameter)}</span>
+            <div className="parameter-heading">
+              <div className="parameter-meta">
+                <span>Parameter {parameter.detail_kode || `${kode}.${parameter.parameter_no || "-"}`}</span>
+                <span>No {parameter.parameter_no || "-"}</span>
+                <span>Baris {parameter.source_row}</span>
+              </div>
+              <StatusPill
+                status={parameter.evidence_status || "Kosong"}
+                explanation={parameter.evidence_status_reason}
+              />
             </div>
+            <ParameterCodePanel parameter={parameter} />
             <p className="parameter-statement">{parameter.uraian}</p>
             <GradeMatrix parameter={parameter} />
             {parameter.cara_pengujian ? (
@@ -893,12 +901,54 @@ function GradeMatrix({ parameter }) {
             <strong>{grade.grade || "-"}</strong>
           </div>
           <div className="grade-copy">
+            <GradeCodeBadges grade={grade} parameter={parameter} />
             <MatrixField label="Kriteria" text={grade.kriteria} />
             <MatrixField label="Penjelasan" text={grade.penjelasan} />
             <GradeRecommendation recommendation={grade.recommendation} />
             <GradeEvidenceFolder folder={grade.evidence_folders?.[0]} />
           </div>
         </article>
+      ))}
+    </div>
+  );
+}
+
+function ParameterCodePanel({ parameter }) {
+  const codes = parameterCodeItems(parameter);
+  const rule = parameterEvidenceRule(parameter);
+  return (
+    <section className={`parameter-code-panel parameter-rule-${rule.mode}`}>
+      <div>
+        <span className="parameter-code-label">Kode parameter</span>
+        <div className="parameter-code-badges">
+          {codes.length ? codes.map((code) => (
+            <span className={`parameter-code-badge code-${code.system.toLowerCase()}`} key={code.system}>
+              <strong>{code.system}</strong>
+              {code.value !== code.system ? <small>{code.value}</small> : null}
+            </span>
+          )) : <span className="parameter-code-unknown">Belum tersedia</span>}
+        </div>
+      </div>
+      <div className="parameter-rule-copy">
+        <strong>{rule.title}</strong>
+        <span>{rule.description}</span>
+      </div>
+    </section>
+  );
+}
+
+function GradeCodeBadges({ grade, parameter }) {
+  const codes = gradeCodeItems(grade);
+  const fallbackCodes = parameterCodeItems(parameter);
+  const visibleCodes = codes.length ? codes : fallbackCodes;
+  if (!visibleCodes.length) return null;
+  return (
+    <div className="grade-code-line">
+      <span>Berlaku untuk</span>
+      {visibleCodes.map((code) => (
+        <strong className={`grade-code-badge code-${code.system.toLowerCase()}`} key={code.system}>
+          {code.system}
+        </strong>
       ))}
     </div>
   );
@@ -1004,15 +1054,6 @@ function InfoBlock({ label, text }) {
       <p>{text}</p>
     </section>
   );
-}
-
-function compactCodes(parameter) {
-  const parts = [
-    parameter.kode_spip && `SPIP: ${parameter.kode_spip}`,
-    parameter.kode_mri && `MRI: ${parameter.kode_mri}`,
-    parameter.kode_iepk && `IEPK: ${parameter.kode_iepk}`,
-  ].filter(Boolean);
-  return parts.join(" · ");
 }
 
 function expandTestMethods(value) {

@@ -17,6 +17,7 @@ settings = get_settings()
 db = Database(settings.database_path)
 db.ensure_mapping()
 db.ensure_parameters()
+db.recalculate_evidence_statuses()
 db.normalize_lumbung_links()
 
 analysis_job_manager = AnalysisJobManager(db, settings)

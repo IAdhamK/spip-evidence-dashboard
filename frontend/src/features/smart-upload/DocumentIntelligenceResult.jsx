@@ -5,6 +5,7 @@ import { formatSourceLocation } from "../../lib/source-location.js";
 import { EmptyState } from "../shared/Feedback.jsx";
 import AdministrativeResultView from "./AdministrativeResultView.jsx";
 import ControlledUploadState from "./ControlledUploadState.jsx";
+import WorkbookEvidencePanel from "./WorkbookEvidencePanel.jsx";
 import { primaryAdministrativeResult } from "./admin-result.js";
 
 export { CrossDocumentPackagePanel, V2PackageControl } from "./DocumentPackagePanels.jsx";
@@ -243,7 +244,9 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
       </div>
 
       {viewMode === "simple" ? (
-        <AdministrativeResultView
+        <>
+          <WorkbookEvidencePanel evidence={snapshot.workbook_evidence} onOpenDetails={() => setViewMode("detail")} />
+          <AdministrativeResultView
           run={run}
           documentFamily={snapshot.document_family ?? {}}
           primaryResult={primaryResult}
@@ -266,7 +269,8 @@ export default function DocumentIntelligenceResult({ result, ordinal }) {
           beginReview={beginSimpleReview}
           submitReview={submitSimpleReview}
           cancelReview={() => setReviewIntent(null)}
-        />
+          />
+        </>
       ) : (
       <>
       <section className="analysis-summary" aria-label="Coverage Document Intelligence">

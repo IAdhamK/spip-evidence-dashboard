@@ -55,6 +55,8 @@ from app.analysis.shadow import (
 )
 from app.analysis.storage_evidence import storage_encryption_attestation_status
 from app.analysis.visual_review import VisualPreviewError, extract_visual_preview
+from app.analysis.workbook_evidence import build_workbook_evidence_view
+from app.analysis.workbook_sheet_retrieval import configured_sheet_retrieval_fallback
 from app.config import get_settings
 from app.database import Database
 
@@ -2598,14 +2600,20 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
 
     @router.get("/{run_id}")
     def analysis_run(run_id: int, request: Request) -> dict:
+        """Return canonical run artifacts plus a derived workbook sheet-attribution view.
+
+        ``workbook_evidence`` is additive, derived on read, and never promotes a
+        mapping or a corrected human Grade into an official Grade decision.
+        """
         require_analysis_access(request)
         repository = AnalysisRepository(db)
         run = repository.get_run(run_id)
         if not run:
             raise HTTPException(status_code=404, detail="Analysis run tidak ditemukan.")
+        parameter_items = repository.parameter_index()
         parameters = {
             (item["kk_id"], item["kode"], item["detail_kode"]): item
-            for item in repository.parameter_index()
+            for item in parameter_items
         }
         facts = repository.list_facts(run_id)
         engine_results = repository.list_engine_results(run_id)
@@ -2616,8 +2624,18 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
                 if item.get("engine_name") == "file_router"
                 and item.get("output", {}).get("file_kind")
             ),
-            "text",
+            "",
         )
+        if not file_kind:
+            file_name = str(run.get("file_name") or "").casefold()
+            content_type = str(run.get("content_type") or "").casefold()
+            file_kind = (
+                "xlsx"
+                if file_name.endswith(".xlsx")
+                or content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                else "text"
+            )
         document_role = infer_document_role(
             DocumentIdentity(
                 file_name=run["file_name"],
@@ -2651,22 +2669,57 @@ def create_analysis_router(db: Database, job_manager: AnalysisJobManager | None 
                     "document_role": document_role,
                 }
             )
+        document_units = repository.list_document_units(run_id)
+        grade_assessments = repository.list_grade_assessments(run_id)
+        verification_results = repository.list_verification_results(run_id)
+        workbook_evidence = build_workbook_evidence_view(
+            run_status=str(run.get("status") or ""),
+            file_kind=file_kind,
+            document_units=document_units,
+            facts=facts,
+            mapping_candidates=mappings,
+            grade_assessments=grade_assessments,
+            verification_results=verification_results,
+        )
+        if any(
+            item.get("status") == "needs_sheet_retrieval"
+            for item in workbook_evidence.get("sheet_results") or []
+        ):
+            workbook_evidence = configured_sheet_retrieval_fallback(
+                get_settings()
+            ).apply(
+                workbook_evidence=workbook_evidence,
+                identity=DocumentIdentity(
+                    file_name=run["file_name"],
+                    content_type=run.get("content_type"),
+                    size_bytes=int(run.get("size_bytes") or 0),
+                    sha256=run["sha256"],
+                    file_kind=file_kind,
+                ),
+                document_units=document_units,
+                facts=facts,
+                parameters=parameter_items,
+                document_role=document_role,
+                feedback_terms=repository.active_retrieval_feedback_terms(),
+                external_ai_allowed=bool(run.get("external_ai_allowed")),
+            )
         return {
             "run": run,
             "events": repository.list_events(run_id),
             "engines": engine_results,
             "security_findings": repository.list_security_findings(run_id),
-            "document_units": repository.list_document_units(run_id),
+            "document_units": document_units,
             "document_structures": repository.list_document_structures(run_id),
             "facts": facts,
             "mappings": mappings,
-            "grade_assessments": repository.list_grade_assessments(run_id),
-            "verification_results": repository.list_verification_results(run_id),
+            "grade_assessments": grade_assessments,
+            "verification_results": verification_results,
             "human_review_decisions": repository.list_human_review_decisions(run_id),
             "controlled_upload_actions": repository.list_controlled_upload_actions(run_id),
             "controlled_upload_reconciliations": (
                 repository.list_controlled_upload_reconciliation_summaries(run_id)
             ),
+            "workbook_evidence": workbook_evidence,
         }
 
     @router.get("/{run_id}/events")

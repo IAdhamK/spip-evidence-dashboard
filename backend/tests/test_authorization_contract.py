@@ -79,6 +79,18 @@ class AuthorizationContractTests(unittest.TestCase):
         self.assertEqual(summary["classified_operation_count"], 62)
         self.assertTrue(summary["all_mutations_role_secured"])
 
+    def test_workbook_evidence_inherits_run_read_scope_without_new_authority(self) -> None:
+        self.assertEqual(
+            SECURED_OPERATION_ROLES[
+                ("GET", "/api/analysis-runs/{run_id}")
+            ],
+            frozenset({"evidence_reviewer", "operations_owner"}),
+        )
+        self.assertNotIn(
+            ("GET", "/api/analysis-runs/{run_id}"),
+            PROXY_BOUNDARY_OPERATIONS,
+        )
+
     def test_unregistered_guarded_route_fails_closed_even_in_development(self) -> None:
         request = Request({
             "type": "http",

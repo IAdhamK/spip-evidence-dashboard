@@ -140,10 +140,12 @@ const smartUploadModulePaths = [
   "smart-upload/SmartUploadControls.jsx",
   "smart-upload/SmartUploadLinkPanel.jsx",
   "smart-upload/DocumentIntelligenceResult.jsx",
+  "smart-upload/WorkbookEvidencePanel.jsx",
   "smart-upload/ControlledUploadState.jsx",
   "smart-upload/SmartUploadBatchPanels.jsx",
   "smart-upload/SmartUploadResults.jsx",
   "smart-upload/utils.js",
+  "smart-upload/workbook-evidence.js",
 ];
 for (const modulePath of smartUploadModulePaths) {
   const importName = modulePath.split("/").at(-1);
@@ -216,7 +218,9 @@ for (const presentational of [
   "smart-upload/SmartUploadLinkPanel.jsx",
   "smart-upload/SmartUploadBatchPanels.jsx",
   "smart-upload/ControlledUploadState.jsx",
+  "smart-upload/WorkbookEvidencePanel.jsx",
   "smart-upload/utils.js",
+  "smart-upload/workbook-evidence.js",
 ]) {
   const content = source(join(featuresRoot, presentational));
   for (const forbidden of ["apiGet(", "apiPost(", "apiUpload(", "useEffect(", "useState(", "useMemo("]) {

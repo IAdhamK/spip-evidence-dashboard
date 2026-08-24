@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   administrativeMissingItems,
   administrativeReviewGroups,
@@ -11,6 +14,12 @@ import {
   gradeDirection,
   primaryAdministrativeResult,
 } from "../src/features/smart-upload/admin-result.js";
+import {
+  parameterSourceLabel,
+  sheetStatusLabel,
+  workbookEvidenceSummary,
+  workbookReviewState,
+} from "../src/features/smart-upload/workbook-evidence.js";
 
 assert.equal(confidenceLabel(0.9), "Tinggi");
 assert.equal(confidenceLabel(0.7), "Sedang");
@@ -170,5 +179,156 @@ assert.deepEqual(
     governance: ["Pedoman Grade belum disahkan; hasil tetap ditampilkan sebagai Arah Grade"],
   },
 );
+
+const workbookFixture = {
+  applicable: true,
+  is_multi_evidence: true,
+  status: "ready",
+  sheet_count: 3,
+  substantive_sheet_count: 2,
+  sheet_results: [
+    {
+      sheet_key: "sheet:register-risiko",
+      sheet_name: "Register Risiko",
+      status: "mapped",
+      evidence_role: "primary",
+      coverage_status: "complete",
+      fact_count: 4,
+      primary_parameter: {
+        kk_id: "KK3.1",
+        kode: "2.1",
+        detail_kode: "2.1.2",
+        uraian: "Risiko dituangkan dalam register risiko",
+        mapping_score: 0.91,
+        verification_status: "verified",
+      },
+      secondary_parameters: [
+        { kk_id: "KK3.1", kode: "2.2", detail_kode: "2.2.1", mapping_score: 0.80 },
+        { kk_id: "KK3.1", kode: "2.2", detail_kode: "2.2.2", mapping_score: 0.79 },
+        { kk_id: "KK3.1", kode: "2.2", detail_kode: "2.2.3", mapping_score: 0.78 },
+        { kk_id: "KK3.1", kode: "2.2", detail_kode: "2.2.4", mapping_score: 0.77 },
+      ],
+      warnings: [],
+    },
+    {
+      sheet_key: "sheet:analisis-risiko",
+      sheet_name: "Analisis Risiko",
+      status: "ambiguous",
+      evidence_role: "supporting",
+      coverage_status: "complete",
+      fact_count: 3,
+      primary_parameter: {
+        kk_id: "KK3.1",
+        kode: "2.2",
+        detail_kode: "2.2.1",
+        mapping_score: 0.73,
+        verification_status: "needs_human_review",
+      },
+      secondary_parameters: [],
+      warnings: ["Dua kandidat teratas mempunyai dukungan yang berdekatan."],
+    },
+    {
+      sheet_key: "sheet:template",
+      sheet_name: "Template",
+      status: "template_only",
+      evidence_role: "context",
+      coverage_status: "complete",
+      fact_count: 0,
+      primary_parameter: {
+        kk_id: "KK3.1",
+        kode: "2.1",
+        detail_kode: "2.1.2",
+      },
+      secondary_parameters: [],
+      warnings: ["Sheet hanya berisi template."],
+    },
+  ],
+  workbook_summary: {
+    primary_parameter: {
+      kk_id: "KK3.1",
+      kode: "2.1",
+      detail_kode: "2.1.2",
+      source_sheets: [{ sheet_name: "Register Risiko" }],
+    },
+    secondary_parameters: [],
+    parameter_sources: [
+      {
+        kk_id: "KK3.1",
+        kode: "2.1",
+        detail_kode: "2.1.2",
+        source_sheets: [{ sheet_name: "Register Risiko" }],
+      },
+      {
+        kk_id: "KK3.1",
+        kode: "2.2",
+        detail_kode: "2.2.1",
+        source_sheets: [{ sheet_name: "Analisis Risiko" }],
+      },
+    ],
+    warnings: ["1 sheet mempunyai atribusi parameter ambigu."],
+  },
+};
+const workbookModel = workbookEvidenceSummary(workbookFixture);
+assert.equal(workbookModel.showPanel, true);
+assert.equal(workbookModel.sheetCount, 3);
+assert.equal(workbookModel.substantiveSheetCount, 2);
+assert.equal(workbookModel.parameterCount, 2);
+assert.equal(workbookModel.evidenceSheets.length, 2);
+assert.equal(workbookModel.evidenceSheets[0].secondaryParameters.length, 3);
+assert.equal(workbookModel.evidenceSheets[0].tone, "success");
+assert.equal(workbookModel.evidenceSheets[1].tone, "warning");
+assert.equal(workbookModel.excludedSheets[0].primaryParameter, null);
+assert.equal(parameterSourceLabel(workbookFixture.workbook_summary.parameter_sources[0]), "Sumber: Sheet Register Risiko");
+assert.equal(sheetStatusLabel("ambiguous"), "Perlu dipastikan");
+assert.equal(workbookReviewState(workbookFixture).canConfirmWorkbookAtOnce, false);
+assert.equal(
+  workbookReviewState(workbookFixture).message,
+  "Periksa dan konfirmasi setiap sheet yang relevan melalui Review Terpandu.",
+);
+
+const singleEvidence = workbookEvidenceSummary({
+  ...workbookFixture,
+  is_multi_evidence: false,
+  sheet_count: 1,
+  substantive_sheet_count: 1,
+  sheet_results: workbookFixture.sheet_results.slice(0, 1),
+});
+assert.equal(singleEvidence.showPanel, false);
+assert.deepEqual(workbookEvidenceSummary(), {
+  applicable: false,
+  isMultiEvidence: false,
+  showPanel: false,
+  status: "not_available",
+  sheetCount: 0,
+  substantiveSheetCount: 0,
+  parameterCount: 0,
+  primaryParameter: null,
+  secondaryParameters: [],
+  parameterSources: [],
+  evidenceSheets: [],
+  excludedSheets: [],
+  warnings: [],
+  review: {
+    showPanel: false,
+    hasAmbiguousSheets: false,
+    hasBlockedSheets: false,
+    hasPendingRetrieval: false,
+    requiresPerSheetReview: false,
+    canConfirmWorkbookAtOnce: true,
+    message: "Periksa dan konfirmasi setiap sheet yang relevan melalui Review Terpandu.",
+  },
+});
+
+const scriptDirectory = dirname(fileURLToPath(import.meta.url));
+const intelligenceSource = readFileSync(resolve(scriptDirectory, "../src/features/smart-upload/DocumentIntelligenceResult.jsx"), "utf8");
+const workbookPanelSource = readFileSync(resolve(scriptDirectory, "../src/features/smart-upload/WorkbookEvidencePanel.jsx"), "utf8");
+const stylesSource = readFileSync(resolve(scriptDirectory, "../src/styles/main.css"), "utf8");
+assert.match(intelligenceSource, /<WorkbookEvidencePanel evidence=\{snapshot\.workbook_evidence\}/);
+assert.match(intelligenceSource, /<AdministrativeResultView/);
+assert.match(workbookPanelSource, /Workbook Multi-Evidence/);
+assert.match(workbookPanelSource, /Buka Detail Pemeriksaan/);
+assert.match(stylesSource, /\.workbook-evidence-panel[^}]*max-width:\s*100%/s);
+assert.match(stylesSource, /\.workbook-evidence-panel\s+:where\([^}]*overflow-wrap:\s*anywhere/s);
+assert.match(stylesSource, /\.workbook-aggregate-list,\s*\.workbook-secondary-list\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
 
 console.log("Administrative result checks passed.");

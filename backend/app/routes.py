@@ -9,6 +9,7 @@ from app.analysis.jobs import AnalysisJobManager
 from app.analysis.repository import AnalysisRepository
 from app.analysis.shadow import ShadowComparisonService
 from app.database import Database
+from app.evidence_status import attach_parameter_progress
 from app.evidence_link_crawler import EvidenceLinkCrawler
 from app.evidence_structure import canonical_folder_path
 from app.recommendations import attach_recommendations
@@ -490,15 +491,7 @@ def create_router(db: Database, analysis_job_manager: AnalysisJobManager | None 
 
 
 def attach_slots(parameters: list[dict], slots: list[dict]) -> None:
-    slot_map: dict[tuple[str, str], list[dict]] = {}
-    for slot in slots:
-        slot_map.setdefault((slot["detail_kode"], slot["grade"]), []).append(slot)
-
-    for parameter in parameters:
-        detail_kode = parameter.get("detail_kode")
-        for grade in parameter.get("grades", []):
-            grade_value = str(grade.get("grade") or "").strip().upper()
-            grade["evidence_folders"] = slot_map.get((detail_kode, grade_value), [])
+    attach_parameter_progress(parameters, slots)
 
 
 def with_slot_public_url(slot: dict) -> dict:

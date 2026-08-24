@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 from app.config import get_settings  # noqa: E402
 from app.database import Database  # noqa: E402
+from app.evidence_status import attach_parameter_progress  # noqa: E402
 from app.recommendations import attach_recommendations  # noqa: E402
 from app.spip_mapping import EVIDENCE_CATEGORIES, KK_LIST, STATUS_EXPLANATIONS  # noqa: E402
 from app.webdav_client import canonical_public_folder_url, public_folder_link  # noqa: E402
@@ -49,6 +50,7 @@ def build_snapshot_from_database(settings) -> dict:
     db = Database(os.environ.get("DATABASE_PATH", str(ROOT / "data" / "evidence.db")))
     db.ensure_mapping()
     db.ensure_parameters()
+    db.recalculate_evidence_statuses()
 
     folders = [with_public_url(folder, settings) for folder in db.folders()]
     dashboard = build_dashboard(folders)
@@ -175,15 +177,7 @@ def sanitize_file(file: dict) -> dict:
 
 
 def attach_slots(parameters: list[dict], slots: list[dict]) -> None:
-    slot_map: dict[tuple[str, str], list[dict]] = {}
-    for slot in slots:
-        slot_map.setdefault((slot["detail_kode"], slot["grade"]), []).append(slot)
-
-    for parameter in parameters:
-        detail_kode = parameter.get("detail_kode")
-        for grade in parameter.get("grades", []):
-            grade_value = str(grade.get("grade") or "").strip().upper()
-            grade["evidence_folders"] = slot_map.get((detail_kode, grade_value), [])
+    attach_parameter_progress(parameters, slots)
 
 
 def build_dashboard(folders: list[dict]) -> dict:

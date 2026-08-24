@@ -21,6 +21,20 @@ Sistem memilih dokumen beragam, melewati format yang belum didukung, tidak mengh
 
 Review terpandu **tidak** mengesahkan rule domain, tidak mengaktifkan OCR/vision, dan tidak membuka upload produksi. Semua gate tersebut tetap terpisah dan fail-closed.
 
+## Jika satu workbook mempunyai beberapa evidence
+
+Untuk XLSX multi-evidence, mulai dari panel **Workbook Multi-Evidence** pada Upload Pintar:
+
+1. Buka card setiap sheet substantif dan catat parameter utama, maksimal tiga parameter sekunder, serta nama sheet sumbernya.
+2. Dahulukan sheet dengan status **Perlu dipastikan**, **Perlu diperiksa**, coverage sebagian, formula error, periode campuran, atau unit kerja campuran.
+3. Tekan **Buka Detail Pemeriksaan** untuk memeriksa fakta sumber. Parameter utama/sekunder per sheet hanyalah rekomendasi pencarian, bukan keputusan final dan bukan Grade.
+4. Masuk ke **Review Terpandu** dan pilih parameter yang benar berdasarkan fakta dari sheet terkait. Jangan memakai fakta sheet A untuk membenarkan parameter sheet B.
+5. Bila workbook mendukung beberapa parameter, simpan keputusan berdasarkan sumber yang benar-benar diperiksa. Jangan menyetujui seluruh workbook sekaligus hanya karena satu sheet sudah benar.
+6. Hidden sheet, template, petunjuk, atau sheet kosong tidak boleh dipilih sebagai evidence utama. Jika data hidden memang relevan, periksa manual dan catat alasannya.
+7. Bila periode atau unit kerja berbeda antar-sheet, pilih **Belum yakin** sampai konteks penilaian dapat dipastikan oleh pemilik dokumen/domain.
+
+Grade tetap mengikuti rule yang disahkan, kelengkapan evidence, verification, dan keputusan reviewer. Rekomendasi sheet tidak mengaktifkan `primary_allowed` dan tidak membuka controlled upload.
+
 ## Cara paling mudah
 
 1. Buka aplikasi, lalu tekan **Review Terpandu** pada bagian atas halaman.

@@ -3,16 +3,12 @@ import {
   ArrowUpDown,
   CheckCircle2,
   Info,
-  ShieldCheck,
-  TriangleAlert,
 } from "lucide-react";
 
 const STATUS_ICONS = {
   Kosong: AlertCircle,
   "Terisi Sebagian": ArrowUpDown,
-  Terisi: CheckCircle2,
-  "Perlu Kurasi": TriangleAlert,
-  Final: ShieldCheck,
+  "Terisi Penuh": CheckCircle2,
 };
 
 function slug(value) {
