@@ -36,6 +36,10 @@ import "./styles/main.css";
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi Penuh"];
 const SYNC_REFRESH_INTERVAL_MS = 15_000;
 
+function delay(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 // Disembunyikan sementara agar navigasi utama berfokus pada Upload Pintar.
 // Route dan implementasi tetap tersedia sehingga dapat diaktifkan kembali tanpa
 // memulihkan kode yang dihapus.
@@ -139,6 +143,7 @@ function App() {
   const [governanceOpen, setGovernanceOpen] = useState(false);
   const [smartUploadConfig, setSmartUploadConfig] = useState(null);
   const detailRequestGuard = useRef(createLatestRequestGuard()).current;
+  const syncAdvanceGuard = useRef(false);
 
   function clearDetailView() {
     detailRequestGuard.invalidate();
@@ -164,6 +169,26 @@ function App() {
     }
   }
 
+  async function continueClientDrivenSync(initialStatus) {
+    if (!initialStatus?.is_running || !initialStatus?.client_driven || syncAdvanceGuard.current) return;
+    syncAdvanceGuard.current = true;
+    setSyncing(true);
+    let current = initialStatus;
+    try {
+      while (current?.is_running && current?.client_driven) {
+        current = await apiPost("/api/sync/background/advance");
+        setSyncStatus(current);
+        await loadData({ silent: true });
+        if (current?.is_running) await delay(100);
+      }
+    } catch (err) {
+      setError(`Sinkronisasi penuh terhenti sementara: ${err.message}`);
+    } finally {
+      syncAdvanceGuard.current = false;
+      setSyncing(false);
+    }
+  }
+
   async function runSync() {
     if (staticSnapshot) {
       setError("Versi online GitHub Pages memakai snapshot read-only. Sinkronisasi live dijalankan dari aplikasi lokal/server backend.");
@@ -175,6 +200,7 @@ function App() {
       const status = await apiPost("/api/sync/background");
       setSyncStatus(status);
       await loadData({ silent: true });
+      await continueClientDrivenSync(status);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -265,6 +291,9 @@ function App() {
     try {
       const status = await apiGet("/api/sync/status");
       setSyncStatus(status);
+      if (status?.is_running && status?.client_driven) {
+        void continueClientDrivenSync(status);
+      }
       return status;
     } catch {
       return null;

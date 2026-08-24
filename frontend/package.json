@@ -10,15 +10,17 @@
     "check:admin-ui": "node scripts/check-admin-result.mjs",
     "check:navigation": "node scripts/check-navigation.mjs",
     "check:parameter-evidence": "node scripts/check-parameter-evidence.mjs",
+    "check:edge-sync": "node scripts/check-edge-sync.mjs",
     "build": "vite build",
+    "build:edge": "npm run build && node scripts/build-edge-seed.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 3000"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "fast-xml-parser": "^5.11.0",
+    "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "lucide-react": "latest"
-  },
-  "devDependencies": {}
+    "vite": "latest"
+  }
 }

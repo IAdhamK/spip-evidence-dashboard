@@ -1,0 +1,32 @@
+{
+  "$schema": "./frontend/node_modules/wrangler/config-schema.json",
+  "name": "spip-evidence-pdp",
+  "main": "frontend/worker/index.js",
+  "compatibility_date": "2026-08-24",
+  "assets": {
+    "directory": "frontend/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "LIVE_DB",
+      "database_name": "spip-evidence-pdp-live",
+      "database_id": "0b2b7df3-6582-40bd-92c5-c729d4e67793"
+    }
+  ],
+  "vars": {
+    "LUMBUNG_HOST": "https://lumbungfile.kemendesa.go.id",
+    "SCAN_MAX_DEPTH": "4",
+    "SCAN_MAX_REQUESTS_PER_SYNC": "45",
+    "SYNC_MIN_INTERVAL_SECONDS": "10",
+    "EDGE_FULL_SYNC_INTERVAL_MINUTES": "360"
+  },
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -107,6 +107,18 @@ SCAN_TIMEOUT_SECONDS=30
 
 Mode ini mendukung tombol `Sinkronkan` langsung dari dashboard karena API backend tersedia online pada origin yang sama.
 
+### Cloudflare Worker live sync
+
+Deployment `spip-evidence-pdp` menggunakan Worker API, D1, dan seed snapshot yang dibangun melalui `npm run build:edge`. Worker menyinkronkan metadata langsung dari public-share WebDAV tanpa mengubah tunnel atau URL aplikasi.
+
+- Halaman detail menyinkronkan subunsur aktif setiap 15 detik, dengan cooldown server-side 10 detik.
+- Tombol `Sinkronkan` menjalankan seluruh 100 subunsur secara bertahap; setiap request hanya memproses satu subunsur agar tetap berada dalam batas subrequest Cloudflare.
+- Cron Worker berjalan tiap menit untuk melanjutkan full-sync otomatis dan memulai siklus baru setelah interval enam jam.
+- D1 hanya menyimpan metadata dashboard, detail parameter, status proses, dan checksum. Isi dokumen tidak disimpan.
+- Kegagalan folder utama mempertahankan data terakhir. Kegagalan slot Grade ditandai sebagai `Terisi Sebagian`, bukan dinyatakan lengkap.
+
+Konfigurasi berada di `wrangler.jsonc`; schema D1 berada di `migrations/edge/0001_edge_state.sql`. Secret `LUMBUNG_SHARE_TOKEN` wajib disimpan melalui Wrangler dan tidak boleh dimasukkan ke Git.
+
 ### GitHub Pages snapshot
 
 ```text
