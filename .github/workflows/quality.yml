@@ -14,6 +14,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - name: Install PDF renderer
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: pip install -r backend/requirements.txt
       - run: PYTHONPATH=backend python -W error::ResourceWarning -m unittest discover -s backend/tests -v
       - run: PYTHONPATH=backend python scripts/validate_handover_docs.py
