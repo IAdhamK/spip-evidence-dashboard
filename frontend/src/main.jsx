@@ -1,4 +1,4 @@
-import { Component, useEffect, useMemo, useState } from "react";
+import { Component, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./lib/browser-compat.js";
 import {
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost, isStaticSnapshot } from "./lib/api.js";
 import { formatBytes, formatDate } from "./lib/formatters.js";
+import { createLatestRequestGuard } from "./lib/latest-request-guard.js";
 import { canonicalLumbungUrl } from "./lib/lumbung-link.js";
 import { EmptyState, Notice } from "./features/shared/Feedback.jsx";
 import { StatusPill, Tooltip } from "./features/shared/StatusPill.jsx";
@@ -32,6 +33,11 @@ import SmartUploadPage from "./features/SmartUploadPage.jsx";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
+
+// Disembunyikan sementara agar navigasi utama berfokus pada Upload Pintar.
+// Route dan implementasi tetap tersedia sehingga dapat diaktifkan kembali tanpa
+// memulihkan kode yang dihapus.
+const SHOW_SUPPORTING_V2_NAVIGATION = false;
 
 class AppErrorBoundary extends Component {
   constructor(props) {
@@ -130,6 +136,14 @@ function App() {
   const [visualReviewOpen, setVisualReviewOpen] = useState(false);
   const [governanceOpen, setGovernanceOpen] = useState(false);
   const [smartUploadConfig, setSmartUploadConfig] = useState(null);
+  const detailRequestGuard = useRef(createLatestRequestGuard()).current;
+
+  function clearDetailView() {
+    detailRequestGuard.invalidate();
+    setSelected(null);
+    setDetailLoading(false);
+    setDetailSyncing(false);
+  }
 
   async function loadData({ silent = false } = {}) {
     if (!silent) setLoading(true);
@@ -167,6 +181,7 @@ function App() {
   }
 
   async function openDetail(folder, { updateRoute = true } = {}) {
+    const requestRevision = detailRequestGuard.begin();
     setDetailLoading(true);
     setSelected(null);
     setSmartUploadOpen(false);
@@ -175,29 +190,33 @@ function App() {
     setGovernanceOpen(false);
     try {
       const detail = await apiGet(`/api/subunsur/${encodeURIComponent(folder.kk_id)}/${encodeURIComponent(folder.kode)}`);
+      if (!detailRequestGuard.isCurrent(requestRevision)) return null;
       setSelected(detail);
       if (updateRoute) {
         updateRouteHash({ page: "detail", kkId: folder.kk_id, kode: folder.kode });
       }
       startFolderBackgroundSync(folder.kk_id, folder.kode);
+      return detail;
     } catch (err) {
-      setError(err.message);
+      if (detailRequestGuard.isCurrent(requestRevision)) setError(err.message);
+      return null;
     } finally {
-      setDetailLoading(false);
+      if (detailRequestGuard.isCurrent(requestRevision)) setDetailLoading(false);
     }
   }
 
   async function refreshDetail(kkId, kode) {
+    const requestRevision = detailRequestGuard.begin();
     const detail = await apiGet(`/api/subunsur/${encodeURIComponent(kkId)}/${encodeURIComponent(kode)}`);
+    if (!detailRequestGuard.isCurrent(requestRevision)) return null;
     setSelected(detail);
     return detail;
   }
 
   async function restoreRouteFromHash() {
     const route = parseRouteHash();
+    if (route.page !== "detail") clearDetailView();
     if (route.page === "smart-upload") {
-      setSelected(null);
-      setDetailLoading(false);
       setGuidedReviewOpen(false);
       setGovernanceOpen(false);
       setVisualReviewOpen(false);
@@ -205,8 +224,6 @@ function App() {
       return;
     }
     if (route.page === "guided-review") {
-      setSelected(null);
-      setDetailLoading(false);
       setSmartUploadOpen(false);
       setGovernanceOpen(false);
       setVisualReviewOpen(false);
@@ -214,8 +231,6 @@ function App() {
       return;
     }
     if (route.page === "visual-review") {
-      setSelected(null);
-      setDetailLoading(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setGovernanceOpen(false);
@@ -223,8 +238,6 @@ function App() {
       return;
     }
     if (route.page === "governance") {
-      setSelected(null);
-      setDetailLoading(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setVisualReviewOpen(false);
@@ -239,8 +252,6 @@ function App() {
       await openDetail({ kk_id: route.kkId, kode: route.kode }, { updateRoute: false });
       return;
     }
-    setSelected(null);
-    setDetailLoading(false);
     setSmartUploadOpen(false);
     setGuidedReviewOpen(false);
     setVisualReviewOpen(false);
@@ -411,7 +422,7 @@ function App() {
               className="secondary-button"
               type="button"
               onClick={() => {
-                setSelected(null);
+                clearDetailView();
                 setGuidedReviewOpen(false);
                 setVisualReviewOpen(false);
                 setGovernanceOpen(false);
@@ -424,12 +435,12 @@ function App() {
               Upload Pintar
             </button>
           ) : null}
-          {smartUploadConfig?.analysis_pipeline_v2_enabled ? (
+          {SHOW_SUPPORTING_V2_NAVIGATION && smartUploadConfig?.analysis_pipeline_v2_enabled ? (
             <button
               className="secondary-button"
               type="button"
               onClick={() => {
-                setSelected(null);
+                clearDetailView();
                 setSmartUploadOpen(false);
                 setVisualReviewOpen(false);
                 setGovernanceOpen(false);
@@ -442,12 +453,12 @@ function App() {
               Review Terpandu
             </button>
           ) : null}
-          {smartUploadConfig?.analysis_pipeline_v2_enabled ? (
+          {SHOW_SUPPORTING_V2_NAVIGATION && smartUploadConfig?.analysis_pipeline_v2_enabled ? (
             <button
               className="secondary-button"
               type="button"
               onClick={() => {
-                setSelected(null);
+                clearDetailView();
                 setSmartUploadOpen(false);
                 setGuidedReviewOpen(false);
                 setGovernanceOpen(false);
@@ -460,12 +471,12 @@ function App() {
               Review Visual
             </button>
           ) : null}
-          {smartUploadConfig?.analysis_pipeline_v2_enabled ? (
+          {SHOW_SUPPORTING_V2_NAVIGATION && smartUploadConfig?.analysis_pipeline_v2_enabled ? (
             <button
               className="secondary-button"
               type="button"
               onClick={() => {
-                setSelected(null);
+                clearDetailView();
                 setSmartUploadOpen(false);
                 setGuidedReviewOpen(false);
                 setVisualReviewOpen(false);
@@ -504,7 +515,7 @@ function App() {
           detail={selected}
           meta={meta}
           onBack={() => {
-            setSelected(null);
+            clearDetailView();
             updateRouteHash({ page: "dashboard" });
           }}
           onSync={syncSelectedDetail}
