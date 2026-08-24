@@ -33,6 +33,7 @@ import SmartUploadPage from "./features/SmartUploadPage.jsx";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi", "Perlu Kurasi", "Final"];
+const SYNC_REFRESH_INTERVAL_MS = 15_000;
 
 // Disembunyikan sementara agar navigasi utama berfokus pada Upload Pintar.
 // Route dan implementasi tetap tersedia sehingga dapat diaktifkan kembali tanpa
@@ -350,7 +351,7 @@ function App() {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       loadData({ silent: true });
-    }, 1000);
+    }, SYNC_REFRESH_INTERVAL_MS);
     return () => window.clearInterval(intervalId);
   }, []);
 
@@ -358,7 +359,7 @@ function App() {
     if (!selected || staticSnapshot) return undefined;
     const intervalId = window.setInterval(() => {
       syncSelectedDetail();
-    }, 5000);
+    }, SYNC_REFRESH_INTERVAL_MS);
     return () => window.clearInterval(intervalId);
   }, [selected?.kk_id, selected?.kode, staticSnapshot, detailSyncing]);
 
@@ -366,7 +367,7 @@ function App() {
     if (!selected) return undefined;
     const intervalId = window.setInterval(() => {
       refreshDetail(selected.kk_id, selected.kode);
-    }, 1000);
+    }, SYNC_REFRESH_INTERVAL_MS);
     return () => window.clearInterval(intervalId);
   }, [selected?.kk_id, selected?.kode]);
 
@@ -374,7 +375,7 @@ function App() {
     if (staticSnapshot) return undefined;
     const intervalId = window.setInterval(() => {
       loadSyncStatus();
-    }, 1000);
+    }, SYNC_REFRESH_INTERVAL_MS);
     return () => window.clearInterval(intervalId);
   }, [staticSnapshot]);
 
@@ -386,7 +387,7 @@ function App() {
         return;
       }
       startFolderBackgroundSync(watchedFolder.kkId, watchedFolder.kode);
-    }, 5000);
+    }, SYNC_REFRESH_INTERVAL_MS);
     return () => window.clearInterval(intervalId);
   }, [watchedFolder?.kkId, watchedFolder?.kode, watchedFolder?.expiresAt, staticSnapshot]);
 
@@ -780,7 +781,7 @@ function DetailPage({ detail, meta, onBack, onSync, onWatchFolder, syncing, stat
             {syncing ? <Loader2 className="spin" size={16} /> : <RefreshCw size={16} />}
             Sinkronkan Subunsur Ini
           </button>
-          <span className="autosync-note">Auto-sync subunsur aktif tiap 5 detik.</span>
+          <span className="autosync-note">Auto-sync subunsur aktif tiap 15 detik.</span>
         </div>
       </div>
 
