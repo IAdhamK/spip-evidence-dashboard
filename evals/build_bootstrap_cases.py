@@ -26,12 +26,23 @@ def build(case_count: int) -> list[dict]:
                 str(parameter.get("cara_pengujian") or "").strip(),
             ) if value
         )
+        normalized_uraian = " ".join(str(parameter.get("uraian") or "").split()).casefold()
+        equivalent_parameters = [
+            candidate
+            for candidate in parameters
+            if candidate.get("detail_kode") == parameter.get("detail_kode")
+            and " ".join(str(candidate.get("uraian") or "").split()).casefold()
+            == normalized_uraian
+        ]
         cases.append(
             {
                 "id": f"bootstrap-{index + 1:03d}",
                 "claim": claim,
                 "fact_type": "unknown",
-                "expected_any_of": [f"{parameter['kk_id']}:{parameter['detail_kode']}"],
+                "expected_any_of": sorted({
+                    f"{candidate['kk_id']}:{candidate['detail_kode']}"
+                    for candidate in equivalent_parameters
+                }),
                 "labelled_by": "bootstrap-generator-not-expert",
                 "labelled_at": "generated",
                 "case_type": CASE_TYPES[index % len(CASE_TYPES)],
