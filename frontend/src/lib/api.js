@@ -1,4 +1,5 @@
 import { normalizeLumbungLinks } from "./lumbung-link.js";
+import { normalizeStaticSnapshotEvidence } from "./parameter-evidence.js";
 
 const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 const STATIC_SNAPSHOT = import.meta.env.VITE_STATIC_SNAPSHOT === "true";
@@ -132,7 +133,7 @@ async function loadSnapshot() {
       if (!response.ok) {
         throw new Error("Snapshot dashboard online belum tersedia.");
       }
-      return normalizeLumbungLinks(await response.json());
+      return normalizeLumbungLinks(normalizeStaticSnapshotEvidence(await response.json()));
     });
   }
   return snapshotPromise;
