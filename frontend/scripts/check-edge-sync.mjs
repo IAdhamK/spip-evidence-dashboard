@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { applyDetailToDashboard, recalculateDetail } from "../worker/evidence-sync.js";
 import { createClient, parsePropfind } from "../worker/webdav.js";
+import { proxyBackendRequest } from "../worker/index.js";
 
 const xml = await readFile(new URL("./fixtures/propfind.xml", import.meta.url), "utf8");
 const items = parsePropfind(xml, "Root/Grade E");
@@ -67,4 +68,19 @@ const dashboard = applyDetailToDashboard({
 }, updated);
 assert.equal(dashboard.total_files, 2);
 assert.deepEqual(dashboard.status_counts, { Kosong: 0, "Terisi Sebagian": 0, "Terisi Penuh": 1 });
+
+let proxiedRequest;
+const proxyResponse = await proxyBackendRequest(
+  new Request("https://worker.example/api/dashboard?scope=all", { method: "GET" }),
+  "https://backend.example/base/",
+  async (target, options) => {
+    proxiedRequest = { target: String(target), method: options.method };
+    return new Response("ok");
+  },
+);
+assert.equal(await proxyResponse.text(), "ok");
+assert.deepEqual(proxiedRequest, {
+  target: "https://backend.example/api/dashboard?scope=all",
+  method: "GET",
+});
 console.log("Cloudflare edge sync checks passed.");

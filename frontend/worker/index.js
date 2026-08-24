@@ -13,6 +13,9 @@ export default {
     const url = new URL(request.url);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
     try {
+      if (env.BACKEND_ORIGIN_URL) {
+        return await proxyBackendRequest(request, env.BACKEND_ORIGIN_URL);
+      }
       return await routeApi(request, env, url);
     } catch (error) {
       return json({ detail: error instanceof Error ? error.message : String(error) }, 500);
@@ -23,6 +26,23 @@ export default {
     ctx.waitUntil(runScheduledSync(env));
   },
 };
+
+export async function proxyBackendRequest(request, originUrl, fetchImpl = fetch) {
+  const source = new URL(request.url);
+  const origin = new URL(originUrl);
+  const target = new URL(`${source.pathname}${source.search}`, origin);
+  const headers = new Headers(request.headers);
+  headers.delete("host");
+  headers.delete("cf-connecting-ip");
+  headers.delete("cf-ray");
+  headers.delete("cf-visitor");
+  return fetchImpl(target, {
+    method: request.method,
+    headers,
+    body: ["GET", "HEAD"].includes(request.method.toUpperCase()) ? undefined : request.body,
+    redirect: "manual",
+  });
+}
 
 async function routeApi(request, env, url) {
   const method = request.method.toUpperCase();
