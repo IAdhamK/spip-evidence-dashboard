@@ -98,6 +98,17 @@ async function staticRequest(path, options) {
   if (path === "/api/health") return snapshot.health;
   if (path === "/api/meta") return snapshot.meta;
   if (path === "/api/dashboard") return snapshot.dashboard;
+  if (path.startsWith("/api/operational-progress")) {
+    const summary = snapshot.dashboard?.operational_summary ?? {};
+    return {
+      count: summary.latest_documents?.length ?? 0,
+      limit: summary.latest_documents?.length ?? 0,
+      last_checked_at: summary.last_checked_at ?? null,
+      latest_document_modified_at: summary.latest_document_modified_at ?? null,
+      latest_documents: summary.latest_documents ?? [],
+      source: summary.source ?? "snapshot_metadata",
+    };
+  }
   if (path === "/api/kk") return snapshot.kk;
 
   const kkMatch = path.match(/^\/api\/kk\/([^/]+)$/);

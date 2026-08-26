@@ -565,6 +565,29 @@ class Database:
             ).fetchall()
             return [dict(row) for row in rows]
 
+    def recent_files(self, limit: int = 20) -> list[dict]:
+        """Return recent file metadata only; document content is never loaded."""
+
+        safe_limit = min(max(int(limit or 20), 1), 100)
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT
+                    f.id, f.kk_id, f.kode, f.name, f.size_bytes,
+                    f.mime_type, f.modified_at, folders.subunsur_name
+                FROM files f
+                JOIN folders
+                  ON folders.kk_id = f.kk_id AND folders.kode = f.kode
+                WHERE f.is_folder = 0
+                  AND f.modified_at IS NOT NULL
+                  AND TRIM(f.modified_at) != ''
+                ORDER BY datetime(f.modified_at) DESC, f.modified_at DESC, f.id DESC
+                LIMIT ?
+                """,
+                (safe_limit,),
+            ).fetchall()
+            return [dict(row) for row in rows]
+
     def search_files(
         self,
         query: str,

@@ -34,6 +34,8 @@ import VisualReviewPage from "./features/VisualReviewPage.jsx";
 import GovernancePage from "./features/GovernancePage.jsx";
 import SmartUploadPage from "./features/SmartUploadPage.jsx";
 import EvidenceSearchPage from "./features/file-search/EvidenceSearchPage.jsx";
+import OperationalSummary from "./features/operational-summary/OperationalSummary.jsx";
+import RecentProgressPage from "./features/operational-summary/RecentProgressPage.jsx";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi Penuh"];
@@ -86,6 +88,7 @@ function parseRouteHash() {
   if (typeof window === "undefined") return { page: "dashboard" };
   const hash = window.location.hash || "";
   if (hash === "#/file-search") return { page: "file-search" };
+  if (hash === "#/recent-progress") return { page: "recent-progress" };
   if (hash === "#/smart-upload") return { page: "smart-upload" };
   if (hash === "#/guided-review") return { page: "guided-review" };
   if (hash === "#/visual-review") return { page: "visual-review" };
@@ -108,6 +111,8 @@ function updateRouteHash(route) {
   let nextHash = "";
   if (route?.page === "file-search") {
     nextHash = "#/file-search";
+  } else if (route?.page === "recent-progress") {
+    nextHash = "#/recent-progress";
   } else if (route?.page === "smart-upload") {
     nextHash = "#/smart-upload";
   } else if (route?.page === "guided-review") {
@@ -144,6 +149,7 @@ function App() {
   const [syncStatus, setSyncStatus] = useState(null);
   const [watchedFolder, setWatchedFolder] = useState(null);
   const [fileSearchOpen, setFileSearchOpen] = useState(false);
+  const [recentProgressOpen, setRecentProgressOpen] = useState(false);
   const [smartUploadOpen, setSmartUploadOpen] = useState(false);
   const [guidedReviewOpen, setGuidedReviewOpen] = useState(false);
   const [visualReviewOpen, setVisualReviewOpen] = useState(false);
@@ -161,12 +167,24 @@ function App() {
 
   function openFileSearch() {
     clearDetailView();
+    setRecentProgressOpen(false);
     setSmartUploadOpen(false);
     setGuidedReviewOpen(false);
     setVisualReviewOpen(false);
     setGovernanceOpen(false);
     setFileSearchOpen(true);
     updateRouteHash({ page: "file-search" });
+  }
+
+  function openRecentProgress() {
+    clearDetailView();
+    setFileSearchOpen(false);
+    setSmartUploadOpen(false);
+    setGuidedReviewOpen(false);
+    setVisualReviewOpen(false);
+    setGovernanceOpen(false);
+    setRecentProgressOpen(true);
+    updateRouteHash({ page: "recent-progress" });
   }
 
   async function loadData({ silent = false } = {}) {
@@ -230,6 +248,7 @@ function App() {
     setDetailLoading(true);
     setSelected(null);
     setFileSearchOpen(false);
+    setRecentProgressOpen(false);
     setSmartUploadOpen(false);
     setGuidedReviewOpen(false);
     setVisualReviewOpen(false);
@@ -263,6 +282,7 @@ function App() {
     const route = parseRouteHash();
     if (route.page !== "detail") clearDetailView();
     if (route.page === "file-search") {
+      setRecentProgressOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setVisualReviewOpen(false);
@@ -270,7 +290,17 @@ function App() {
       setFileSearchOpen(true);
       return;
     }
+    if (route.page === "recent-progress") {
+      setFileSearchOpen(false);
+      setSmartUploadOpen(false);
+      setGuidedReviewOpen(false);
+      setVisualReviewOpen(false);
+      setGovernanceOpen(false);
+      setRecentProgressOpen(true);
+      return;
+    }
     if (route.page === "smart-upload") {
+      setRecentProgressOpen(false);
       setFileSearchOpen(false);
       setGuidedReviewOpen(false);
       setGovernanceOpen(false);
@@ -279,6 +309,7 @@ function App() {
       return;
     }
     if (route.page === "guided-review") {
+      setRecentProgressOpen(false);
       setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGovernanceOpen(false);
@@ -287,6 +318,7 @@ function App() {
       return;
     }
     if (route.page === "visual-review") {
+      setRecentProgressOpen(false);
       setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
@@ -295,6 +327,7 @@ function App() {
       return;
     }
     if (route.page === "governance") {
+      setRecentProgressOpen(false);
       setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
@@ -303,6 +336,7 @@ function App() {
       return;
     }
     if (route.page === "detail") {
+      setRecentProgressOpen(false);
       setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
@@ -316,6 +350,7 @@ function App() {
     setVisualReviewOpen(false);
     setGovernanceOpen(false);
     setFileSearchOpen(false);
+    setRecentProgressOpen(false);
   }
 
   async function loadSyncStatus() {
@@ -486,6 +521,7 @@ function App() {
               type="button"
               onClick={() => {
                 clearDetailView();
+                setRecentProgressOpen(false);
                 setFileSearchOpen(false);
                 setGuidedReviewOpen(false);
                 setVisualReviewOpen(false);
@@ -604,6 +640,15 @@ function App() {
           }}
           onOpenDetail={(item) => openDetail({ kk_id: item.kk_id, kode: item.kode })}
         />
+      ) : recentProgressOpen ? (
+        <RecentProgressPage
+          dashboard={dashboard}
+          onBack={() => {
+            setRecentProgressOpen(false);
+            updateRouteHash({ page: "dashboard" });
+          }}
+          onOpenDetail={(item) => openDetail({ kk_id: item.kk_id, kode: item.kode })}
+        />
       ) : governanceOpen ? (
         <GovernancePage
           onBack={() => {
@@ -641,6 +686,12 @@ function App() {
       ) : (
         <>
           <Summary dashboard={dashboard} meta={meta} />
+
+          <OperationalSummary
+            dashboard={dashboard}
+            onOpenDetail={openDetail}
+            onOpenRecentProgress={openRecentProgress}
+          />
 
           <section className="control-band">
             <label className="search-box">

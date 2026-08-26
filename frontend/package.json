@@ -12,6 +12,7 @@
     "check:parameter-evidence": "node scripts/check-parameter-evidence.mjs",
     "check:edge-sync": "node scripts/check-edge-sync.mjs",
     "check:file-search": "node scripts/check-file-search.mjs",
+    "check:operational-summary": "node scripts/check-operational-summary.mjs",
     "build": "vite build",
     "build:edge": "npm run build && node scripts/build-edge-seed.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 3000"

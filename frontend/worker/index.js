@@ -60,6 +60,18 @@ async function routeApi(request, env, url) {
   if (method === "GET" && url.pathname === "/api/dashboard") {
     return json(await record(env, "dashboard", "/edge-seed/dashboard.json", request.url));
   }
+  if (method === "GET" && url.pathname === "/api/operational-progress") {
+    const dashboard = await record(env, "dashboard", "/edge-seed/dashboard.json", request.url);
+    const summary = dashboard?.operational_summary ?? {};
+    return json({
+      count: summary.latest_documents?.length ?? 0,
+      limit: summary.latest_documents?.length ?? 0,
+      last_checked_at: summary.last_checked_at ?? null,
+      latest_document_modified_at: summary.latest_document_modified_at ?? null,
+      latest_documents: summary.latest_documents ?? [],
+      source: summary.source ?? "edge_snapshot_metadata",
+    });
+  }
   if (method === "GET" && url.pathname === "/api/kk") {
     return json(await record(env, "kk-list", "/edge-seed/kk-list.json", request.url));
   }

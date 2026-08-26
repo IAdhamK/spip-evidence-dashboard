@@ -10,6 +10,7 @@ from app.analysis.repository import AnalysisRepository
 from app.analysis.shadow import ShadowComparisonService
 from app.database import Database
 from app.evidence_status import attach_parameter_progress
+from app.operational_summary import build_operational_summary
 from app.evidence_link_crawler import EvidenceLinkCrawler
 from app.evidence_structure import canonical_folder_path
 from app.recommendations import attach_recommendations
@@ -299,6 +300,26 @@ def create_router(db: Database, analysis_job_manager: AnalysisJobManager | None 
             "status_counts": status_counts,
             "kk_summary": list(kk_summary.values()),
             "folders": folders,
+            "operational_summary": build_operational_summary(
+                folders,
+                db.recent_files(),
+            ),
+        }
+
+    @router.get("/operational-progress")
+    def operational_progress(
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict:
+        folders = db.folders()
+        summary = build_operational_summary(
+            folders,
+            db.recent_files(limit),
+            item_limit=limit,
+        )
+        return {
+            "count": len(summary["latest_documents"]),
+            "limit": limit,
+            **summary,
         }
 
     @router.get("/kk")
