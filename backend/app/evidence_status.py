@@ -11,6 +11,17 @@ GRADE_SEQUENCE = ("E", "D", "C", "B", "A")
 EMPTY_CODE_VALUES = {"", "-", "–", "—"}
 
 
+def _is_missing_folder_error(message: object) -> bool:
+    """Treat a confirmed WebDAV 404 as an absent Grade folder, not a read failure."""
+
+    text = str(message or "").strip().lower()
+    return bool(text) and (
+        "http 404 not found" in text
+        or "sabredav\\exception\\notfound" in text
+        or "could not be located" in text
+    )
+
+
 def _clean_code(value: object) -> str:
     text = str(value or "").strip()
     return "" if text in EMPTY_CODE_VALUES else text
@@ -46,11 +57,16 @@ def evaluate_parameter_status(parameter: dict, slots: Iterable[dict]) -> dict:
             for slot in parameter_slots
         )
     ]
-    scan_errors = [
-        str(slot.get("error_message") or "").strip()
-        for slot in parameter_slots
-        if str(slot.get("error_message") or "").strip()
-    ]
+    scan_errors = []
+    for slot in parameter_slots:
+        error_message = str(slot.get("error_message") or "").strip()
+        if not error_message:
+            continue
+        # A missing empty Grade folder is equivalent to an unfilled Grade.
+        # Real read failures must remain fail-conservative.
+        if int(slot.get("file_count") or 0) == 0 and _is_missing_folder_error(error_message):
+            continue
+        scan_errors.append(error_message)
     has_alternative_code = "MRI" in active_codes or "IEPK" in active_codes
     rule_mode = "single_grade" if has_alternative_code else "sequential_from_e"
 

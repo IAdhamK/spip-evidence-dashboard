@@ -1,4 +1,4 @@
-import { deriveParameterEvidenceStatus } from "../src/lib/parameter-evidence.js";
+import { deriveParameterEvidenceStatus, isMissingFolderError } from "../src/lib/parameter-evidence.js";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi Penuh"];
 
@@ -43,7 +43,11 @@ export function recalculateDetail(detail, scanned) {
   );
   const totalEvidence = directFileCount + attributedCount;
   const fullCount = parameters.filter((parameter) => parameter.evidence_status === "Terisi Penuh").length;
-  const hasSlotError = evidenceSlots.some((slot) => String(slot.error_message ?? "").trim());
+  const hasSlotError = evidenceSlots.some((slot) => {
+    const errorMessage = String(slot.error_message ?? "").trim();
+    if (!errorMessage) return false;
+    return (Number(slot.file_count) || 0) > 0 || !isMissingFolderError(errorMessage);
+  });
 
   let status = "Terisi Sebagian";
   let statusReason = "Status belum dapat dipastikan karena sinkronisasi belum lengkap.";

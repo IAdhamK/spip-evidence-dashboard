@@ -3,12 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./lib/browser-compat.js";
 import {
   AlertCircle,
+  ArrowRight,
   ArrowLeft,
   CheckCircle2,
   Database,
   Eye,
   ExternalLink,
   FileArchive,
+  FileSearch,
   FileSpreadsheet,
   FileText,
   FolderOpen,
@@ -31,6 +33,7 @@ import GuidedReviewPage from "./features/GuidedReviewPage.jsx";
 import VisualReviewPage from "./features/VisualReviewPage.jsx";
 import GovernancePage from "./features/GovernancePage.jsx";
 import SmartUploadPage from "./features/SmartUploadPage.jsx";
+import EvidenceSearchPage from "./features/file-search/EvidenceSearchPage.jsx";
 import "./styles/main.css";
 
 const STATUS_ORDER = ["Kosong", "Terisi Sebagian", "Terisi Penuh"];
@@ -82,6 +85,7 @@ class AppErrorBoundary extends Component {
 function parseRouteHash() {
   if (typeof window === "undefined") return { page: "dashboard" };
   const hash = window.location.hash || "";
+  if (hash === "#/file-search") return { page: "file-search" };
   if (hash === "#/smart-upload") return { page: "smart-upload" };
   if (hash === "#/guided-review") return { page: "guided-review" };
   if (hash === "#/visual-review") return { page: "visual-review" };
@@ -102,7 +106,9 @@ function parseRouteHash() {
 function updateRouteHash(route) {
   if (typeof window === "undefined") return;
   let nextHash = "";
-  if (route?.page === "smart-upload") {
+  if (route?.page === "file-search") {
+    nextHash = "#/file-search";
+  } else if (route?.page === "smart-upload") {
     nextHash = "#/smart-upload";
   } else if (route?.page === "guided-review") {
     nextHash = "#/guided-review";
@@ -137,6 +143,7 @@ function App() {
   const [detailSyncing, setDetailSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
   const [watchedFolder, setWatchedFolder] = useState(null);
+  const [fileSearchOpen, setFileSearchOpen] = useState(false);
   const [smartUploadOpen, setSmartUploadOpen] = useState(false);
   const [guidedReviewOpen, setGuidedReviewOpen] = useState(false);
   const [visualReviewOpen, setVisualReviewOpen] = useState(false);
@@ -150,6 +157,16 @@ function App() {
     setSelected(null);
     setDetailLoading(false);
     setDetailSyncing(false);
+  }
+
+  function openFileSearch() {
+    clearDetailView();
+    setSmartUploadOpen(false);
+    setGuidedReviewOpen(false);
+    setVisualReviewOpen(false);
+    setGovernanceOpen(false);
+    setFileSearchOpen(true);
+    updateRouteHash({ page: "file-search" });
   }
 
   async function loadData({ silent = false } = {}) {
@@ -212,6 +229,7 @@ function App() {
     const requestRevision = detailRequestGuard.begin();
     setDetailLoading(true);
     setSelected(null);
+    setFileSearchOpen(false);
     setSmartUploadOpen(false);
     setGuidedReviewOpen(false);
     setVisualReviewOpen(false);
@@ -244,7 +262,16 @@ function App() {
   async function restoreRouteFromHash() {
     const route = parseRouteHash();
     if (route.page !== "detail") clearDetailView();
+    if (route.page === "file-search") {
+      setSmartUploadOpen(false);
+      setGuidedReviewOpen(false);
+      setVisualReviewOpen(false);
+      setGovernanceOpen(false);
+      setFileSearchOpen(true);
+      return;
+    }
     if (route.page === "smart-upload") {
+      setFileSearchOpen(false);
       setGuidedReviewOpen(false);
       setGovernanceOpen(false);
       setVisualReviewOpen(false);
@@ -252,6 +279,7 @@ function App() {
       return;
     }
     if (route.page === "guided-review") {
+      setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGovernanceOpen(false);
       setVisualReviewOpen(false);
@@ -259,6 +287,7 @@ function App() {
       return;
     }
     if (route.page === "visual-review") {
+      setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setGovernanceOpen(false);
@@ -266,6 +295,7 @@ function App() {
       return;
     }
     if (route.page === "governance") {
+      setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setVisualReviewOpen(false);
@@ -273,6 +303,7 @@ function App() {
       return;
     }
     if (route.page === "detail") {
+      setFileSearchOpen(false);
       setSmartUploadOpen(false);
       setGuidedReviewOpen(false);
       setVisualReviewOpen(false);
@@ -284,6 +315,7 @@ function App() {
     setGuidedReviewOpen(false);
     setVisualReviewOpen(false);
     setGovernanceOpen(false);
+    setFileSearchOpen(false);
   }
 
   async function loadSyncStatus() {
@@ -454,6 +486,7 @@ function App() {
               type="button"
               onClick={() => {
                 clearDetailView();
+                setFileSearchOpen(false);
                 setGuidedReviewOpen(false);
                 setVisualReviewOpen(false);
                 setGovernanceOpen(false);
@@ -472,6 +505,7 @@ function App() {
               type="button"
               onClick={() => {
                 clearDetailView();
+                setFileSearchOpen(false);
                 setSmartUploadOpen(false);
                 setVisualReviewOpen(false);
                 setGovernanceOpen(false);
@@ -490,6 +524,7 @@ function App() {
               type="button"
               onClick={() => {
                 clearDetailView();
+                setFileSearchOpen(false);
                 setSmartUploadOpen(false);
                 setGuidedReviewOpen(false);
                 setGovernanceOpen(false);
@@ -508,6 +543,7 @@ function App() {
               type="button"
               onClick={() => {
                 clearDetailView();
+                setFileSearchOpen(false);
                 setSmartUploadOpen(false);
                 setGuidedReviewOpen(false);
                 setVisualReviewOpen(false);
@@ -559,6 +595,15 @@ function App() {
           <Loader2 className="spin" size={28} />
           <span>Memuat dashboard evidence...</span>
         </section>
+      ) : fileSearchOpen ? (
+        <EvidenceSearchPage
+          kkOptions={["KK3.1", "KK3.2", "KK3.3", "KK3.4"]}
+          onBack={() => {
+            setFileSearchOpen(false);
+            updateRouteHash({ page: "dashboard" });
+          }}
+          onOpenDetail={(item) => openDetail({ kk_id: item.kk_id, kode: item.kode })}
+        />
       ) : governanceOpen ? (
         <GovernancePage
           onBack={() => {
@@ -603,7 +648,8 @@ function App() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Cari kode, subunsur, unsur, atau KK"
+                placeholder="Cari daftar subunsur: kode, nama unsur, atau KK"
+                aria-label="Cari daftar subunsur berdasarkan kode, nama unsur, atau KK"
               />
             </label>
             <SegmentedControl
@@ -612,6 +658,28 @@ function App() {
               value={statusFilter}
               onChange={setStatusFilter}
             />
+            {!staticSnapshot ? (
+              <button
+                className="evidence-search-entry"
+                type="button"
+                onClick={openFileSearch}
+                aria-label="Buka Cari Evidence berdasarkan nama file atau nomor dokumen"
+              >
+                <span className="evidence-search-entry-icon" aria-hidden="true">
+                  <FileSearch size={30} />
+                </span>
+                <span className="evidence-search-entry-copy">
+                  <strong>Cari Evidence</strong>
+                  <small>
+                    Ingat nama file atau nomor surat? Cari dokumen seperti IKPA, Petris, atau 465 pada data yang sudah masuk aplikasi.
+                  </small>
+                </span>
+                <span className="evidence-search-entry-action" aria-hidden="true">
+                  Buka pencarian
+                  <ArrowRight size={21} />
+                </span>
+              </button>
+            ) : null}
           </section>
 
           <KkFilterBand

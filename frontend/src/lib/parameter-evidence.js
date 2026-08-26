@@ -12,6 +12,15 @@ function validCode(value) {
   return EMPTY_CODE_VALUES.has(text) ? "" : text;
 }
 
+export function isMissingFolderError(message) {
+  const text = String(message ?? "").trim().toLowerCase();
+  return Boolean(text) && (
+    text.includes("http 404 not found")
+    || text.includes("sabredav\\exception\\notfound")
+    || text.includes("could not be located")
+  );
+}
+
 export function parameterCodeItems(parameter = {}) {
   return [
     ["SPIP", validCode(parameter.kode_spip)],
@@ -62,7 +71,11 @@ export function deriveParameterEvidenceStatus(parameter = {}) {
   const filledGrades = GRADE_SEQUENCE.filter((grade) => fileCountForGrade(grade) > 0);
   const evidenceFileCount = GRADE_SEQUENCE.reduce((total, grade) => total + fileCountForGrade(grade), 0);
   const hasScanError = [...gradeFolders.values()].some((folders) =>
-    folders.some((folder) => String(folder.error_message ?? "").trim()),
+    folders.some((folder) => {
+      const errorMessage = String(folder.error_message ?? "").trim();
+      if (!errorMessage) return false;
+      return (Number(folder.file_count) || 0) > 0 || !isMissingFolderError(errorMessage);
+    }),
   );
   const hasAlternativeCode = codes.includes("MRI") || codes.includes("IEPK");
   const highestFilledGrade = filledGrades.at(-1) ?? null;

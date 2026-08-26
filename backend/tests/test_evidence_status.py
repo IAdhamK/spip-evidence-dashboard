@@ -82,6 +82,40 @@ class EvidenceStatusTests(unittest.TestCase):
         result = evaluate_parameter_status(parameter(), slots("1.1.1", error_grade="E"))
         self.assertEqual(result["status"], STATUS_PARTIAL)
 
+    def test_missing_higher_grade_folders_do_not_block_contiguous_spip(self) -> None:
+        grade_slots = slots("1.1.1", "E", "D", "C")
+        for slot in grade_slots:
+            if slot["grade"] in {"A", "B"}:
+                slot["error_message"] = "WebDAV gagal: HTTP 404 Not Found; folder could not be located"
+
+        result = evaluate_parameter_status(parameter(), grade_slots)
+
+        self.assertEqual(result["status"], STATUS_FULL)
+        self.assertEqual(result["highest_filled_grade"], "C")
+        self.assertFalse(result["has_scan_error"])
+
+    def test_missing_folder_inside_spip_sequence_is_still_a_gap(self) -> None:
+        grade_slots = slots("1.1.1", "E", "C")
+        next(slot for slot in grade_slots if slot["grade"] == "D")["error_message"] = (
+            "WebDAV gagal: HTTP 404 Not Found; folder could not be located"
+        )
+
+        result = evaluate_parameter_status(parameter(), grade_slots)
+
+        self.assertEqual(result["status"], STATUS_PARTIAL)
+        self.assertEqual(result["missing_grades_before_highest"], ["D"])
+
+    def test_server_error_above_highest_grade_still_blocks_status(self) -> None:
+        grade_slots = slots("1.1.1", "E", "D", "C")
+        next(slot for slot in grade_slots if slot["grade"] == "B")["error_message"] = (
+            "WebDAV gagal: HTTP 500 Internal Server Error"
+        )
+
+        result = evaluate_parameter_status(parameter(), grade_slots)
+
+        self.assertEqual(result["status"], STATUS_PARTIAL)
+        self.assertTrue(result["has_scan_error"])
+
     def test_subunsur_without_evidence_is_empty(self) -> None:
         result = evaluate_subunsur_status([parameter()], slots("1.1.1"))
         self.assertEqual(result["status"], STATUS_EMPTY)

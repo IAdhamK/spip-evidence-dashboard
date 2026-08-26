@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Query, Response, UploadFile
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
@@ -325,6 +325,52 @@ def create_router(db: Database, analysis_job_manager: AnalysisJobManager | None 
             "title": folders[0]["kk_title"],
             "folders": folders,
         }
+
+    @router.get("/files/search")
+    def search_files(
+        q: str = Query(min_length=2, max_length=120),
+        kk_id: str | None = Query(default=None, max_length=16),
+        kode: str | None = Query(default=None, max_length=16),
+        file_type: str | None = Query(default=None, max_length=24),
+        grade: str | None = Query(default=None, pattern="^(?:[A-Ea-e]|all|ALL)?$"),
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict:
+        if not q.strip():
+            raise HTTPException(status_code=422, detail="Masukkan minimal dua karakter pencarian.")
+        settings = get_settings()
+        result = db.search_files(
+            q,
+            kk_id=kk_id,
+            kode=kode,
+            file_type=file_type,
+            grade=grade,
+            limit=limit,
+        )
+        reason_labels = {
+            "exact_name": "Nama file sama persis dengan pencarian.",
+            "file_name": "Kata ditemukan pada nama file.",
+            "location": "Kata ditemukan pada lokasi folder.",
+            "related_keyword": "Ditemukan melalui padanan kata administrasi.",
+        }
+        for item in result["results"]:
+            item["public_url"] = current_public_folder_link(
+                settings,
+                {
+                    "folder_path": item["location_path"],
+                    "public_url": None,
+                },
+            )
+            item["match_reason"] = reason_labels.get(item.get("match_type"), "Kata ditemukan pada indeks file.")
+            item.pop("href", None)
+        result["filters"] = {
+            "kk_id": kk_id,
+            "kode": kode,
+            "file_type": file_type,
+            "grade": grade,
+        }
+        result["source"] = "synchronized_file_metadata"
+        result["content_search"] = False
+        return result
 
     @router.get("/subunsur/{kk_id}/{kode}")
     def subunsur_detail(kk_id: str, kode: str) -> dict:

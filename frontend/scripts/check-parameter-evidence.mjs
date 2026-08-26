@@ -33,6 +33,20 @@ const spipProgress = {
 };
 assert.equal(deriveParameterEvidenceStatus(spipProgress).status, "Terisi Penuh");
 
+const missingHigherGradeFolders = structuredClone(spipProgress);
+for (const grade of missingHigherGradeFolders.grades) {
+  if (["A", "B"].includes(grade.grade)) {
+    grade.evidence_folders[0].error_message = "WebDAV gagal: HTTP 404 Not Found; folder could not be located";
+  }
+}
+assert.equal(deriveParameterEvidenceStatus(missingHigherGradeFolders).status, "Terisi Penuh");
+
+const failedHigherGradeFolder = structuredClone(spipProgress);
+failedHigherGradeFolder.grades.find((grade) => grade.grade === "B").evidence_folders[0].error_message = (
+  "WebDAV gagal: HTTP 500 Internal Server Error"
+);
+assert.equal(deriveParameterEvidenceStatus(failedHigherGradeFolder).status, "Terisi Sebagian");
+
 const gapProgress = structuredClone(spipProgress);
 gapProgress.grades.find((grade) => grade.grade === "D").evidence_folders[0].file_count = 0;
 assert.equal(deriveParameterEvidenceStatus(gapProgress).status, "Terisi Sebagian");

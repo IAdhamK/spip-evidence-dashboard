@@ -15,6 +15,7 @@ Aplikasi internal untuk membaca metadata file evidence dari Lumbung File Kemende
   - `Final`: disiapkan untuk verifikasi manual tahap berikutnya.
 - Tooltip hover untuk penjelasan status, metrik, dan acuan parameter.
 - Detail panel per subunsur dengan daftar file dan tombol buka folder Lumbung File.
+- Pencarian global **Cari Evidence** berdasarkan nama file, nomor dokumen, lokasi, KK, jenis file, dan Grade dari indeks sinkronisasi lokal.
 - Acuan parameter matriks disimpan per kombinasi `KK + kode subunsur + nomor parameter + grade`, sehingga detail seperti `KK3.1/1.3.1/Grade A` sampai `Grade E` dapat ditampilkan sesuai workbook.
 - Folder evidence detail dapat ditrack sampai level `detail parameter -> grade`, lengkap dengan link Lumbung File dan jumlah file per grade.
 
@@ -81,10 +82,17 @@ npm run dev
 - `GET /api/dashboard`
 - `GET /api/kk`
 - `GET /api/kk/{kk_id}`
+- `GET /api/files/search?q={kata_kunci}&kk_id={opsional}&file_type={opsional}&grade={opsional}`
 - `GET /api/subunsur/{kk_id}/{kode}`
 - `GET /api/subunsur/{kk_id}/{kode}/files`
 - `POST /api/sync`
 - `POST /api/sync/{kk_id}/{kode}`
+
+### Cari Evidence
+
+Menu **Cari Evidence** membaca metadata file yang sudah tersinkronisasi, sehingga tidak memindai ulang seluruh Lumbung File pada setiap pencarian. Pencarian mendukung nama file atau nomor dokumen seperti `IKPA`, `Petris`, `465`, dan frasa administrasi seperti `pelaksanaan anggaran`. Padanan deterministik membantu menemukan variasi nama seperti `RPD` atau `DIPA`; tidak ada provider AI yang dipanggil.
+
+Setiap hasil menampilkan nama file, KK, subunsur, parameter, Grade bila dapat diturunkan dari lokasi, jenis file, dan tombol membuka folder sumber di Lumbung File. Fitur ini tidak membaca isi dokumen, tidak menentukan relevansi substantif, tidak menetapkan Grade, serta tidak mengubah controlled upload. Bila file baru belum muncul, jalankan sinkronisasi terlebih dahulu.
 
 ## Deployment Online
 

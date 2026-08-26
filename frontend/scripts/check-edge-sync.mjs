@@ -62,6 +62,19 @@ assert.equal(updated.status, "Terisi Penuh");
 assert.equal(updated.file_count, 2);
 assert.equal(updated.parameters[0].highest_filled_grade, "D");
 
+const missingHigherGradeScanned = {
+  ...scanned,
+  slots: scanned.slots.map((slot) => ({
+    ...slot,
+    error_message: ["A", "B", "C"].includes(slot.grade)
+      ? "WebDAV gagal: HTTP 404 Not Found; folder could not be located"
+      : null,
+  })),
+};
+const updatedWithMissingHigherGrades = recalculateDetail(detail, missingHigherGradeScanned);
+assert.equal(updatedWithMissingHigherGrades.status, "Terisi Penuh");
+assert.equal(updatedWithMissingHigherGrades.parameters[0].evidence_status, "Terisi Penuh");
+
 const dashboard = applyDetailToDashboard({
   folders: [{ kk_id: "KK3.1", kode: "1.1", file_count: 0, total_size_bytes: 0, status: "Kosong" }],
   kk_summary: [{ kk_id: "KK3.1", file_count: 0, total_size_bytes: 0, status_counts: { Kosong: 1 } }],

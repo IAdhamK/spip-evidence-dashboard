@@ -9,6 +9,7 @@ import stat
 from typing import Iterator
 
 from app.evidence_structure import canonical_folder_path, parameter_folder, slot_folder_path
+from app.file_search import search_file_records
 from app.migrations import run_migrations
 from app.spip_mapping import KK_LIST, SUBUNSUR_LIST
 from app.webdav_client import canonical_public_folder_url
@@ -563,6 +564,48 @@ class Database:
                 (kk_id, kode),
             ).fetchall()
             return [dict(row) for row in rows]
+
+    def search_files(
+        self,
+        query: str,
+        *,
+        kk_id: str | None = None,
+        kode: str | None = None,
+        file_type: str | None = None,
+        grade: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        clauses = ["f.is_folder = 0"]
+        params: list[str] = []
+        if kk_id:
+            clauses.append("f.kk_id = ?")
+            params.append(kk_id)
+        if kode:
+            clauses.append("f.kode = ?")
+            params.append(kode)
+        with self.connect() as conn:
+            rows = conn.execute(
+                f"""
+                SELECT
+                    f.id, f.kk_id, f.kode, f.name, f.href, f.size_bytes,
+                    f.mime_type, f.modified_at, folders.kk_title,
+                    folders.subunsur_name, folders.unsur, folders.folder_path,
+                    folders.last_scanned_at
+                FROM files f
+                JOIN folders
+                  ON folders.kk_id = f.kk_id AND folders.kode = f.kode
+                WHERE {' AND '.join(clauses)}
+                ORDER BY f.id
+                """,
+                tuple(params),
+            ).fetchall()
+        return search_file_records(
+            [dict(row) for row in rows],
+            query,
+            file_type=file_type,
+            grade=grade,
+            limit=limit,
+        )
 
     def indexed_file_duplicate_matches(
         self,
